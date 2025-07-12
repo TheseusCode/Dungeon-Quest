@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dungeon Quest</title>
+<style>
+  * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: monospace;
+  background: #111;
+  color: #eee;
+  padding: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  max-width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  gap: 10px;
+}
+
+
+
+#map {
+  white-space: pre;
+  font-family: monospace;
+  font-size: 16px;
+  line-height: 1.2;
+  background: #222;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+#content-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+#log {
+  flex: 1;
+  height: 150px;
+  overflow-y: auto;
+  background: #222;
+  border: 1px solid #444;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+#stats {
+  flex: 1;
+  background: #222;
+  padding: 5px;
+  border-radius: 5px;
+  height: 150px;
+  overflow-y: auto;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat-item {
+  background: #333;
+  padding: 5px 8px;
+  border-radius: 3px;
+  flex: 1;
+  text-align: center;
+  margin: 0 2px;
+}
+
+#controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+#nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 5px;
+  width: 40%;
+  max-width: 150px;
+}
+
+.nav-btn {
+  font-size: 1em;
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: #333;
+  border: 1px solid #555;
+  color: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 3px;
+}
+
+.nav-cell {
+  visibility: hidden;
+}
+
+#actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 40%;
+}
+
+.act-btn {
+  font-size: 0.85em;
+  padding: 6px 4px;
+  background: #333;
+  border: 1px solid #555;
+  color: #eee;
+  text-align: center;
+  border-radius: 3px;
+  flex: 1;
+}
+
+.act-btn:hover, .nav-btn:hover {
+  background: #444;
+  cursor: pointer;
+}
+
+/* Color coding for map elements */
+.monster-lvl1 { color: #ff9999; }
+.monster-lvl2 { color: #ff6666; }
+.monster-lvl3 { color: #ff3333; }
+.monster-lvl4 { color: #ff0000; }
+.monster-lvl5 { color: #cc0000; }
+.chest { color: #ffff00; }
+.town-npc { color: #55ffff; }
+.resource { color: #55ff55; }
+
+/* Modal styles */
+.overlay, .modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+.overlay {
+  background: rgba(0,0,0,0.7);
+  z-index: 10;
+}
+.modal {
+  background: #222;
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 15px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  z-index: 11;
+}
+
+/* Quest Modal Styles */
+#quest-modal {
+  display: none;
+}
+
+.quest-options {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 10px;
+}
+
+.quest-options button {
+  padding: 8px 15px;
+  border-radius: 3px;
+  border: none;
+  flex: 1;
+}
+
+.quest-accept {
+  background: #4CAF50;
+  color: white;
+}
+
+.quest-decline {
+  background: #f44336;
+  color: white;
+}
+
+.quest-details {
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+@media (min-width: 500px) {
+  #nav {
+    width: 120px;
+  }
+  
+  #actions {
+    width: calc(100% - 130px);
+  }
+  
+  .act-btn {
+    padding: 10px;
+  }
+}
+</style>
+</head>
+<body>
+
+
+<div id="map"></div>
+<div id="content-row">
+  <div id="log"></div>
+  <div id="stats"></div>
+</div>
+
+<div id="controls">
+  <!-- Nav: plus shape -->
+  <div id="nav">
+    <div class="nav-cell"></div>
+    <button class="nav-btn" data-dir="up">↑</button>
+    <div class="nav-cell"></div>
+
+    <button class="nav-btn" data-dir="left">←</button>
+    <div class="nav-cell"></div>
+    <button class="nav-btn" data-dir="right">→</button>
+
+    <div class="nav-cell"></div>
+    <button class="nav-btn" data-dir="down">↓</button>
+    <div class="nav-cell"></div>
+  </div>
+
+  <!-- Actions -->
+  <div id="actions">
+    <button id="btn-inv" class="act-btn">Inventory</button>
+    <button id="btn-craft" class="act-btn">Crafting</button>
+    <button id="btn-shop" class="act-btn">Market</button>
+    <button id="btn-quests" class="act-btn">Quests</button>
+    <button id="btn-reborn" class="act-btn">Reborn</button>
+  </div>
+</div>
+
+<div id="overlay" class="overlay"></div>
+<div id="modal" class="modal"></div>
+<div id="quest-modal" class="modal"></div>
+
+<script>
+(() => {
+  // Data definitions
+  const monsterTpl={
+    Goblin: {base:{hp:8,atk:3,def:1,boost:'atk'}, levels:[
+      {name:'Goblin',mult:1,reward:0.1},
+      {name:'Hob Goblin',mult:2,reward:0.2},
+      {name:'Goblin King',mult:4,reward:0.4}
+    ]},
+    Skeleton: {base:{hp:12,atk:4,def:2,boost:'def'}, levels:[
+      {name:'Skeleton',mult:1,reward:0.1},
+      {name:'Skeleton Soldier',mult:2,reward:0.2},
+      {name:'Skeleton Knight',mult:3,reward:0.3},
+      {name:'Skeleton Duke',mult:4,reward:0.4},
+      {name:'Skeleton King',mult:5,reward:0.5}
+    ]},
+    Wolf: {base:{hp:15,atk:5,def:3,boost:'maxHp'}, levels:[
+      {name:'Wolf',mult:1,reward:1},
+      {name:'Dark Wolf',mult:2,reward:2},
+      {name:'Dire Wolf',mult:3,reward:3}
+    ]}
+  };
+
+  const shops={ 
+    'Potion Seller':[
+      {name:'Health Potion',price:5,apply:()=>{p.hp=Math.min(p.maxHp,p.hp+10)}},
+      {name:'Strength Potion',price:10,apply:()=>{p.tempAtk={value:roll(10,20),steps:roll(30,90)}}},
+      {name:'Rage Potion',price:50,apply:()=>{
+        p.tempAtk={value:Math.floor(p.atk * 2),steps:30};
+        p.hp = Math.floor(p.hp * 0.75);
+        log("Rage consumes your health!");
+      }}
+    ], 
+    'Blacksmith':[
+      {name:'Iron Sword',price:20,apply:()=>{equip('Iron Sword')}}
+    ], 
+    'Scroll Merchant':[
+      {name:'Scroll of Healing',price:12,apply:()=>{p.hp=p.maxHp}},
+      {name:'Luck Charm',price:50,apply:()=>{p.tempLuck={value:10,steps:10}}}
+    ] 
+  };
+
+  const itemDefs={
+    'Spear':{boost:{atk:2},maxD:100},
+    'Shield':{boost:{def:3},maxD:100},
+    'Greatsword':{boost:{atk:4},maxD:100},
+    'PlateArmor':{boost:{maxHp:10},maxD:100},
+    'Iron Sword':{boost:{atk:3},maxD:100},
+    'Skeleton_King_Bone':{boost:{def:1},maxD:50},
+    'Dire_Wolf_Pelt':{boost:{maxHp:5},maxD:50}
+  };
+
+  const recipes=[
+    {name:'Health Potion',need:{Herb:1,Bottle:1}},
+    {name:'Strength Potion',need:{Herb:2}},
+    {name:'Scroll of Healing',need:{Paper:1,Herb:1}},
+    {name:'Iron Ingot',need:{'Iron Ore':2,Coal:1}},
+    {name:'Iron Sword',need:{'Iron Ingot':1,Wood:2}}
+  ];
+
+  const npcProfs=['Hunter','Herbalist','Miner','Scout','Mercenary'];
+  
+  const fetchTpl={ 
+    Hunter:{need:{Wolf_Pelt:3},reward:'Spear',rewardGold:15}, 
+    Herbalist:{need:{Herb:3},reward:'Health Potion',rewardGold:10}, 
+    Miner:{need:{'Iron Ore':2},reward:'Greatsword',rewardGold:20}, 
+    Scout:{need:{Wood:3},reward:'Shield',rewardGold:15},
+    Mercenary:{need:{Goblin_Ear:2},reward:'Iron Sword',rewardGold:15}
+  };
+
+  const townQuests={ 
+    easy:[
+      {name:'Help Herbalist',type:'fetch',desc:'Bring 2 Herbs',need:{Herb:2},reward:{gold:10}},
+      {name:'Wolf Pelt',type:'fetch',desc:'Bring 1 Wolf Pelt',need:{Wolf_Pelt:1},reward:{gold:15}}
+    ], 
+    med:[
+      {name:'Slay Goblins',type:'kill',desc:'Defeat 3 Goblins',need:{Goblin:3},reward:{gold:15}},
+      {name:'Skeleton Bones',type:'fetch',desc:'Bring 2 Skeleton Bones',need:{Skeleton_Bone:2},reward:{gold:20}}
+    ], 
+    hard:[
+      {name:'Defeat Skeletons',type:'kill',desc:'Defeat 2 Skeleton Soldiers',need:{Skeleton_Soldier:2},reward:{gold:25}},
+      {name:'Hob Goblin Challenge',type:'kill',desc:'Defeat 1 Hob Goblin',need:{Hob_Goblin:1},reward:{gold:30}}
+    ],
+    elite:[
+      {name:'Goblin King',type:'kill',desc:'Defeat the Goblin King',need:{Goblin_King:1},reward:{gold:50}},
+      {name:'Skeleton Duke',type:'kill',desc:'Defeat a Skeleton Duke',need:{Skeleton_Duke:1},reward:{gold:60}}
+    ]
+  };
+  
+  // State - changed to 256x256 map (16x16 areas of 16x16 tiles)
+  const AREA=16,GRID_W=16,GRID_H=16,TOWN=8,SIZE=256,SAVE='dqSave';
+  let p,world,quests=[];
+  const d=s=>document.querySelector(s),dA=s=>document.querySelectorAll(s),
+        SEl=d('#stats'),MEl=d('#map'),LEl=d('#log'),OV=d('#overlay'),MD=d('#modal'),
+        QM=d('#quest-modal');
+  
+  function roll(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+  
+  function init(){
+    const s=localStorage.getItem(SAVE);
+    if(s) try{ let o=JSON.parse(s); p=o.player; quests=o.quests||[];}catch{localStorage.removeItem(SAVE);return init();}
+    else p={
+      x:TOWN*AREA+8,
+      y:TOWN*AREA+8,
+      maxHp:20,
+      hp:20,
+      atk:roll(1,7),
+      def:roll(1,7),
+      luck:roll(1,5),
+      g:0,
+      inv:{},
+      eq:[],
+      craft:0,
+      equipped:null,
+      tempAtk:null,
+      tempLuck:null,
+      steps:0,
+      kills:{},
+      preventFlee:0
+    };
+    world=Array.from({length:GRID_W},(_,y)=>Array.from({length:GRID_W},(_,x)=>gen(x===TOWN&&y===TOWN)));
+    save();
+  }
+  
+  function save(){
+    localStorage.setItem(SAVE,JSON.stringify({player:p,quests:quests}));
+  }
+
+  function gen(isTown){
+    let tiles=Array.from({length:AREA},()=>Array.from({length:AREA},()=>({type:'empty'})));
+    if(isTown){
+      ['Potion Seller','Blacksmith','Scroll Merchant','Quest Giver EM','Quest Giver H']
+        .forEach(pr=>place(tiles,pr,true));
+    } else {
+      for(let i=0;i<2;i++) place(tiles,npcProfs[roll(0,npcProfs.length-1)],false);
+      for(let y=0;y<AREA;y++)for(let x=0;x<AREA;x++){
+        if(tiles[y][x].type!=='empty')continue;
+        let r=Math.random()*100;
+        if(r<30) {
+          // Monster spawn based on distance from town
+          const distFromTown = Math.sqrt(Math.pow(x-TOWN*AREA,2) + Math.pow(y-TOWN*AREA,2));
+          const monsterType = ['Goblin','Skeleton','Wolf'][roll(0,2)];
+          const monsterData = monsterTpl[monsterType];
+          
+          // Only level 1 monsters adjacent to town
+          let maxLevel = 0;
+          if(distFromTown > AREA*1.5) {
+            maxLevel = Math.min(
+              monsterData.levels.length-1,
+              Math.floor(distFromTown/(AREA*2))
+            );
+          }
+          
+          let level = 0;
+          for(let l=maxLevel;l>=0;l--){
+            if(Math.random() < 1/Math.pow(2,l)){
+              level = l;
+              break;
+            }
+          }
+          
+          const levelData = monsterData.levels[level];
+          const monster = {
+            ...structuredClone(monsterData.base),
+            name: levelData.name,
+            level: level+1,
+            reward: levelData.reward,
+            boost: monsterData.base.boost
+          };
+          
+          // Scale stats by level multiplier
+          Object.keys(monsterData.base).forEach(stat => {
+            if(stat !== 'boost') monster[stat] = Math.floor(monster[stat] * levelData.mult);
+          });
+          
+          tiles[y][x]={type:'monster',data:monster};
+        }
+        else if(r<55) {
+          const resources = ['Herb','Bottle','Wood','Iron Ore','Coal','Paper','Wolf_Pelt','Goblin_Ear','Skeleton_Bone'];
+          tiles[y][x]={type:'resource',data:resources[roll(0,resources.length-1)]};
+        }
+        else if(r<65) tiles[y][x]={type:'trap'};
+        else if(r<70) tiles[y][x]={type:'chest'};
+      }
+    }
+    return {tiles};
+  }
+  
+  function place(tiles,prof,town){
+    for(let i=0;i<100;i++){
+      let x=roll(0,AREA-1),y=roll(0,AREA-1);
+      if(tiles[y][x].type==='empty'){
+        let npc={type:'npc',data:{profession:prof}};
+        if(town) {
+          npc.data.abbr = prof[0]; // Town NPCs show first letter of profession
+          npc.data.isTown = true;
+        } else {
+          npc.data.abbr = 'N'; // Random NPCs show as 'N'
+        }
+        if(!town&&fetchTpl[prof]) {
+          npc.data.quest={...fetchTpl[prof],state:0};
+        }
+        tiles[y][x]=npc;
+        return;
+      }
+    }
+  }
+  
+  function getT(x,y){
+    let ax=Math.floor(x/AREA),ay=Math.floor(y/AREA),lx=x%AREA,ly=y%AREA;
+    return world[ay][ax].tiles[ly][lx];
+  }
+  
+  function setT(x,y,o){
+    let ax=Math.floor(x/AREA),ay=Math.floor(y/AREA),lx=x%AREA,ly=y%AREA;
+    world[ay][ax].tiles[ly][lx]=o;
+  }
+  
+  function regen(ax,ay){
+    if(!(ax===TOWN&&ay===TOWN)) world[ay][ax]=gen(false);
+  }
+  
+  // Render
+  function log(m){LEl.innerHTML+=m+'<br>';LEl.scrollTop=LEl.scrollHeight;save();}
+  
+  function updateUI(){
+    // Handle temporary buffs
+    if(p.tempAtk){
+      p.tempAtk.steps--;
+      if(p.tempAtk.steps <= 0){
+        p.tempAtk = null;
+        log("Strength potion wore off!");
+      }
+    }
+    
+    if(p.tempLuck){
+      p.tempLuck.steps--;
+      if(p.tempLuck.steps <= 0){
+        p.tempLuck = null;
+        log("Luck charm wore off!");
+      }
+    }
+    
+    p.steps++;
+    
+    const currentAtk = p.atk + (p.tempAtk ? p.tempAtk.value : 0);
+    const currentLuck = p.luck + (p.tempLuck ? p.tempLuck.value : 0);
+    
+    // Update stats display
+    let statsHTML = `
+      <div class="stat-bar"><span class="stat-name">HP:</span> ${p.hp}/${p.maxHp}</div>
+      <div class="stat-bar"><span class="stat-name">ATK:</span> ${currentAtk}(${p.atk})</div>
+      <div class="stat-bar"><span class="stat-name">DEF:</span> ${p.def}</div>
+      <div class="stat-bar"><span class="stat-name">LUCK:</span> ${currentLuck}(${p.luck})</div>
+      <div class="stat-bar"><span class="stat-name">GOLD:</span> ${p.g}</div>
+      <div class="stat-bar"><span class="stat-name">CRAFT:</span> ${p.craft.toFixed(1)}</div>
+    `;
+    
+    if(p.equipped) {
+      statsHTML += `<div class="stat-bar"><span class="stat-name">EQUIP:</span> ${p.equipped.name}(${p.equipped.durability})</div>`;
+    }
+    
+    SEl.innerHTML = statsHTML;
+    
+    let gx=p.x,gy=p.y,ax=Math.floor(gx/AREA),ay=Math.floor(gy/AREA),lx=gx%AREA,ly=gy%AREA,
+        sx=Math.max(0,Math.min(AREA-GRID_W,lx-Math.floor(GRID_W/2))),
+        sy=Math.max(0,Math.min(AREA-GRID_H,ly-Math.floor(GRID_H/2))),
+        o='';
+    
+    for(let y=0;y<GRID_H;y++){
+      for(let x=0;x<GRID_W;x++){
+        let tx=sx+x,ty=sy+y,ch='.';
+        if(tx===lx&&ty===ly) ch='P';
+        else {
+          let c=getT(tx+ax*AREA,ty+ay*AREA);
+          if(c.type==='monster') {
+            const levelClass = `monster-lvl${Math.min(5, c.data.level)}`;
+            ch=`<span class="${levelClass}">M</span>`;
+          }
+          else if(c.type==='resource') ch=`<span class="resource">R</span>`;
+          else if(c.type==='trap') ch='T';
+          else if(c.type==='chest') ch='<span class="chest">C</span>';
+          else if(c.type==='npc') {
+            if(c.data.isTown) {
+              ch=`<span class="town-npc">${c.data.abbr}</span>`;
+            } else {
+              ch='N';
+            }
+          }
+        }
+        o+=ch+' ';
+      }
+      o+='\n';
+    }
+    MEl.innerHTML=o;
+  }
+  
+  // Actions
+  function move(d){
+    if(p.hp<=0) return;
+    
+    let m={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[d],
+        nx=p.x+m[0],ny=p.y+m[1];
+    
+    if(nx<0||ny<0||nx>=SIZE||ny>=SIZE){log("Wall");return;}
+    
+    let oax=Math.floor(p.x/AREA),oay=Math.floor(p.y/AREA),
+        nax=Math.floor(nx/AREA),nay=Math.floor(ny/AREA);
+    
+    if(oax!==nax||oay!==nay) regen(oax,oay);
+    
+    p.x=nx;p.y=ny;
+    const c=getT(nx,ny);
+    
+    if(c.type==='monster') combat(c.data,nx,ny);
+    else if(c.type==='resource'){
+      p.inv[c.data]=(p.inv[c.data]||0)+1;
+      log("Got "+c.data);
+      setT(nx,ny,{type:'empty'});
+    }
+    else if(c.type==='trap'){
+      let d=roll(2,6);
+      p.hp-=d;
+      log("Trap-"+d);
+      setT(nx,ny,{type:'empty'});
+    }
+    else if(c.type==='chest'){
+      let g=roll(5,20);
+      p.g+=g;
+      log("Chest+"+g);
+      setT(nx,ny,{type:'empty'});
+    }
+    else if(c.type==='npc') npcTalk(c.data);
+    
+    updateUI();
+  }
+  
+  function combat(m,x,y){
+    m=structuredClone(m);
+    m.maxHp=m.hp;
+    log("!"+m.name+" (Lvl "+m.level+")");
+    
+    if(Math.random()<.2){
+      m.atk++;
+      log("^"+m.name+" looks angry!");
+    }
+    
+    const currentAtk = p.atk + (p.tempAtk ? p.tempAtk.value : 0);
+    const currentLuck = p.luck + (p.tempLuck ? p.tempLuck.value : 0);
+    
+    while(m.hp>0&&p.hp>0){
+      // Player attack
+      let dg=Math.max(0,currentAtk-m.def)+roll(0,2);
+      m.hp-=dg;
+      log(">"+dg);
+      
+      if(m.hp<=0){
+        // Monster defeated
+        log("X"+m.name);
+        
+        // Gold reward based on monster level
+        let g=roll(3,10)*m.level;
+        p.g+=g;
+        log("G"+g);
+        
+        // Stat boost - 0.1 for str/def, 1 for hp
+        if(m.boost === 'maxHp') {
+          p[m.boost] += m.reward;
+          log("+"+m.reward+" "+m.boost);
+        } else {
+          // Round to 1 decimal place to avoid floating point issues
+          const boostAmount = Math.round(m.reward * 10) / 10;
+          p[m.boost] = (p[m.boost] || 0) + boostAmount;
+          log("+"+boostAmount.toFixed(1)+" "+m.boost);
+        }
+        
+        // Special drops from level 3+ monsters
+        if(m.level >= 3) {
+          const specialDrops = {
+            'Dire Wolf': 'Dire_Wolf_Pelt',
+            'Skeleton King': 'Skeleton_King_Bone',
+            'Goblin King': 'Goblin_King_Ear'
+          };
+          if(specialDrops[m.name]) {
+            p.inv[specialDrops[m.name]] = (p.inv[specialDrops[m.name]] || 0) + 1;
+            log("Got rare: " + specialDrops[m.name]);
+          }
+        }
+        
+        // Track kills
+        p.kills[m.name.replace(/ /g,'_')] = (p.kills[m.name.replace(/ /g,'_')] || 0) + 1;
+        
+        // Update quests
+        quests.forEach(q=>{
+          if(q.type==='kill'&&q.state===1&&q.need[m.name.replace(/ /g,'_')]){
+            q.progress[m.name.replace(/ /g,'_')] = (q.progress[m.name.replace(/ /g,'_')] || 0) + 1;
+            log("Q"+q.name+" "+q.progress[m.name.replace(/ /g,'_')]+"/"+q.need[m.name.replace(/ /g,'_')]);
+            if(q.progress[m.name.replace(/ /g,'_')]>=q.need[m.name.replace(/ /g,'_')]){
+              q.state=2;
+              p.g+=q.reward.gold;
+              log("Done "+q.name+" +"+q.reward.gold+"g");
+            }
+          }
+        });
+        
+        setT(x,y,{type:'empty'});
+        break;
+      }
+      
+      // Monster flee chance (reduced by luck)
+      if(m.hp/m.maxHp<.3 && Math.random()<.3){
+        // Check if luck prevents flee
+        if(p.preventFlee > 0) {
+          p.preventFlee--;
+          log(m.name+" tried to flee but you stopped it!");
+        } else {
+          log("~"+m.name+" flees!");
+          setT(x,y,{type:'empty'});
+          break;
+        }
+      }
+      
+      // Monster attack - chance to miss based on luck
+      const hitChance = Math.max(10, 100 - currentLuck * 5); // Higher luck = lower chance to be hit
+      if(Math.random()*100 > hitChance) {
+        log(m.name+" missed!");
+      } else {
+        let dd=Math.max(0,m.atk-p.def)+roll(0,2);
+        p.hp-=dd;
+        log("<"+dd);
+      }
+      
+      if(p.hp<=0) log("DEAD");
+    }
+    
+    // Reset flee prevention counter
+    p.preventFlee = Math.max(0, currentLuck - 7);
+  }
+  
+  function npcTalk(n){
+    log("?"+n.profession);
+    if(shops[n.profession]){
+      openShop(n.profession);
+      return;
+    }
+    if(/Quest Giver/.test(n.profession)){
+      openTownQ(n.profession);
+      return;
+    }
+    
+    if(n.quest){
+      let q=n.quest;
+      if(q.state===0){
+        showQuestPopup(n);
+        return;
+      }
+      else if(q.state===1){
+        let key=Object.keys(q.need)[0];
+        let ok=(p.inv[key]||0)>=q.need[key];
+        if(ok){
+          p.inv[key]-=q.need[key];
+          let it=q.reward;
+          if(itemDefs[it]){
+            let d=roll(1,itemDefs[it].maxD);
+            p.eq.push({name:it,durability:d});
+            log("Got "+it+"("+d+")");
+          } else {
+            p.inv[it] = (p.inv[it] || 0) + 1;
+            log("Got "+it);
+          }
+          p.g += q.rewardGold;
+          log("+"+q.rewardGold+" gold");
+          q.state=2;
+        } else {
+          log("Need more "+key);
+        }
+      }
+    }
+  }
+  
+  function showQuestPopup(n) {
+    const q = n.quest;
+    const html = `
+      <h2>${n.profession} Quest</h2>
+      <div class="quest-details">
+        <p><strong>Requires:</strong> ${Object.entries(q.need).map(e => `${e[1]}x ${e[0].replace('_', ' ')}`).join(', ')}</p>
+        <p><strong>Reward:</strong> ${q.reward.replace('_', ' ')} + ${q.rewardGold}g</p>
+      </div>
+      <div class="quest-options">
+        <button class="quest-accept" data-accept="true">Accept</button>
+        <button class="quest-decline" data-accept="false">Decline</button>
+      </div>
+    `;
+    
+    QM.innerHTML = html;
+    QM.style.display = 'block';
+    OV.style.display = 'block';
+    
+    QM.querySelectorAll('button').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        if (btn.dataset.accept === 'true') {
+          acceptQuest(n);
+        }
+        closeQuestPopup();
+      };
+    });
+  }
+  
+  function acceptQuest(n) {
+    const q = n.quest;
+    q.state = 1;
+    quests.push({
+      name: "F" + n.profession,
+      type: 'fetch',
+      desc: 'Bring ' + Object.entries(q.need).map(e => e.join('x')).join('+') + ' (Reward: ' + q.rewardGold + 'g)',
+      need: q.need,
+      progress: {},
+      reward: { item: q.reward, gold: q.rewardGold },
+      state: 1
+    });
+    log("Accepted quest from " + n.profession);
+  }
+  
+  function closeQuestPopup() {
+    QM.style.display = 'none';
+    OV.style.display = 'none';
+  }
+  
+  function materials(req){
+    for(let k in req){
+      if((p.inv[k]||0)<req[k]) return false;
+    }
+    return true;
+  }
+  
+  function equip(nm){
+    let def=itemDefs[nm],d=roll(1,def.maxD);
+    p.eq.push({name:nm,durability:d});
+    log("Got "+nm+"("+d+")");
+  }
+  
+  function equipItem(item) {
+    // Unequip current item first if any
+    if(p.equipped){
+      Object.entries(itemDefs[p.equipped.name].boost).forEach(([stat,value])=>{
+        p[stat]-=value;
+      });
+    }
+    
+    // Equip new item
+    p.equipped=item;
+    Object.entries(itemDefs[item.name].boost).forEach(([stat,value])=>{
+      p[stat]+=value;
+    });
+    log("Equipped "+item.name);
+  }
+  
+  function unequipItem(){
+    if(p.equipped){
+      Object.entries(itemDefs[p.equipped.name].boost).forEach(([stat,value])=>{
+        p[stat]-=value;
+      });
+      log("Unequipped "+p.equipped.name);
+      p.equipped=null;
+    }
+  }
+
+  // Shops
+  function openShop(prof){
+    let arr=shops[prof],html=`<h2>${prof}</h2>`;
+    arr.forEach(it=>html+=`<button data-buy="${it.name}">${it.name} ${it.price}g</button><br>`);
+    openModal(html,btn=>{
+      let it=arr.find(x=>x.name===btn.dataset.buy);
+      if(p.g>=it.price){
+        p.g-=it.price;
+        it.apply();
+        log("Bought "+it.name);
+        if(it.name === 'Strength Potion') log("Strength +"+it.value+" for "+it.steps+" steps");
+        if(it.name === 'Luck Charm') log("Luck +10 for 10 steps");
+        if(it.name === 'Rage Potion') log("RAGE! ATK doubled, HP reduced by 25% for 30 steps");
+      } else {
+        log("Not enough gold");
+      }
+      closeModal();
+      updateUI();
+    });
+  }
+  
+  function openGlobal(){
+    let html='<h2>Market</h2>';
+    html+=Object.values(shops).flat().map(it=>`<button data-buyg="${it.name}">${it.name} ${it.price+5}g</button><br>`).join('');
+    html+='<hr><h3>Sell</h3>';
+    
+    // Regular items
+    Object.entries(p.inv).forEach(([k,v])=>{
+      if(v) {
+        let price = 0;
+        if(['Skeleton_King_Bone','Dire_Wolf_Pelt','Goblin_King_Ear'].includes(k)) {
+          price = roll(40,60); // Special items
+        } else {
+          price = roll(1,10); // Regular items
+        }
+        html+=`<button data-sell="${k}" data-price="${price}">Sell ${k} (${price}g)</button><br>`;
+      }
+    });
+    
+    // Equipment
+    p.eq.forEach((e,i)=>{
+      let price = roll(10,30);
+      html+=`<button data-selleq="${i}" data-price="${price}">Sell ${e.name} (${price}g)</button><br>`;
+    });
+    
+    openModal(html,btn=>{
+      if(btn.dataset.buyg){
+        let nm=btn.dataset.buyg,pr=Object.values(shops).flat().find(x=>x.name===nm).price+5;
+        if(p.g>=pr){
+          p.g-=pr;
+          p.inv[nm]=(p.inv[nm]||0)+1;
+          log("Bought "+nm);
+        } else {
+          log("Not enough gold");
+        }
+      }
+      if(btn.dataset.sell){
+        let nm=btn.dataset.sell;
+        let price = parseInt(btn.dataset.price);
+        p.inv[nm]--;
+        p.g+=price;
+        log("Sold "+nm+" +"+price+"g");
+      }
+      if(btn.dataset.selleq){
+        let i=btn.dataset.selleq;
+        let price = parseInt(btn.dataset.price);
+        let o=p.eq.splice(i,1)[0];
+        p.g+=price;
+        log("Sold "+o.name+" +"+price+"g");
+      }
+      closeModal();
+      updateUI();
+    });
+  }
+  
+  // Town Quests
+  function openTownQ(prof){
+    let pool;
+    if(prof==='Quest Giver EM') pool=townQuests.easy.concat(townQuests.med);
+    else pool=townQuests.hard.concat(townQuests.elite);
+    
+    let html=`<h2>${prof}</h2>`;
+    pool.forEach((q,i)=>html+=`<button data-q="${i}">${q.name} - ${q.desc} (Reward: ${q.reward.gold}g)</button><br>`);
+    openModal(html,btn=>{
+      let q=pool[btn.dataset.q];
+      if(confirm("Accept "+q.name+"?")){
+        // Check if this quest already exists
+        const existingQuest = quests.find(quest => 
+          quest.name === q.name && quest.state === 1
+        );
+        
+        if(existingQuest) {
+          log("You already have this quest active");
+        } else {
+          quests.push({
+            name:q.name,
+            type:q.type,
+            desc:q.desc + " (Reward: "+q.reward.gold+"g)",
+            need:q.need,
+            progress:{},
+            reward:q.reward,
+            state:1
+          });
+          log("Accepted quest: "+q.name);
+        }
+      }
+      closeModal();
+      updateUI();
+    });
+  }
+  
+  // Crafting
+  function openCraft(){
+    let html='<h2>Craft</h2>';
+    recipes.forEach((r,i)=>html+=`<button data-r="${i}">${r.name} ← ${Object.entries(r.need).map(e=>e.join('x')).join('+')}</button><br>`);
+    html+=`<div>CraftPts: ${p.craft.toFixed(1)}</div><div>Chance: ${Math.floor(p.craft/20)}%</div>`;
+    openModal(html,btn=>{
+      let r=recipes[btn.dataset.r];
+      if(materials(r.need)){
+        p.craft+=0.1;
+        for(let k in r.need) p.inv[k]-=r.need[k];
+        let ch=Math.floor(p.craft/20);
+        if(ch>0&&Math.random()*100<ch){
+          p.inv[r.name]=(p.inv[r.name]||0)+1;
+          log("Crafted "+r.name);
+        } else {
+          log("Crafting failed");
+        }
+      } else {
+        log("Missing materials");
+      }
+      closeModal();
+      updateUI();
+    });
+  }
+  
+  // Quests
+  function openQuests(){
+    let html='<h2>Quests</h2>';
+    if(!quests.length) html+='<div>No active quests</div>';
+    
+    // Separate active and completed quests
+    const activeQuests = quests.filter(q => q.state === 1);
+    const completedQuests = quests.filter(q => q.state === 2);
+    
+    // Group similar quests
+    const groupedActive = groupQuests(activeQuests);
+    const groupedCompleted = groupQuests(completedQuests);
+    
+    // Show active quests first
+    if(groupedActive.length > 0) {
+      html += '<h3>Active Quests</h3>';
+      groupedActive.forEach(q=>{
+        html += `<div><b>${q.name}</b><br>${q.desc}`;
+        if(q.type==='kill'){
+          const monsterName = Object.keys(q.need)[0];
+          html += `<br>Progress: ${q.progress[monsterName]||0}/${q.need[monsterName]}`;
+        }
+        html += `</div><hr>`;
+      });
+    }
+    
+    // Then show completed quests
+    if(groupedCompleted.length > 0) {
+      html += '<h3>Completed Quests</h3>';
+      groupedCompleted.forEach(q=>{
+        html += `<div><b>${q.name}</b><br>${q.desc}<br>Completed!</div><hr>`;
+      });
+    }
+    
+    openModal(html,btn=>{
+      if(btn.dataset.turn!==undefined){
+        let q=quests[btn.dataset.turn];
+        if(materials(q.need)){
+          if(q.reward.item){
+            let it=q.reward.item;
+            if(itemDefs[it]){
+              let d=roll(1,itemDefs[it].maxD);
+              p.eq.push({name:it,durability:d});
+            } else {
+              p.inv[it] = (p.inv[it] || 0) + 1;
+            }
+          }
+          if(q.reward.gold) p.g+=q.reward.gold;
+          q.state=2;
+          log("Completed quest: "+q.name);
+        } else {
+          log("You don't have the required items");
+        }
+      }
+      closeModal();
+      updateUI();
+    });
+  }
+  
+  function groupQuests(quests) {
+    const grouped = [];
+    const questMap = {};
+    
+    quests.forEach(q => {
+      const key = q.name + q.desc + JSON.stringify(q.need);
+      if(questMap[key]) {
+        questMap[key].count++;
+      } else {
+        questMap[key] = {...q, count:1};
+      }
+    });
+    
+    return Object.values(questMap).map(q => {
+      if(q.count > 1) {
+        return {
+          ...q,
+          name: `${q.name} x${q.count}`,
+          progress: Object.fromEntries(
+            Object.entries(q.progress).map(([k,v]) => [k, v * q.count])
+          ),
+          need: Object.fromEntries(
+            Object.entries(q.need).map(([k,v]) => [k, v * q.count])
+          )
+        };
+      }
+      return q;
+    });
+  }
+  
+  // Inventory
+  function openInventory(){
+    let html='<h2>Inventory</h2>';
+    if(Object.keys(p.inv).length === 0 && p.eq.length === 0) {
+      html += '<div>Empty</div>';
+    } else {
+      // Show items
+      html += '<h3>Items</h3>';
+      Object.entries(p.inv).forEach(([item, count]) => {
+        if(count > 0) {
+          html += `<div>${item} x${count}`;
+          // Add use buttons for potions
+          if(item === 'Health Potion') {
+            html += ` <button data-use-health="${item}">Use</button>`;
+          }
+          if(item === 'Strength Potion') {
+            html += ` <button data-use-strength="${item}">Use</button>`;
+          }
+          if(item === 'Rage Potion') {
+            html += ` <button data-use-rage="${item}">Use</button>`;
+          }
+          html += `</div>`;
+        }
+      });
+      
+      // Show equipment
+      if(p.eq.length > 0) {
+        html += '<h3>Equipment</h3>';
+        p.eq.forEach((item, index) => {
+          html += `<div>${item.name} (${item.durability})`;
+          if (itemDefs[item.name]) {
+            html += ` <button data-equip="${index}">Equip</button>`;
+            if (p.equipped && p.equipped.name === item.name) {
+              html += ` <button data-unequip="${index}">Unequip</button>`;
+            }
+          }
+          html += `</div>`;
+        });
+      }
+    }
+    openModal(html, btn => {
+      if (btn.dataset.equip !== undefined) {
+        const index = parseInt(btn.dataset.equip);
+        equipItem(p.eq[index]);
+      }
+      if (btn.dataset.unequip !== undefined) {
+        unequipItem();
+      }
+      if (btn.dataset.useHealth !== undefined) {
+        const potion = btn.dataset.useHealth;
+        if(p.inv[potion] > 0) {
+          p.inv[potion]--;
+          p.hp = Math.min(p.maxHp, p.hp + 10);
+          log("Used Health Potion (+10 HP)");
+        }
+      }
+      if (btn.dataset.useStrength !== undefined) {
+        const potion = btn.dataset.useStrength;
+        if(p.inv[potion] > 0) {
+          p.inv[potion]--;
+          p.tempAtk = {value: roll(10,20), steps: roll(30,90)};
+          log(`Used Strength Potion (+${p.tempAtk.value} ATK for ${p.tempAtk.steps} steps)`);
+        }
+      }
+      if (btn.dataset.useRage !== undefined) {
+        const potion = btn.dataset.useRage;
+        if(p.inv[potion] > 0) {
+          p.inv[potion]--;
+          p.tempAtk = {value: Math.floor(p.atk * 2), steps: 30};
+          p.hp = Math.floor(p.hp * 0.75);
+          log("RAGE! ATK doubled, HP reduced by 25% for 30 steps");
+        }
+      }
+      updateUI();
+    });
+  }
+  
+  // Modal
+  function openModal(html,act){
+    OV.style.display='block';
+    MD.style.display='block';
+    MD.innerHTML=html+"<br><button id='close'>Close</button>";
+    d('#close').onclick=()=>{
+      closeModal();
+      updateUI();
+    };
+    if(act) {
+      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage]').forEach(b=>{
+        b.onclick=()=>act(b);
+      });
+    }
+  }
+  
+  function closeModal(){
+    OV.style.display='none';
+    MD.style.display='none';
+    MD.innerHTML='';
+  }
+  
+  // Bind & init
+  document.addEventListener('DOMContentLoaded',()=>{
+    ['up','down','left','right'].forEach(dn=>d(`[data-dir="${dn}"]`).onclick=()=>move(dn));
+    d('#btn-inv').onclick    = openInventory;
+    d('#btn-craft').onclick  = openCraft;
+    d('#btn-shop').onclick   = openGlobal;
+    d('#btn-quests').onclick = openQuests;
+    d('#btn-reborn').onclick = ()=>{
+      localStorage.removeItem(SAVE);
+      LEl.innerHTML='';
+      quests = []; // Clear quests array
+      init();
+      log("Reborn!");
+      updateUI();
+    };
+    OV.onclick=closeModal;
+    init();
+    log("Welcome to Dungeon Quest!");
+    updateUI();
+  });
+})();
+</script>
+</body>
+</html>
