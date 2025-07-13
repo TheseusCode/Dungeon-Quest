@@ -26,8 +26,6 @@ body {
   gap: 10px;
 }
 
-
-
 #map {
   white-space: pre;
   font-family: monospace;
@@ -225,7 +223,6 @@ body {
 </head>
 <body>
 
-
 <div id="map"></div>
 <div id="content-row">
   <div id="log"></div>
@@ -264,6 +261,9 @@ body {
 
 <script>
 (() => {
+  // Helper function to round to 1 decimal place
+  const round1 = num => Math.round(num * 10) / 10;
+  
   // Data definitions
   const monsterTpl={
     Goblin: {base:{hp:8,atk:3,def:1,boost:'atk'}, levels:[
@@ -287,11 +287,11 @@ body {
 
   const shops={ 
     'Potion Seller':[
-      {name:'Health Potion',price:5,apply:()=>{p.hp=Math.min(p.maxHp,p.hp+10)}},
+      {name:'Health Potion',price:5,apply:()=>{p.hp=Math.min(p.maxHp,round1(p.hp+10))}},
       {name:'Strength Potion',price:10,apply:()=>{p.tempAtk={value:roll(10,20),steps:roll(30,90)}}},
       {name:'Rage Potion',price:50,apply:()=>{
         p.tempAtk={value:Math.floor(p.atk * 2),steps:30};
-        p.hp = Math.floor(p.hp * 0.75);
+        p.hp = Math.floor(round1(p.hp * 0.75));
         log("Rage consumes your health!");
       }}
     ], 
@@ -362,15 +362,26 @@ body {
   
   function init(){
     const s=localStorage.getItem(SAVE);
-    if(s) try{ let o=JSON.parse(s); p=o.player; quests=o.quests||[];}catch{localStorage.removeItem(SAVE);return init();}
+    if(s) try{ 
+      let o=JSON.parse(s); 
+      p=o.player; 
+      // Ensure all numeric values are properly typed and rounded
+      p.atk = round1(p.atk);
+      p.def = round1(p.def);
+      p.luck = round1(p.luck);
+      p.maxHp = round1(p.maxHp);
+      p.hp = round1(p.hp);
+      p.craft = round1(p.craft);
+      quests=o.quests||[];
+    }catch{localStorage.removeItem(SAVE);return init();}
     else p={
       x:TOWN*AREA+8,
       y:TOWN*AREA+8,
       maxHp:20,
       hp:20,
-      atk:roll(1,7),
-      def:roll(1,7),
-      luck:roll(1,5),
+      atk:round1(roll(1,7)),
+      def:round1(roll(1,7)),
+      luck:round1(roll(1,5)),
       g:0,
       inv:{},
       eq:[],
@@ -387,7 +398,20 @@ body {
   }
   
   function save(){
-    localStorage.setItem(SAVE,JSON.stringify({player:p,quests:quests}));
+    // Round all numeric values before saving
+    const saveData = {
+      player: {
+        ...p,
+        atk: round1(p.atk),
+        def: round1(p.def),
+        luck: round1(p.luck),
+        maxHp: round1(p.maxHp),
+        hp: round1(p.hp),
+        craft: round1(p.craft)
+      },
+      quests: quests
+    };
+    localStorage.setItem(SAVE,JSON.stringify(saveData));
   }
 
   function gen(isTown){
@@ -507,17 +531,17 @@ body {
     
     p.steps++;
     
-    const currentAtk = p.atk + (p.tempAtk ? p.tempAtk.value : 0);
-    const currentLuck = p.luck + (p.tempLuck ? p.tempLuck.value : 0);
+    const currentAtk = round1(p.atk + (p.tempAtk ? p.tempAtk.value : 0));
+    const currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
     
     // Update stats display
     let statsHTML = `
-      <div class="stat-bar"><span class="stat-name">HP:</span> ${p.hp}/${p.maxHp}</div>
-      <div class="stat-bar"><span class="stat-name">ATK:</span> ${currentAtk}(${p.atk})</div>
-      <div class="stat-bar"><span class="stat-name">DEF:</span> ${p.def}</div>
-      <div class="stat-bar"><span class="stat-name">LUCK:</span> ${currentLuck}(${p.luck})</div>
+      <div class="stat-bar"><span class="stat-name">HP:</span> ${round1(p.hp)}/${round1(p.maxHp)}</div>
+      <div class="stat-bar"><span class="stat-name">ATK:</span> ${currentAtk}(${round1(p.atk)})</div>
+      <div class="stat-bar"><span class="stat-name">DEF:</span> ${round1(p.def)}</div>
+      <div class="stat-bar"><span class="stat-name">LUCK:</span> ${currentLuck}(${round1(p.luck)})</div>
       <div class="stat-bar"><span class="stat-name">GOLD:</span> ${p.g}</div>
-      <div class="stat-bar"><span class="stat-name">CRAFT:</span> ${p.craft.toFixed(1)}</div>
+      <div class="stat-bar"><span class="stat-name">CRAFT:</span> ${round1(p.craft)}</div>
     `;
     
     if(p.equipped) {
@@ -583,8 +607,8 @@ body {
       setT(nx,ny,{type:'empty'});
     }
     else if(c.type==='trap'){
-      let d=roll(2,6);
-      p.hp-=d;
+      let d=round1(roll(2,6));
+      p.hp=round1(p.hp-d);
       log("Trap-"+d);
       setT(nx,ny,{type:'empty'});
     }
@@ -609,13 +633,13 @@ body {
       log("^"+m.name+" looks angry!");
     }
     
-    const currentAtk = p.atk + (p.tempAtk ? p.tempAtk.value : 0);
-    const currentLuck = p.luck + (p.tempLuck ? p.tempLuck.value : 0);
+    const currentAtk = round1(p.atk + (p.tempAtk ? p.tempAtk.value : 0));
+    const currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
     
     while(m.hp>0&&p.hp>0){
       // Player attack
-      let dg=Math.max(0,currentAtk-m.def)+roll(0,2);
-      m.hp-=dg;
+      let dg=round1(Math.max(0,currentAtk-m.def)+roll(0,2));
+      m.hp=round1(m.hp-dg);
       log(">"+dg);
       
       if(m.hp<=0){
@@ -629,13 +653,12 @@ body {
         
         // Stat boost - 0.1 for str/def, 1 for hp
         if(m.boost === 'maxHp') {
-          p[m.boost] += m.reward;
+          p[m.boost] = round1(p[m.boost] + m.reward);
           log("+"+m.reward+" "+m.boost);
         } else {
-          // Round to 1 decimal place to avoid floating point issues
-          const boostAmount = Math.round(m.reward * 10) / 10;
-          p[m.boost] = (p[m.boost] || 0) + boostAmount;
-          log("+"+boostAmount.toFixed(1)+" "+m.boost);
+          const boostAmount = round1(m.reward);
+          p[m.boost] = round1((p[m.boost] || 0) + boostAmount);
+          log("+"+boostAmount+" "+m.boost);
         }
         
         // Special drops from level 3+ monsters
@@ -689,8 +712,8 @@ body {
       if(Math.random()*100 > hitChance) {
         log(m.name+" missed!");
       } else {
-        let dd=Math.max(0,m.atk-p.def)+roll(0,2);
-        p.hp-=dd;
+        let dd=round1(Math.max(0,m.atk-p.def)+roll(0,2));
+        p.hp=round1(p.hp-dd);
         log("<"+dd);
       }
       
@@ -808,14 +831,14 @@ body {
     // Unequip current item first if any
     if(p.equipped){
       Object.entries(itemDefs[p.equipped.name].boost).forEach(([stat,value])=>{
-        p[stat]-=value;
+        p[stat] = round1(p[stat] - value);
       });
     }
     
     // Equip new item
     p.equipped=item;
     Object.entries(itemDefs[item.name].boost).forEach(([stat,value])=>{
-      p[stat]+=value;
+      p[stat] = round1(p[stat] + value);
     });
     log("Equipped "+item.name);
   }
@@ -823,7 +846,7 @@ body {
   function unequipItem(){
     if(p.equipped){
       Object.entries(itemDefs[p.equipped.name].boost).forEach(([stat,value])=>{
-        p[stat]-=value;
+        p[stat] = round1(p[stat] - value);
       });
       log("Unequipped "+p.equipped.name);
       p.equipped=null;
@@ -945,11 +968,11 @@ body {
   function openCraft(){
     let html='<h2>Craft</h2>';
     recipes.forEach((r,i)=>html+=`<button data-r="${i}">${r.name} ← ${Object.entries(r.need).map(e=>e.join('x')).join('+')}</button><br>`);
-    html+=`<div>CraftPts: ${p.craft.toFixed(1)}</div><div>Chance: ${Math.floor(p.craft/20)}%</div>`;
+    html+=`<div>CraftPts: ${round1(p.craft)}</div><div>Chance: ${Math.floor(p.craft/20)}%</div>`;
     openModal(html,btn=>{
       let r=recipes[btn.dataset.r];
       if(materials(r.need)){
-        p.craft+=0.1;
+        p.craft = round1(p.craft + 0.1);
         for(let k in r.need) p.inv[k]-=r.need[k];
         let ch=Math.floor(p.craft/20);
         if(ch>0&&Math.random()*100<ch){
@@ -1107,7 +1130,7 @@ body {
         const potion = btn.dataset.useHealth;
         if(p.inv[potion] > 0) {
           p.inv[potion]--;
-          p.hp = Math.min(p.maxHp, p.hp + 10);
+          p.hp = round1(Math.min(p.maxHp, p.hp + 10));
           log("Used Health Potion (+10 HP)");
         }
       }
@@ -1124,7 +1147,7 @@ body {
         if(p.inv[potion] > 0) {
           p.inv[potion]--;
           p.tempAtk = {value: Math.floor(p.atk * 2), steps: 30};
-          p.hp = Math.floor(p.hp * 0.75);
+          p.hp = round1(Math.floor(p.hp * 0.75));
           log("RAGE! ATK doubled, HP reduced by 25% for 30 steps");
         }
       }
