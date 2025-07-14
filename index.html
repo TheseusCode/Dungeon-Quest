@@ -123,6 +123,7 @@ body {
   grid-template-rows: repeat(3, 1fr);
   gap: 5px;
   width: 50%;
+  margin-right: auto;
   max-width: 200px;
 }
 
@@ -155,7 +156,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  width: 50%;
+  width: 40%;
+  margin-left: auto;
 }
 
 .act-btn {
@@ -376,6 +378,7 @@ body {
     <button id="btn-craft" class="act-btn">Crafting</button>
     <button id="btn-shop" class="act-btn">Market</button>
     <button id="btn-quests" class="act-btn">Quests</button>
+    <button id="btn-npc-quests" class="act-btn">RNPC Quests</button>
     <button id="btn-reborn" class="act-btn">Reborn</button>
   </div>
 </div>
@@ -642,7 +645,7 @@ body {
     'Scroll Merchant':[
       {name:'Scroll of Healing',price:12,apply:()=>{p.hp=p.maxHp}},
       {name:'Luck Charm',price:50,apply:()=>{p.tempLuck={value:10,steps:10}}}
-    ] 
+    ]
   };
 
   const itemDefs={
@@ -674,7 +677,28 @@ body {
     'Thundercaller_Hammer':{boost:{atk:8,maxHp:5},maxD:()=>roll(40,100),value:180,level:1},
     'Voidreaper_Scythe':{boost:{atk:10},maxD:()=>roll(40,100),value:200,level:1},
     'Dragonbane_Spear':{boost:{atk:5,def:4},maxD:()=>roll(40,100),value:160,level:1},
-    'Soulrender_Axe':{boost:{atk:7,maxHp:3},maxD:()=>roll(40,100),value:170,level:1}
+    'Soulrender_Axe':{boost:{atk:7,maxHp:3},maxD:()=>roll(40,100),value:170,level:1},
+    // Random NPC Quest Reward Equipment
+    'Rusty_Dagger':{boost:{atk:1},maxD:50,level:1},
+    'Leather_Gloves':{boost:{atk:1,def:1},maxD:40,level:1},
+    'Iron_Boots':{boost:{def:2},maxD:60,level:1},
+    'Steel_Helm':{boost:{def:3,maxHp:5},maxD:70,level:1},
+    'Hunter_Bow':{boost:{atk:3},maxD:55,level:1},
+    'Chain_Mail':{boost:{def:4,maxHp:8},maxD:80,level:1},
+    'Battle_Axe':{boost:{atk:5},maxD:65,level:1},
+    'Magic_Ring':{boost:{atk:2,def:2,maxHp:3},maxD:90,level:1},
+    'Dragon_Scale_Armor':{boost:{def:6,maxHp:12},maxD:85,level:1},
+    'Enchanted_Blade':{boost:{atk:7},maxD:75,level:1},
+    'Guardian_Shield':{boost:{def:8},maxD:95,level:1},
+    'Mystic_Cloak':{boost:{atk:3,def:5},maxD:70,level:1},
+    'Warrior_Gauntlets':{boost:{atk:4,def:3},maxD:65,level:1},
+    'Crystal_Amulet':{boost:{atk:5,def:2,maxHp:7},maxD:80,level:1},
+    'Shadow_Boots':{boost:{atk:2,def:4},maxD:60,level:1},
+    'Fire_Sword':{boost:{atk:8},maxD:70,level:1},
+    'Ice_Staff':{boost:{atk:6,maxHp:10},maxD:75,level:1},
+    'Lightning_Spear':{boost:{atk:9},maxD:85,level:1},
+    'Ancient_Relic':{boost:{atk:6,def:6,maxHp:15},maxD:100,level:1},
+    'Demon_Blade':{boost:{atk:12},maxD:80,level:1}
   };
 
   const recipes=[
@@ -740,10 +764,55 @@ body {
       {name:'Susano Boss',type:'kill',desc:'Defeat the Level 15 Susano',need:{Susano:1},reward:{gold:10000}}
     ]
   };
+
+  // 30 Custom Random NPC Quests
+  const randomNpcQuests = [
+    // Easy Area Quests (1-2 distance from town)
+    {name:'Goblin Cleaner',type:'kill',desc:'Clear out 2 Goblins',need:{Goblin:2},reward:'Rusty_Dagger',consumableChance:0.2},
+    {name:'Herb Collector',type:'fetch',desc:'Gather 3 Herbs',need:{Herb:3},reward:'Leather_Gloves',consumableChance:0.2},
+    {name:'Wolf Hunt',type:'kill',desc:'Hunt 1 Wolf',need:{Wolf:1},reward:'Iron_Boots',consumableChance:0.2},
+    {name:'Skeleton Patrol',type:'kill',desc:'Eliminate 1 Skeleton',need:{Skeleton:1},reward:'Steel_Helm',consumableChance:0.2},
+    {name:'Wood Gatherer',type:'fetch',desc:'Collect 4 Wood',need:{Wood:4},reward:'Hunter_Bow',consumableChance:0.2},
+    
+    // Medium Area Quests (3-4 distance from town)
+    {name:'Orc Extermination',type:'kill',desc:'Slay 2 Orcs',need:{Orc:2},reward:'Chain_Mail',consumableChance:0.2},
+    {name:'Fierce Goblin Hunt',type:'kill',desc:'Defeat 1 Fierce Goblin',need:{'Fierce Goblin':1},reward:'Battle_Axe',consumableChance:0.2},
+    {name:'Iron Ore Mining',type:'fetch',desc:'Mine 3 Iron Ore',need:{'Iron Ore':3},reward:'Magic_Ring',consumableChance:0.2},
+    {name:'Skeleton Warrior Slayer',type:'kill',desc:'Destroy 1 Skeleton Warrior',need:{'Skeleton Warrior':1},reward:'Dragon_Scale_Armor',consumableChance:0.2},
+    {name:'Wild Wolf Tracker',type:'kill',desc:'Track and kill 1 Wild Wolf',need:{'Wild Wolf':1},reward:'Enchanted_Blade',consumableChance:0.2},
+    
+    // Hard Area Quests (5-6 distance from town)  
+    {name:'Ogre Slayer',type:'kill',desc:'Defeat 1 Ogre',need:{Ogre:1},reward:'Guardian_Shield',consumableChance:0.2},
+    {name:'Savage Goblin Crusher',type:'kill',desc:'Crush 1 Savage Goblin',need:{'Savage Goblin':1},reward:'Mystic_Cloak',consumableChance:0.2},
+    {name:'Gnoll Hunter',type:'kill',desc:'Hunt 1 Gnoll',need:{Gnoll:1},reward:'Warrior_Gauntlets',consumableChance:0.2},
+    {name:'Dark Wolf Stalker',type:'kill',desc:'Stalk and kill 1 Dark Wolf',need:{'Dark Wolf':1},reward:'Crystal_Amulet',consumableChance:0.2},
+    {name:'Skeleton Soldier Eliminator',type:'kill',desc:'Eliminate 1 Skeleton Soldier',need:{'Skeleton Soldier':1},reward:'Shadow_Boots',consumableChance:0.2},
+    
+    // Elite Area Quests (7-8 distance from town)
+    {name:'Brutal Goblin Destroyer',type:'kill',desc:'Destroy 1 Brutal Goblin',need:{'Brutal Goblin':1},reward:'Fire_Sword',consumableChance:0.2},
+    {name:'Orc Scout Ambusher',type:'kill',desc:'Ambush 1 Orc Scout',need:{'Orc Scout':1},reward:'Ice_Staff',consumableChance:0.2},
+    {name:'Dire Wolf Alpha',type:'kill',desc:'Take down 1 Dire Wolf',need:{'Dire Wolf':1},reward:'Lightning_Spear',consumableChance:0.2},
+    {name:'Skeleton Knight Challenger',type:'kill',desc:'Challenge 1 Skeleton Knight',need:{'Skeleton Knight':1},reward:'Ancient_Relic',consumableChance:0.2},
+    {name:'Ogre Brute Smasher',type:'kill',desc:'Smash 1 Ogre Brute',need:{'Ogre Brute':1},reward:'Demon_Blade',consumableChance:0.2},
+    
+    // Special Collection Quests
+    {name:'Coal Supplier',type:'fetch',desc:'Supply 5 Coal',need:{Coal:5},reward:'Rusty_Dagger',consumableChance:0.2},
+    {name:'Potion Materials',type:'fetch',desc:'Gather 2 Bottles',need:{Bottle:2},reward:'Leather_Gloves',consumableChance:0.2},
+    {name:'Bone Collector',type:'fetch',desc:'Collect 2 Skeleton Bones',need:{Skeleton_Bone:2},reward:'Iron_Boots',consumableChance:0.2},
+    {name:'Pelt Trader',type:'fetch',desc:'Trade 2 Wolf Pelts',need:{Wolf_Pelt:2},reward:'Steel_Helm',consumableChance:0.2},
+    {name:'Tusk Hunter',type:'fetch',desc:'Hunt for 1 Orc Tusk',need:{Orc_Tusk:1},reward:'Hunter_Bow',consumableChance:0.2},
+    
+    // Multi-target Quests
+    {name:'Goblin Horde',type:'kill',desc:'Defeat 3 Goblins',need:{Goblin:3},reward:'Chain_Mail',consumableChance:0.2},
+    {name:'Skeleton Army',type:'kill',desc:'Destroy 2 Skeletons',need:{Skeleton:2},reward:'Battle_Axe',consumableChance:0.2},
+    {name:'Wolf Pack Leader',type:'kill',desc:'Eliminate 2 Wolves',need:{Wolf:2},reward:'Magic_Ring',consumableChance:0.2},
+    {name:'Mixed Hunt',type:'kill',desc:'Kill 1 Goblin and 1 Skeleton',need:{Goblin:1,Skeleton:1},reward:'Dragon_Scale_Armor',consumableChance:0.2},
+    {name:'Resource Master',type:'fetch',desc:'Gather 2 Herbs and 2 Wood',need:{Herb:2,Wood:2},reward:'Enchanted_Blade',consumableChance:0.2}
+  ];
   
   // State - changed to 512x512 map (32x32 areas of 16x16 tiles)
   const AREA=16,GRID_W=16,GRID_H=16,TOWN=16,SIZE=512,SAVE='dqSave';
-  let p,world,quests=[];
+  let p,world,quests=[],randomNpcActiveQuests=[];
   const d=s=>document.querySelector(s),dA=s=>document.querySelectorAll(s),
         SEl=d('#stats'),MEl=d('#map'),LEl=d('#log'),OV=d('#overlay'),MD=d('#modal'),
         QM=d('#quest-modal');
@@ -770,6 +839,7 @@ body {
       // Track current area for refresh system
       p.currentArea = p.currentArea || {x: TOWN, y: TOWN};
       quests=o.quests||[];
+      randomNpcActiveQuests=o.randomNpcActiveQuests||[];
     }catch{localStorage.removeItem(SAVE);return init();}
     else p={
       x:TOWN*AREA+8,
@@ -810,177 +880,377 @@ body {
         craft: round1(p.craft),
         g: Number(p.g) || 0
       },
-      quests: quests
+      quests: quests,
+      randomNpcActiveQuests: randomNpcActiveQuests
     };
     localStorage.setItem(SAVE,JSON.stringify(saveData));
   }
 
-  function generateRandomQuest(distFromTown) {
-    // 60% kill quests, 40% gathering quests
-    const isKillQuest = Math.random() < 0.6;
+  // Random NPC Quest System Functions
+  function getRandomNpcQuest(distFromTown) {
+    // Select quest based on distance from town
+    const questPool = randomNpcQuests.filter(quest => {
+      if (distFromTown <= 2) return quest.name.includes('Goblin Cleaner') || quest.name.includes('Herb Collector') || quest.name.includes('Wolf Hunt') || quest.name.includes('Skeleton Patrol') || quest.name.includes('Wood Gatherer');
+      if (distFromTown <= 4) return quest.name.includes('Orc Extermination') || quest.name.includes('Fierce Goblin') || quest.name.includes('Iron Ore') || quest.name.includes('Skeleton Warrior') || quest.name.includes('Wild Wolf');
+      if (distFromTown <= 6) return quest.name.includes('Ogre Slayer') || quest.name.includes('Savage Goblin') || quest.name.includes('Gnoll Hunter') || quest.name.includes('Dark Wolf') || quest.name.includes('Skeleton Soldier');
+      if (distFromTown <= 8) return quest.name.includes('Brutal Goblin') || quest.name.includes('Orc Scout') || quest.name.includes('Dire Wolf') || quest.name.includes('Skeleton Knight') || quest.name.includes('Ogre Brute');
+      return quest.name.includes('Coal') || quest.name.includes('Bottle') || quest.name.includes('Bone Collector') || quest.name.includes('Pelt Trader') || quest.name.includes('Tusk Hunter') || quest.name.includes('Goblin Horde') || quest.name.includes('Skeleton Army') || quest.name.includes('Wolf Pack') || quest.name.includes('Mixed Hunt') || quest.name.includes('Resource Master');
+    });
     
-    // Calculate difficulty multiplier based on distance
-    const difficultyMult = Math.max(1, Math.floor(distFromTown / 3));
-    
-    let quest;
-    
-    if (isKillQuest) {
-      // Generate kill quest
-      const monsterTypes = ['Goblin','Skeleton','Wolf','Orc','Ogre','Gnoll','Wyvern'];
-      const monsterType = monsterTypes[roll(0, monsterTypes.length-1)];
-      
-      // Limit kill quests to levels 4-6 monsters only
-      let questLevel = roll(3, 5); // Levels 4-6 (index 3-5)
-      
-      const monsterData = monsterTpl[monsterType];
-      const levelData = monsterData.levels[questLevel];
-      const targetMonster = levelData.name.replace(/\s+/g, '_');
-      
-      const questCount = Math.max(1, roll(1, 3) + Math.floor(difficultyMult / 2));
-      
-      quest = {
-        type: 'kill',
-        need: {[targetMonster]: questCount},
-        progress: {[targetMonster]: 0},
-        state: 0
-      };
-    } else {
-      // Generate gathering quest
-      const gatherItems = ['Herb', 'Wood', 'Iron_Ore', 'Coal', 'Stone', 'Wolf_Pelt', 'Skeleton_Bone', 'Orc_Tusk', 'Gnoll_Claw'];
-      const targetItem = gatherItems[roll(0, gatherItems.length-1)];
-      const gatherCount = Math.max(1, roll(1, 4) + Math.floor(difficultyMult / 2));
-      
-      quest = {
-        type: 'gather',
-        need: {[targetItem]: gatherCount},
-        state: 0
-      };
-    }
-    
-    // Generate reward - 50% equipment, 50% gold (never both)
-    const isEquipmentReward = Math.random() < 0.5;
-    
-    if (isEquipmentReward) {
-      // Equipment reward based on distance/difficulty
-      const equipmentPool = ['Spear', 'Shield', 'Greatsword', 'PlateArmor', 'Iron_Sword'];
-      if (difficultyMult >= 3) {
-        equipmentPool.push('Shadowstrike_Blade', 'Thundercaller_Hammer', 'Voidreaper_Scythe', 'Dragonbane_Spear', 'Soulrender_Axe');
-      }
-      if (difficultyMult >= 5) {
-        equipmentPool.push('Ancient_Goblin_Crown', 'Bone_Archlich_Staff', 'Primordial_Wolf_Fang');
-      }
-      
-      quest.reward = equipmentPool[roll(0, equipmentPool.length-1)];
-    } else {
-      // Gold reward scaled by distance
-      const baseGold = isKillQuest ? 20 : 15;
-      const scaledGold = Math.floor(baseGold * (1 + difficultyMult * 0.5));
-      quest.rewardGold = scaledGold;
-    }
-    
-    return quest;
+    if (questPool.length === 0) return randomNpcQuests[roll(0, randomNpcQuests.length - 1)];
+    return questPool[roll(0, questPool.length - 1)];
   }
 
-  // Function to update quest progress and auto-complete quests
-  function updateQuestProgress(questType, itemKey) {
-    if(!quests || quests.length === 0) return;
+  function generateRandomNpcQuest(npcId, areaX, areaY) {
+    const distFromTown = Math.abs(areaX - TOWN) + Math.abs(areaY - TOWN);
+    const questTemplate = getRandomNpcQuest(distFromTown);
     
-    // Create a copy to avoid issues with array modification during iteration
-    const questsCopy = [...quests];
+    // 20% chance for consumable reward instead of equipment
+    const isConsumable = Math.random() < questTemplate.consumableChance;
+    const reward = isConsumable ? (Math.random() < 0.5 ? 'Scroll of Healing' : 'Strength Potion') : questTemplate.reward;
     
-    questsCopy.forEach((quest, index) => {
-      if(!quest || !quest.type || !quest.need || quest.state !== 1) return;
+    return {
+      id: npcId,
+      name: questTemplate.name,
+      type: questTemplate.type,
+      desc: questTemplate.desc,
+      need: {...questTemplate.need},
+      progress: Object.keys(questTemplate.need).reduce((acc, key) => {acc[key] = 0; return acc;}, {}),
+      reward: reward,
+      isConsumable: isConsumable,
+      areaX: areaX,
+      areaY: areaY,
+      completed: false
+    };
+  }
+
+  function spawnRandomNpcs(areaX, areaY) {
+    // Skip town area
+    if (areaX === TOWN && areaY === TOWN) return [];
+    
+    const npcs = [];
+    const npcNames = ['Wanderer', 'Merchant', 'Scout', 'Traveler', 'Adventurer', 'Explorer', 'Hunter', 'Trader'];
+    
+    // Generate 2 NPCs per area
+    for (let i = 0; i < 2; i++) {
+      const npcName = npcNames[roll(0, npcNames.length - 1)] + ` ${String.fromCharCode(65 + roll(0, 25))}`;
+      const npcId = `${areaX}_${areaY}_${i}`;
       
-      // Update progress for kill quests
-      if(quest.type === 'kill' && questType === 'kill' && quest.need[itemKey]) {
-        if(!quest.progress) quest.progress = {};
-        quest.progress[itemKey] = (quest.progress[itemKey] || 0) + 1;
-        
-        // Check if quest is complete
-        let isComplete = true;
-        for(let [monster, needed] of Object.entries(quest.need)) {
-          if((quest.progress[monster] || 0) < needed) {
-            isComplete = false;
-            break;
-          }
-        }
-        
-        if(isComplete) {
-          // Find the actual index in the current quests array
-          const actualIndex = quests.findIndex(q => q === quest);
-          if(actualIndex !== -1) {
-            completeQuestFromList(quest, actualIndex);
-          }
-        }
+      // Check if this NPC already has an active quest
+      const existingQuest = randomNpcActiveQuests.find(q => q.id === npcId && !q.completed);
+      
+      if (!existingQuest) {
+        const quest = generateRandomNpcQuest(npcId, areaX, areaY);
+        npcs.push({
+          name: npcName,
+          symbol: 'N',
+          quest: quest
+        });
+      } else {
+        npcs.push({
+          name: npcName,
+          symbol: 'N',
+          quest: existingQuest
+        });
       }
+    }
+    
+    return npcs;
+  }
+
+  function acceptRandomNpcQuest(quest) {
+    // Add quest to active quests
+    randomNpcActiveQuests.push(quest);
+    log(`Accepted quest: ${quest.name}`);
+    log(`${quest.desc}`);
+    save();
+  }
+
+  function checkQuestCompletion() {
+    let completedQuests = [];
+    
+    randomNpcActiveQuests.forEach(quest => {
+      if (quest.completed) return;
       
-      // Check gather quest completion whenever inventory changes
-      if(quest.type === 'gather' && questType === 'gather') {
-        let isComplete = true;
-        for(let [item, needed] of Object.entries(quest.need)) {
-          if((p.inv[item] || 0) < needed) {
-            isComplete = false;
-            break;
+      let canComplete = true;
+      Object.entries(quest.need).forEach(([item, needed]) => {
+        const have = quest.type === 'kill' ? (p.kills[item] || 0) : (p.inv[item] || 0);
+        quest.progress[item] = Math.min(have, needed);
+        if (have < needed) canComplete = false;
+      });
+      
+      if (canComplete) {
+        // Remove required items for fetch quests
+        if (quest.type === 'fetch') {
+          Object.entries(quest.need).forEach(([item, needed]) => {
+            p.inv[item] = (p.inv[item] || 0) - needed;
+            if (p.inv[item] <= 0) delete p.inv[item];
+          });
+        }
+        
+        // Give reward
+        if (quest.isConsumable) {
+          if (quest.reward === 'Scroll of Healing') {
+            // Add to inventory instead of using immediately
+            p.inv['Scroll of Healing'] = (p.inv['Scroll of Healing'] || 0) + 1;
+            log(`Completed ${quest.name}! Received: Scroll of Healing`);
+          } else if (quest.reward === 'Strength Potion') {
+            // Add to inventory instead of using immediately
+            p.inv['Strength Potion'] = (p.inv['Strength Potion'] || 0) + 1;
+            log(`Completed ${quest.name}! Received: Strength Potion`);
+          }
+        } else {
+          // Equipment reward
+          const itemData = itemDefs[quest.reward];
+          if (itemData) {
+            const durability = typeof itemData.maxD === 'function' ? itemData.maxD() : itemData.maxD;
+            p.eq.push({
+              name: quest.reward,
+              durability: durability,
+              boost: itemData.boost
+            });
+            log(`Completed ${quest.name}! Received: ${quest.reward.replace(/_/g, ' ')}`);
           }
         }
         
-        if(isComplete) {
-          // Find the actual index in the current quests array
-          const actualIndex = quests.findIndex(q => q === quest);
-          if(actualIndex !== -1) {
-            completeQuestFromList(quest, actualIndex);
-          }
-        }
+        quest.completed = true;
+        completedQuests.push(quest);
       }
     });
+    
+    // Remove completed quests
+    randomNpcActiveQuests = randomNpcActiveQuests.filter(q => !q.completed);
+    
+    if (completedQuests.length > 0) {
+      save();
+      updateUI();
+    } else {
+      log("No completed quests to turn in.");
+    }
   }
 
-  // Function to complete a quest from the quest list and give rewards
-  function completeQuestFromList(quest, questIndex) {
-    if(!quest || !quest.type || questIndex < 0 || questIndex >= quests.length) return;
+  function turnInQuestToNpc(questId) {
+    const quest = randomNpcActiveQuests.find(q => q.id === questId);
+    if (!quest) {
+      log("Quest not found!");
+      return;
+    }
     
-    // Remove consumed items for gather quests
-    if(quest.type === 'gather' && quest.need) {
-      for(let [item, needed] of Object.entries(quest.need)) {
-        if(p.inv[item] >= needed) {
-          p.inv[item] = (p.inv[item] || 0) - needed;
-          if(p.inv[item] <= 0) delete p.inv[item];
-        }
+    let canComplete = true;
+    Object.entries(quest.need).forEach(([item, needed]) => {
+      const have = quest.type === 'kill' ? (p.kills[item] || 0) : (p.inv[item] || 0);
+      if (have < needed) canComplete = false;
+    });
+    
+    if (!canComplete) {
+      log("Quest requirements not met!");
+      return;
+    }
+    
+    // Remove required items for fetch quests
+    if (quest.type === 'fetch') {
+      Object.entries(quest.need).forEach(([item, needed]) => {
+        p.inv[item] = (p.inv[item] || 0) - needed;
+        if (p.inv[item] <= 0) delete p.inv[item];
+      });
+    }
+    
+    // Give reward
+    if (quest.isConsumable) {
+      if (quest.reward === 'Scroll of Healing') {
+        p.inv['Scroll of Healing'] = (p.inv['Scroll of Healing'] || 0) + 1;
+        log(`Completed ${quest.name}! Received: Scroll of Healing`);
+      } else if (quest.reward === 'Strength Potion') {
+        p.inv['Strength Potion'] = (p.inv['Strength Potion'] || 0) + 1;
+        log(`Completed ${quest.name}! Received: Strength Potion`);
+      }
+    } else {
+      // Equipment reward
+      const itemData = itemDefs[quest.reward];
+      if (itemData) {
+        const durability = typeof itemData.maxD === 'function' ? itemData.maxD() : itemData.maxD;
+        p.eq.push({
+          name: quest.reward,
+          durability: durability,
+          boost: itemData.boost
+        });
+        log(`Completed ${quest.name}! Received: ${quest.reward.replace(/_/g, ' ')}`);
       }
     }
     
-    // Give rewards - handle the correct reward structure
-    if(quest.reward && quest.reward.gold) {
-      p.g = Math.max(0, (p.g || 0) + quest.reward.gold);
-      log(`Quest completed! Received ${quest.reward.gold} gold.`);
-    }
+    // Mark quest as completed and remove from active quests
+    quest.completed = true;
+    randomNpcActiveQuests = randomNpcActiveQuests.filter(q => q.id !== questId);
     
-    if(quest.reward && quest.reward.item) {
-      // Add equipment to inventory or equip directly
-      let itemDef = itemDefs[quest.reward.item];
-      if(itemDef) {
-        let durability = typeof itemDef.maxD === 'function' ? itemDef.maxD() : itemDef.maxD;
-        p.eq.push({name: quest.reward.item, durability: durability});
-        log(`Quest completed! Received ${quest.reward.item.replace(/_/g, ' ')}.`);
-      } else {
-        p.inv[quest.reward.item] = (p.inv[quest.reward.item] || 0) + 1;
-        log(`Quest completed! Received ${quest.reward.item.replace(/_/g, ' ')}.`);
-      }
-    }
-    
-    // Remove quest from active list
-    quests.splice(questIndex, 1);
-    log(`Quest completed automatically!`);
     save();
+    updateUI();
+  }
+
+  function showRandomNpcQuestDialog(npc) {
+    const quest = npc.quest;
+    if (!quest) {
+      log(`${npc.name || 'NPC'}: I have no quests for you right now.`);
+      return;
+    }
+    
+    if (quest.completed) {
+      log(`${npc.name || 'NPC'}: Thank you for completing my quest!`);
+      return;
+    }
+    
+    // Check if quest is already accepted
+    const acceptedQuest = randomNpcActiveQuests.find(q => q.id === quest.id);
+    
+    if (acceptedQuest) {
+      // Check if quest can be completed
+      let canComplete = true;
+      let progressText = `${npc.name || 'NPC'}: "${quest.desc}"\n\nProgress:\n`;
+      
+      Object.entries(quest.need).forEach(([item, needed]) => {
+        const have = quest.type === 'kill' ? (p.kills[item] || 0) : (p.inv[item] || 0);
+        const current = Math.min(have, needed);
+        progressText += `${item.replace(/_/g, ' ')}: ${current}/${needed}\n`;
+        if (current < needed) canComplete = false;
+      });
+      
+      if (canComplete) {
+        const rewardText = quest.isConsumable ? 
+          (quest.reward === 'Scroll of Healing' ? 'Scroll of Healing' : 'Strength Potion') :
+          quest.reward.replace(/_/g, ' ');
+        
+        progressText += `\n✓ Quest Complete! Click to turn in for reward: ${rewardText}`;
+        
+        // Show turn-in dialog
+        showTurnInDialog(npc, acceptedQuest);
+      } else {
+        log(progressText);
+      }
+    } else {
+      // Show quest offer
+      const rewardText = quest.isConsumable ? 
+        (quest.reward === 'Scroll of Healing' ? 'Full Health Restoration' : 'Strength Potion') :
+        quest.reward.replace(/_/g, ' ');
+      
+      d('#overlay').style.display = 'block';
+      d('#quest-modal').style.display = 'block';
+      d('#quest-modal').innerHTML = `
+        <div style="background: linear-gradient(145deg, #1a2332, #0f1419); border: 2px solid #2a3441; border-radius: 12px; padding: 20px; max-width: 500px; margin: 10% auto; color: #e8eaed; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);">
+          <h3 style="margin: 0 0 15px 0; text-align: center; color: #4CAF50; font-size: 1.3em;">Quest Offer</h3>
+          <div style="margin-bottom: 15px;">
+            <div style="font-weight: bold; color: #64B5F6; margin-bottom: 8px;">${npc.name || 'NPC'}</div>
+            <div style="font-style: italic; color: #FFD54F; margin-bottom: 8px; font-size: 1.1em;">"${quest.name}"</div>
+            <div style="margin-bottom: 12px; line-height: 1.4;">${quest.desc}</div>
+            <div style="background: rgba(76, 175, 80, 0.1); border: 1px solid #4CAF50; border-radius: 6px; padding: 8px; margin-bottom: 15px;">
+              <strong style="color: #4CAF50;">Reward:</strong> ${rewardText}
+            </div>
+          </div>
+          <div style="text-align: center; gap: 10px; display: flex; justify-content: center;">
+            <button class="act-btn" onclick="acceptQuestOffer('${quest.id}')" style="background: linear-gradient(145deg, #2E7D32, #1B5E20); border: 1px solid #4CAF50; color: white; padding: 8px 16px; margin: 0 5px;">Accept</button>
+            <button class="act-btn" onclick="closeRandomQuestPopup()" style="background: linear-gradient(145deg, #D32F2F, #B71C1C); border: 1px solid #F44336; color: white; padding: 8px 16px; margin: 0 5px;">Decline</button>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function closeRandomQuestPopup() {
+    d('#overlay').style.display = 'none';
+    d('#quest-modal').style.display = 'none';
+  }
+  
+  window.closeRandomQuestPopup = closeRandomQuestPopup;
+
+  function showTurnInDialog(npc, quest) {
+    const rewardText = quest.isConsumable ? 
+      (quest.reward === 'Scroll of Healing' ? 'Scroll of Healing' : 'Strength Potion') :
+      quest.reward.replace(/_/g, ' ');
+    
+    d('#overlay').style.display = 'block';
+    d('#quest-modal').style.display = 'block';
+    d('#quest-modal').innerHTML = `
+      <div style="background: linear-gradient(145deg, #1a2332, #0f1419); border: 2px solid #4CAF50; border-radius: 12px; padding: 20px; max-width: 500px; margin: 10% auto; color: #e8eaed; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);">
+        <h3 style="margin: 0 0 15px 0; text-align: center; color: #4CAF50; font-size: 1.3em;">Quest Complete!</h3>
+        <div style="margin-bottom: 15px;">
+          <div style="font-weight: bold; color: #64B5F6; margin-bottom: 8px;">${npc.name || 'NPC'}</div>
+          <div style="font-style: italic; color: #FFD54F; margin-bottom: 8px; font-size: 1.1em;">"${quest.name}"</div>
+          <div style="margin-bottom: 12px; line-height: 1.4; color: #4CAF50;">✓ Quest objectives completed!</div>
+          <div style="background: rgba(76, 175, 80, 0.1); border: 1px solid #4CAF50; border-radius: 6px; padding: 8px; margin-bottom: 15px;">
+            <strong style="color: #4CAF50;">Reward:</strong> ${rewardText}
+          </div>
+        </div>
+        <div style="text-align: center; gap: 10px; display: flex; justify-content: center;">
+          <button class="act-btn" onclick="turnInQuestToNpc('${quest.id}'); closeRandomQuestPopup();" style="background: linear-gradient(145deg, #2E7D32, #1B5E20); border: 1px solid #4CAF50; color: white; padding: 8px 16px; margin: 0 5px;">Turn In Quest</button>
+          <button class="act-btn" onclick="closeRandomQuestPopup()" style="background: linear-gradient(145deg, #D32F2F, #B71C1C); border: 1px solid #F44336; color: white; padding: 8px 16px; margin: 0 5px;">Cancel</button>
+        </div>
+      </div>
+    `;
+  }
+
+  window.turnInQuestToNpc = turnInQuestToNpc;
+
+  window.acceptQuestOffer = function(questId) {
+    // First check if quest is already in active quests
+    let quest = randomNpcActiveQuests.find(q => q.id === questId);
+    
+    // If not found, look for it in NPCs across all areas
+    if (!quest) {
+      for (let area of world.flat()) {
+        if (area.tiles) {
+          for (let row of area.tiles) {
+            for (let tile of row) {
+              if (tile.type === 'npc' && tile.data && tile.data.quest && tile.data.quest.id === questId) {
+                quest = tile.data.quest;
+                break;
+              }
+            }
+            if (quest) break;
+          }
+        }
+        if (quest) break;
+      }
+    }
+    
+    // Accept the quest if found and not already accepted
+    if (quest) {
+      const alreadyAccepted = randomNpcActiveQuests.some(q => q.id === questId);
+      if (!alreadyAccepted) {
+        acceptRandomNpcQuest(quest);
+      }
+    }
+    closeRandomQuestPopup();
   }
   
   function gen(isTown, areaX, areaY){
     let tiles=Array.from({length:AREA},()=>Array.from({length:AREA},()=>({type:'empty'})));
     if(isTown){
-      ['Potion Seller','Blacksmith','Scroll Merchant','Equipment Combiner','Quest Giver EM','Quest Giver H','Quest Giver L']
+      ['Potion Seller','Blacksmith','Scroll Merchant','Equipment Combiner','Quest Giver EM','Quest Giver H','Quest Giver L','Guild_Member']
         .forEach(pr=>place(tiles,pr,true,areaX,areaY));
     } else {
-      for(let i=0;i<2;i++) place(tiles,npcProfs[roll(0,npcProfs.length-1)],false,areaX,areaY);
+      // Place 2 random NPCs with quests in non-town areas
+      const randomNpcs = spawnRandomNpcs(areaX, areaY);
+      randomNpcs.forEach(npc => {
+        let placed = false;
+        let attempts = 0;
+        while (!placed && attempts < 20) {
+          const x = roll(0, AREA - 1);
+          const y = roll(0, AREA - 1);
+          if (tiles[y][x].type === 'empty') {
+            tiles[y][x] = {
+              type: 'npc',
+              data: {
+                profession: 'Random_NPC',
+                name: npc.name,
+                symbol: npc.symbol,
+                quest: npc.quest,
+                abbr: 'N',
+                isTown: false
+              }
+            };
+            placed = true;
+          }
+          attempts++;
+        }
+      });
       for(let y=0;y<AREA;y++)for(let x=0;x<AREA;x++){
         if(tiles[y][x].type!=='empty')continue;
         let r=Math.random()*100;
@@ -1072,10 +1342,13 @@ body {
       if(tiles[y][x].type==='empty'){
         let npc={type:'npc',data:{profession:prof}};
         if(town) {
-          npc.data.abbr = prof === 'Quest Giver L' ? 'L' : prof[0]; // Special handler for Quest Giver L
+          if(prof === 'Quest Giver L') npc.data.abbr = 'L';
+          else if(prof === 'Guild_Member') npc.data.abbr = 'G';
+          else npc.data.abbr = prof[0];
           npc.data.isTown = true;
         } else {
           npc.data.abbr = 'N'; // Random NPCs show as 'N'
+          npc.data.isTown = false;
         }
         if(!town&&fetchTpl[prof]) {
           npc.data.quest={...fetchTpl[prof],state:0};
@@ -1228,10 +1501,10 @@ body {
           else if(c.type==='trap') ch='T';
           else if(c.type==='chest') ch='<span class="chest">C</span>';
           else if(c.type==='npc') {
-            if(c.data.isTown) {
-              ch=`<span class="town-npc">${c.data.abbr}</span>`;
+            if(c.data && c.data.isTown) {
+              ch=`<span class="town-npc">${c.data.abbr || 'N'}</span>`;
             } else {
-              ch=`<span class="town-npc">N</span>`;
+              ch=`<span class="town-npc">${(c.data && c.data.abbr) || 'N'}</span>`;
             }
           }
         }
@@ -1268,11 +1541,20 @@ body {
     else if(t.type==='resource') {
       p.inv[t.data]=(p.inv[t.data]||0)+1;
       log("Found "+t.data);
+      
+      // Update random NPC fetch quest progress
+      randomNpcActiveQuests.forEach(quest => {
+        if(quest.type === 'fetch' && quest.need[t.data]) {
+          const currentProgress = Math.min(p.inv[t.data] || 0, quest.need[t.data]);
+          if(currentProgress > quest.progress[t.data]) {
+            quest.progress[t.data] = currentProgress;
+            log(`Random quest progress: ${quest.name} - ${quest.progress[t.data]}/${quest.need[t.data]} ${t.data.replace(/_/g, ' ')}`);
+          }
+        }
+      });
+      
       setT(nx,ny,{type:'empty'});
       p.x=nx; p.y=ny;
-      
-      // Check quest progress for gather quests
-      updateQuestProgress('gather', t.data);
       
       checkAreaChange();
       updateUI();
@@ -1315,6 +1597,7 @@ body {
       // Player moved to a new area - refresh the old area
       world[p.currentArea.y][p.currentArea.x] = gen(p.currentArea.x === TOWN && p.currentArea.y === TOWN, p.currentArea.x, p.currentArea.y);
       p.currentArea = {x: newAreaX, y: newAreaY};
+      log(`Entered area (${newAreaX}, ${newAreaY})`);
     }
   }
   
@@ -1480,8 +1763,15 @@ body {
     let monsterKey = m.name.replace(/\s+/g, '_');
     p.kills[monsterKey] = (p.kills[monsterKey] || 0) + 1;
     
-    // Update quest progress for kill quests
-    updateQuestProgress('kill', monsterKey);
+    // Update random NPC kill quest progress
+    randomNpcActiveQuests.forEach(quest => {
+      if(quest.type === 'kill' && quest.need[monsterKey]) {
+        quest.progress[monsterKey] = (quest.progress[monsterKey] || 0) + 1;
+        if(quest.progress[monsterKey] <= quest.need[monsterKey]) {
+          log(`Random quest progress: ${quest.name} - ${quest.progress[monsterKey]}/${quest.need[monsterKey]} ${monsterKey.replace(/_/g, ' ')}`);
+        }
+      }
+    });
     
     // Boss monsters (level 10) drop special items 50% of the time
     if(m.level === 10 && Math.random() < 0.5) {
@@ -1536,14 +1826,35 @@ body {
       let resource = resourceMap[m.type] || 'Herb';
       p.inv[resource] = (p.inv[resource] || 0) + 1;
       log("Found " + resource.replace(/_/g, ' '));
+      
+      // Update random NPC fetch quest progress
+      randomNpcActiveQuests.forEach(quest => {
+        if(quest.type === 'fetch' && quest.need[resource]) {
+          const currentProgress = Math.min(p.inv[resource] || 0, quest.need[resource]);
+          if(currentProgress > quest.progress[resource]) {
+            quest.progress[resource] = currentProgress;
+            log(`Random quest progress: ${quest.name} - ${quest.progress[resource]}/${quest.need[resource]} ${resource.replace(/_/g, ' ')}`);
+          }
+        }
+      });
     }
     
-    // Update quest progress
+    // Update quest progress for regular quests
     quests.forEach(q => {
       if(q.state === 1 && q.type === 'kill' && q.need[monsterKey]) {
         q.progress[monsterKey] = (q.progress[monsterKey] || 0) + 1;
         if(q.progress[monsterKey] >= q.need[monsterKey]) {
           log("Quest progress: " + q.name);
+        }
+      }
+    });
+    
+    // Update random NPC quest progress
+    randomNpcActiveQuests.forEach(quest => {
+      if(quest.type === 'kill' && quest.need[monsterKey]) {
+        quest.progress[monsterKey] = (quest.progress[monsterKey] || 0) + 1;
+        if(quest.progress[monsterKey] >= quest.need[monsterKey]) {
+          log(`Random quest progress: ${quest.name} - ${quest.progress[monsterKey]}/${quest.need[monsterKey]} ${monsterKey.replace(/_/g, ' ')}`);
         }
       }
     });
@@ -1565,6 +1876,12 @@ body {
       if(n.profession==='Quest Giver EM') openQuestGiver('easy','med');
       else if(n.profession==='Quest Giver H') openQuestGiver('hard','elite');
       else if(n.profession==='Quest Giver L') openQuestGiver('legendary');
+    }
+    else if(n.profession==='Guild_Member'){
+      checkQuestCompletion();
+    }
+    else if(n.profession==='Random_NPC'){
+      showRandomNpcQuestDialog(n);
     }
     else if(n.quest){
       if(n.quest.state===0) {
@@ -2146,6 +2463,9 @@ body {
             if(item === 'Rage Potion') {
               html += ` <button data-use-rage="${item}" style="background:#f44336; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Use</button>`;
             }
+            if(item === 'Scroll of Healing') {
+              html += ` <button data-use-scroll="${item}" style="background:#4CAF50; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Use</button>`;
+            }
             
             html += `</div></div>`;
           }
@@ -2210,6 +2530,14 @@ body {
           p.tempAtk = {value: Math.floor(p.atk * 2), steps: 30};
           p.hp = Math.max(1, round1(p.hp * 0.75));
           log("RAGE! ATK doubled, HP reduced by 25% for 30 steps");
+        }
+      }
+      if (btn.dataset.useScroll !== undefined) {
+        const scroll = btn.dataset.useScroll;
+        if(p.inv[scroll] > 0) {
+          p.inv[scroll]--;
+          p.hp = p.maxHp;
+          log(`Used Scroll of Healing (Full HP restored)`);
         }
       }
       updateUI();
@@ -2539,6 +2867,54 @@ body {
     overlay.style.display = 'none';
   }
 
+  function openNpcQuestLog() {
+    let content = '<h3>NPC Quest Log</h3>';
+    
+    if (randomNpcActiveQuests.length === 0) {
+      content += '<p>No active NPC quests.</p>';
+    } else {
+      content += '<div class="quest-list">';
+      randomNpcActiveQuests.forEach(quest => {
+        let progressInfo = '';
+        let canComplete = true;
+        
+        Object.entries(quest.need).forEach(([item, needed]) => {
+          const have = quest.type === 'kill' ? (p.kills[item] || 0) : (p.inv[item] || 0);
+          const current = Math.min(have, needed);
+          quest.progress[item] = current;
+          const progressColor = current >= needed ? '#4CAF50' : '#FFA726';
+          progressInfo += `<span style="color: ${progressColor};">${item.replace(/_/g, ' ')}: ${current}/${needed}</span><br>`;
+          if (current < needed) canComplete = false;
+        });
+        
+        const statusText = canComplete ? ' <span style="color: #4CAF50;">[Ready to turn in to NPC or Guild (G)]</span>' : ' <span style="color: #FFA726;">[In Progress]</span>';
+        const rewardText = quest.isConsumable ? 
+          (quest.reward === 'Scroll of Healing' ? 'Scroll of Healing' : 'Strength Potion') :
+          quest.reward.replace(/_/g, ' ');
+        
+        content += `
+          <div class="quest-item" style="margin-bottom: 15px; padding: 10px; border: 1px solid ${canComplete ? '#4CAF50' : '#444'}; border-radius: 5px; background: rgba(${canComplete ? '76, 175, 80' : '68, 68, 68'}, 0.1);">
+            <h4 style="margin: 0 0 5px 0; color: #e8eaed;">${quest.name}${statusText}</h4>
+            <p style="margin: 5px 0; color: #c0c4c7; font-style: italic;">${quest.desc}</p>
+            <div style="margin: 5px 0;">
+              <strong>Progress:</strong><br>
+              ${progressInfo}
+            </div>
+            <div style="margin: 5px 0;">
+              <strong>Reward:</strong> <span style="color: #4CAF50;">${rewardText}</span>
+            </div>
+            <div style="margin: 5px 0; font-size: 0.9em; color: #888;">
+              Area: (${quest.areaX}, ${quest.areaY}) - Return to the NPC who gave you this quest to turn it in
+            </div>
+          </div>
+        `;
+      });
+      content += '</div>';
+    }
+    
+    openModal(content);
+  }
+
   // Bind & init
   document.addEventListener('DOMContentLoaded',()=>{
     ['up','down','left','right'].forEach(dn=>d(`[data-dir="${dn}"]`).onclick=()=>move(dn));
@@ -2546,10 +2922,12 @@ body {
     d('#btn-craft').onclick  = openCraft;
     d('#btn-shop').onclick   = openGlobal;
     d('#btn-quests').onclick = openQuests;
+    d('#btn-npc-quests').onclick = openNpcQuestLog;
     d('#btn-reborn').onclick = ()=>{
       localStorage.removeItem(SAVE);
       LEl.innerHTML='';
       quests = []; // Clear quests array
+      randomNpcActiveQuests = []; // Clear random NPC quests
       init();
       log("Reborn!");
       updateUI();
