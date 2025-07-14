@@ -383,6 +383,81 @@ body {
 <div id="overlay" class="overlay"></div>
 <div id="modal" class="modal"></div>
 <div id="quest-modal" class="modal"></div>
+<div id="welcome-modal" class="modal" style="display: none;">
+  <div class="welcome-content">
+    <h2 style="text-align: center; color: #e8eaed; margin-bottom: 15px; font-size: 1.5em;">🏰 Dungeon Quest</h2>
+    <p style="text-align: center; color: #c0c4c7; margin-bottom: 20px; line-height: 1.6;">
+      Embark on an epic adventure through dangerous dungeons filled with monsters, treasures, and mysteries.<br>
+      Battle fierce creatures, collect powerful items, and become the ultimate dungeon explorer!
+    </p>
+    
+    <div class="instructions">
+      <h3 style="color: #e8eaed; margin-bottom: 10px; border-bottom: 1px solid #344250; padding-bottom: 5px;">How to Play</h3>
+      <ul style="color: #c0c4c7; line-height: 1.6; margin-bottom: 15px;">
+        <li><strong>Movement:</strong> Use arrow buttons to navigate through the dungeon</li>
+        <li><strong>Combat:</strong> Walk into monsters to engage in automatic battle</li>
+        <li><strong>Inventory:</strong> Manage your items and equipment</li>
+        <li><strong>Crafting:</strong> Create powerful gear from materials</li>
+        <li><strong>Market:</strong> Buy potions and equipment from NPCs</li>
+      </ul>
+      
+      <h3 style="color: #e8eaed; margin-bottom: 10px; border-bottom: 1px solid #344250; padding-bottom: 5px;">Map Legend</h3>
+      <ul style="color: #c0c4c7; line-height: 1.6; margin-bottom: 15px;">
+        <li><span style="color: #ff9999;">Red symbols:</span> Monsters (darker = stronger)</li>
+        <li><span style="color: #ffff00;">Yellow symbols:</span> Treasure chests</li>
+        <li><span style="color: #55ffff;">Cyan symbols:</span> Town NPCs and shops</li>
+        <li><span style="color: #55ff55;">Green symbols:</span> Resource nodes</li>
+      </ul>
+      
+      <h3 style="color: #e8eaed; margin-bottom: 10px; border-bottom: 1px solid #344250; padding-bottom: 5px;">Monster Scaling & World Bosses</h3>
+      <p style="color: #c0c4c7; line-height: 1.6; margin-bottom: 10px;">
+        Monsters grow exponentially stronger with each level. Each monster type has 10+ evolution stages,
+        from basic creatures to ancient legendary bosses. Higher level monsters provide better rewards!
+      </p>
+      <p style="color: #c0c4c7; line-height: 1.6; margin-bottom: 15px;">
+        <strong>3 World Bosses:</strong> Leviathan, Death Star, and Susano - the ultimate challenges with 15 evolution stages each.
+        These legendary beings offer the greatest rewards but require incredible strength to defeat.
+      </p>
+      
+      <h3 style="color: #e8eaed; margin-bottom: 10px; border-bottom: 1px solid #344250; padding-bottom: 5px;">Starting Your Journey</h3>
+      <p style="color: #c0c4c7; line-height: 1.6; margin-bottom: 15px;">
+        You begin your adventure in the <strong>Town</strong> - a safe haven where you can find shops, NPCs, and prepare for your dungeon expeditions.
+        The town serves as your base of operations for buying equipment, potions, and managing your inventory.
+      </p>
+      
+      <h3 style="color: #e8eaed; margin-bottom: 10px; border-bottom: 1px solid #344250; padding-bottom: 5px;">Reborn System</h3>
+      <p style="color: #c0c4c7; line-height: 1.6; margin-bottom: 15px;">
+        The <strong>Reborn</strong> button allows you to completely reset your character and start fresh from the beginning.
+        Use this feature when you want to restart your adventure or if your character dies and you need a fresh start.
+      </p>
+    </div>
+    
+    <button id="start-game-btn" style="
+      width: 100%; 
+      padding: 12px; 
+      background: linear-gradient(145deg, #4CAF50, #45a049); 
+      border: none; 
+      border-radius: 8px; 
+      color: white; 
+      font-size: 1.1em; 
+      font-weight: 600; 
+      cursor: pointer; 
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0, 5, 15, 0.3);
+    ">Start Adventure</button>
+    <style>
+    #start-game-btn:hover {
+      background: linear-gradient(145deg, #5cbf60, #4CAF50) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 5, 15, 0.4) !important;
+    }
+    #start-game-btn:active {
+      transform: translateY(0px);
+      box-shadow: 0 2px 4px rgba(0, 5, 15, 0.2) !important;
+    }
+    </style>
+  </div>
+</div>
 
 <script>
 (() => {
@@ -1125,6 +1200,7 @@ body {
       <div class="stat-bar"><span class="stat-name">LUCK:</span> ${currentLuck}(${round1(p.luck)})</div>
       <div class="stat-bar"><span class="stat-name">GOLD:</span> ${p.g}</div>
       <div class="stat-bar"><span class="stat-name">CRAFT:</span> ${currentCraft}(${round1(p.craft)})</div>
+      <div class="stat-bar"><span class="stat-name">P:</span> ${p.x},${p.y}</div>
     `;
     
     if(p.equipped) {
@@ -2448,6 +2524,21 @@ body {
     MD.innerHTML='';
   }
   
+  // Welcome Modal
+  function showWelcomeModal() {
+    const welcomeModal = d('#welcome-modal');
+    const overlay = d('#overlay');
+    welcomeModal.style.display = 'block';
+    overlay.style.display = 'block';
+  }
+  
+  function closeWelcomeModal() {
+    const welcomeModal = d('#welcome-modal');
+    const overlay = d('#overlay');
+    welcomeModal.style.display = 'none';
+    overlay.style.display = 'none';
+  }
+
   // Bind & init
   document.addEventListener('DOMContentLoaded',()=>{
     ['up','down','left','right'].forEach(dn=>d(`[data-dir="${dn}"]`).onclick=()=>move(dn));
@@ -2463,14 +2554,26 @@ body {
       log("Reborn!");
       updateUI();
     };
+    
+    // Welcome modal functionality
+    d('#start-game-btn').onclick = () => {
+      closeWelcomeModal();
+      log("Adventure begins!");
+    };
+    
     OV.onclick=() => {
-      if(QM.style.display === 'block') {
+      if(d('#welcome-modal').style.display === 'block') {
+        closeWelcomeModal();
+        log("Adventure begins!");
+      } else if(QM.style.display === 'block') {
         closeQuestPopup();
       } else {
         closeModal();
       }
     };
+    
     init();
+    showWelcomeModal(); // Show welcome modal on page load
     log("Welcome to Dungeon Quest!");
     updateUI();
   });
