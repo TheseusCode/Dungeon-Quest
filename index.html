@@ -13,8 +13,8 @@
 
 body {
   font-family: monospace;
-  background: #111;
-  color: #eee;
+  background: linear-gradient(135deg, #0a0f15 0%, #151a20 50%, #0a0f15 100%);
+  color: #e8eaed;
   padding: 10px;
   font-size: 14px;
   line-height: 1.4;
@@ -24,6 +24,7 @@ body {
   flex-direction: column;
   min-height: 100vh;
   gap: 10px;
+  transition: all 0.3s ease;
 }
 
 #map {
@@ -31,11 +32,24 @@ body {
   font-family: monospace;
   font-size: 16px;
   line-height: 1.2;
-  background: #222;
+  background: linear-gradient(145deg, #1a2332, #0f1419);
+  border: 1px solid #2a3441;
+  box-shadow: 
+    inset 0 1px 3px rgba(255, 255, 255, 0.05),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.5);
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 8px;
   overflow-x: auto;
   max-width: 100%;
+  transition: box-shadow 0.3s ease;
+}
+
+#map:hover {
+  box-shadow: 
+    inset 0 1px 3px rgba(255, 255, 255, 0.08),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.5),
+    0 6px 16px rgba(0, 5, 15, 0.6);
 }
 
 #content-row {
@@ -48,19 +62,30 @@ body {
   flex: 1;
   height: 150px;
   overflow-y: auto;
-  background: #222;
-  border: 1px solid #444;
+  background: linear-gradient(145deg, #1a2332, #0f1419);
+  border: 1px solid #2a3441;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.05),
+    0 2px 8px rgba(0, 5, 15, 0.4);
   padding: 8px;
-  border-radius: 5px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
 #stats {
   flex: 1;
-  background: #222;
+  background: linear-gradient(145deg, #1a2332, #0f1419);
+  border: 1px solid #2a3441;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.05),
+    0 2px 8px rgba(0, 5, 15, 0.4);
   padding: 5px;
-  border-radius: 5px;
+  border-radius: 8px;
   height: 150px;
   overflow-y: auto;
+  transition: all 0.3s ease;
 }
 
 .stat-row {
@@ -69,12 +94,20 @@ body {
 }
 
 .stat-item {
-  background: #333;
+  background: linear-gradient(145deg, #243242, #1a2530);
+  border: 1px solid #344250;
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.08),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.4),
+    0 2px 4px rgba(0, 5, 15, 0.3);
   padding: 5px 8px;
-  border-radius: 3px;
+  border-radius: 6px;
   flex: 1;
   text-align: center;
   margin: 0 2px;
+  transition: all 0.3s ease;
+  color: #e8eaed;
+  font-weight: 500;
 }
 
 #controls {
@@ -89,22 +122,29 @@ body {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   gap: 5px;
-  width: 40%;
-  max-width: 150px;
+  width: 50%;
+  max-width: 200px;
 }
 
 .nav-btn {
   font-size: 1em;
   width: 100%;
   aspect-ratio: 1/1;
-  background: #333;
-  border: 1px solid #555;
-  color: #eee;
+  background: linear-gradient(145deg, #243242, #1a2530);
+  border: 1px solid #344250;
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.08),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.4),
+    0 3px 6px rgba(0, 5, 15, 0.4);
+  color: #e8eaed;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  border-radius: 3px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .nav-cell {
@@ -115,23 +155,70 @@ body {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  width: 40%;
+  width: 50%;
 }
 
 .act-btn {
   font-size: 0.85em;
   padding: 6px 4px;
-  background: #333;
-  border: 1px solid #555;
-  color: #eee;
+  background: linear-gradient(145deg, #243242, #1a2530);
+  border: 1px solid #344250;
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.08),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.4),
+    0 3px 6px rgba(0, 5, 15, 0.4);
+  color: #e8eaed;
   text-align: center;
-  border-radius: 3px;
+  border-radius: 6px;
   flex: 1;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  cursor: pointer;
 }
 
-.act-btn:hover, .nav-btn:hover {
-  background: #444;
-  cursor: pointer;
+.nav-btn:hover {
+  background: linear-gradient(145deg, #2a3a4a, #1f2d3a);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.12),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.5),
+    0 5px 10px rgba(0, 10, 25, 0.5);
+  transform: translateY(-2px);
+  color: #f0f2f5;
+}
+
+.nav-btn:active {
+  transform: translateY(0px);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.act-btn:hover {
+  background: linear-gradient(145deg, #2a3a4a, #1f2d3a);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.12),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.5),
+    0 5px 10px rgba(0, 10, 25, 0.5);
+  transform: translateY(-1px);
+  color: #f0f2f5;
+}
+
+.act-btn:active {
+  transform: translateY(0px);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.stat-item:hover {
+  background: linear-gradient(145deg, #2a3a4a, #1f2d3a);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.12),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.5),
+    0 4px 8px rgba(0, 10, 25, 0.4);
+  transform: translateY(-1px);
 }
 
 /* Color coding for map elements */
@@ -158,12 +245,21 @@ body {
   height: 100%;
   display: none;
 }
+
 .overlay {
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
   z-index: 10;
+  transition: opacity 0.3s ease;
 }
+
 .modal {
-  background: #222;
+  background: linear-gradient(145deg, #1a2332, #0f1419);
+  border: 1px solid #2a3441;
+  box-shadow: 
+    inset 0 1px 3px rgba(255, 255, 255, 0.08),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.4),
+    0 20px 40px rgba(0, 5, 15, 0.7);
   width: 90%;
   max-width: 400px;
   max-height: 80vh;
@@ -172,9 +268,9 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 15px;
-  border: 1px solid #555;
-  border-radius: 5px;
+  border-radius: 12px;
   z-index: 11;
+  transition: all 0.3s ease;
 }
 
 /* Quest Modal Styles */
@@ -191,19 +287,43 @@ body {
 
 .quest-options button {
   padding: 8px 15px;
-  border-radius: 3px;
+  border-radius: 6px;
   border: none;
   flex: 1;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.quest-options button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+}
+
+.quest-options button:active {
+  transform: translateY(0px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .quest-accept {
-  background: #4CAF50;
+  background: linear-gradient(145deg, #4CAF50, #45a049);
   color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.quest-accept:hover {
+  background: linear-gradient(145deg, #5cbf60, #4CAF50);
 }
 
 .quest-decline {
-  background: #f44336;
+  background: linear-gradient(145deg, #f44336, #da190b);
   color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.quest-decline:hover {
+  background: linear-gradient(145deg, #f66356, #f44336);
 }
 
 .quest-details {
@@ -213,11 +333,11 @@ body {
 
 @media (min-width: 500px) {
   #nav {
-    width: 120px;
+    width: 180px;
   }
   
   #actions {
-    width: calc(100% - 130px);
+    width: calc(100% - 190px);
   }
   
   .act-btn {
@@ -269,91 +389,142 @@ body {
   // Helper function to round to 1 decimal place
   const round1 = num => Math.round(num * 10) / 10;
   
-  // Data definitions - expanded monster templates with 10 levels
+  // Data definitions - expanded monster templates with exponential scaling
   const monsterTpl={
     Goblin: {base:{hp:8,atk:3,def:1,boost:'atk'}, levels:[
       {name:'Goblin',mult:1,reward:0.1},
       {name:'Hobgoblin',mult:2,reward:0.2},
-      {name:'Goblin Warrior',mult:3,reward:0.3},
-      {name:'Goblin Elite',mult:4,reward:0.4},
-      {name:'Goblin Captain',mult:5,reward:0.5},
-      {name:'Goblin King',mult:6,reward:0.6},
-      {name:'Goblin Warlord',mult:7,reward:0.7},
-      {name:'Goblin Overlord',mult:8,reward:0.8},
-      {name:'Goblin Emperor',mult:9,reward:0.9},
-      {name:'Ancient Goblin',mult:10,reward:1.0}
+      {name:'Goblin Warrior',mult:4,reward:0.4},
+      {name:'Goblin Elite',mult:8,reward:0.8},
+      {name:'Goblin Captain',mult:16,reward:1.6},
+      {name:'Goblin King',mult:32,reward:3.2},
+      {name:'Goblin Warlord',mult:64,reward:6.4},
+      {name:'Goblin Overlord',mult:128,reward:12.8},
+      {name:'Goblin Emperor',mult:256,reward:25.6},
+      {name:'Ancient Goblin',mult:512,reward:51.2}
     ]},
     Skeleton: {base:{hp:12,atk:4,def:2,boost:'def'}, levels:[
       {name:'Skeleton',mult:1,reward:0.1},
       {name:'Skeleton Warrior',mult:2,reward:0.2},
-      {name:'Skeleton Soldier',mult:3,reward:0.3},
-      {name:'Skeleton Knight',mult:4,reward:0.4},
-      {name:'Skeleton Elite',mult:5,reward:0.5},
-      {name:'Skeleton Duke',mult:6,reward:0.6},
-      {name:'Skeleton King',mult:7,reward:0.7},
-      {name:'Skeleton Lord',mult:8,reward:0.8},
-      {name:'Skeleton Emperor',mult:9,reward:0.9},
-      {name:'Bone Archlich',mult:10,reward:1.0}
+      {name:'Skeleton Soldier',mult:4,reward:0.4},
+      {name:'Skeleton Knight',mult:8,reward:0.8},
+      {name:'Skeleton Elite',mult:16,reward:1.6},
+      {name:'Skeleton Duke',mult:32,reward:3.2},
+      {name:'Skeleton King',mult:64,reward:6.4},
+      {name:'Skeleton Lord',mult:128,reward:12.8},
+      {name:'Skeleton Emperor',mult:256,reward:25.6},
+      {name:'Bone Archlich',mult:512,reward:51.2}
     ]},
     Wolf: {base:{hp:15,atk:5,def:3,boost:'maxHp'}, levels:[
-      {name:'Wolf',mult:1,reward:1},
-      {name:'Wild Wolf',mult:2,reward:1.5},
-      {name:'Dark Wolf',mult:3,reward:2},
-      {name:'Dire Wolf',mult:4,reward:2.5},
-      {name:'Shadow Wolf',mult:5,reward:3},
-      {name:'Alpha Wolf',mult:6,reward:3.5},
-      {name:'Werewolf',mult:7,reward:4},
-      {name:'Fenrir Wolf',mult:8,reward:4.5},
-      {name:'Demon Wolf',mult:9,reward:5},
-      {name:'Primordial Wolf',mult:10,reward:10}
+      {name:'Wolf',mult:1,reward:0.1},
+      {name:'Wild Wolf',mult:2,reward:0.2},
+      {name:'Dark Wolf',mult:4,reward:0.4},
+      {name:'Dire Wolf',mult:8,reward:0.8},
+      {name:'Shadow Wolf',mult:16,reward:1.6},
+      {name:'Alpha Wolf',mult:32,reward:3.2},
+      {name:'Werewolf',mult:64,reward:6.4},
+      {name:'Fenrir Wolf',mult:128,reward:12.8},
+      {name:'Demon Wolf',mult:256,reward:25.6},
+      {name:'Primordial Wolf',mult:512,reward:51.2}
     ]},
     Orc: {base:{hp:10,atk:6,def:2,boost:'atk'}, levels:[
       {name:'Orc',mult:1,reward:0.1},
       {name:'Orc Scout',mult:2,reward:0.2},
-      {name:'Orc Fighter',mult:3,reward:0.3},
-      {name:'Orc Berserker',mult:4,reward:0.4},
-      {name:'Orc Champion',mult:5,reward:0.5},
-      {name:'Orc Warlord',mult:6,reward:0.6},
-      {name:'Orc Chieftain',mult:7,reward:0.7},
-      {name:'Orc General',mult:8,reward:0.8},
-      {name:'Orc Emperor',mult:9,reward:0.9},
-      {name:'Orc Destroyer',mult:10,reward:1.0}
+      {name:'Orc Fighter',mult:4,reward:0.4},
+      {name:'Orc Berserker',mult:8,reward:0.8},
+      {name:'Orc Champion',mult:16,reward:1.6},
+      {name:'Orc Warlord',mult:32,reward:3.2},
+      {name:'Orc Chieftain',mult:64,reward:6.4},
+      {name:'Orc General',mult:128,reward:12.8},
+      {name:'Orc Emperor',mult:256,reward:25.6},
+      {name:'Orc Destroyer',mult:512,reward:51.2}
     ]},
     Ogre: {base:{hp:12,atk:4,def:4,boost:'maxHp'}, levels:[
-      {name:'Ogre',mult:1,reward:1},
-      {name:'Ogre Brute',mult:2,reward:1.5},
-      {name:'Ogre Warrior',mult:3,reward:2},
-      {name:'Ogre Berserker',mult:4,reward:2.5},
-      {name:'Ogre Champion',mult:5,reward:3},
-      {name:'Ogre Warlord',mult:6,reward:3.5},
-      {name:'Ogre King',mult:7,reward:4},
-      {name:'Ogre Titan',mult:8,reward:4.5},
-      {name:'Ogre Colossus',mult:9,reward:5},
-      {name:'Ancient Ogre',mult:10,reward:10}
+      {name:'Ogre',mult:1,reward:0.1},
+      {name:'Ogre Brute',mult:2,reward:0.2},
+      {name:'Ogre Warrior',mult:4,reward:0.4},
+      {name:'Ogre Berserker',mult:8,reward:0.8},
+      {name:'Ogre Champion',mult:16,reward:1.6},
+      {name:'Ogre Warlord',mult:32,reward:3.2},
+      {name:'Ogre King',mult:64,reward:6.4},
+      {name:'Ogre Titan',mult:128,reward:12.8},
+      {name:'Ogre Colossus',mult:256,reward:25.6},
+      {name:'Ancient Ogre',mult:512,reward:51.2}
     ]},
     Gnoll: {base:{hp:9,atk:5,def:3,boost:'def'}, levels:[
       {name:'Gnoll',mult:1,reward:0.1},
       {name:'Gnoll Hunter',mult:2,reward:0.2},
-      {name:'Gnoll Warrior',mult:3,reward:0.3},
-      {name:'Gnoll Shaman',mult:4,reward:0.4},
-      {name:'Gnoll Chieftain',mult:5,reward:0.5},
-      {name:'Gnoll Warlord',mult:6,reward:0.6},
-      {name:'Gnoll King',mult:7,reward:0.7},
-      {name:'Gnoll Packmaster',mult:8,reward:0.8},
-      {name:'Gnoll Emperor',mult:9,reward:0.9},
-      {name:'Gnoll Demigod',mult:10,reward:1.0}
+      {name:'Gnoll Warrior',mult:4,reward:0.4},
+      {name:'Gnoll Shaman',mult:8,reward:0.8},
+      {name:'Gnoll Chieftain',mult:16,reward:1.6},
+      {name:'Gnoll Warlord',mult:32,reward:3.2},
+      {name:'Gnoll King',mult:64,reward:6.4},
+      {name:'Gnoll Packmaster',mult:128,reward:12.8},
+      {name:'Gnoll Emperor',mult:256,reward:25.6},
+      {name:'Gnoll Demigod',mult:512,reward:51.2}
     ]},
     Wyvern: {base:{hp:10,atk:6,def:5,boost:'atk'}, levels:[
-      {name:'Wyvern',mult:1,reward:1},
-      {name:'Young Wyvern',mult:2,reward:1.5},
-      {name:'Adult Wyvern',mult:3,reward:2},
-      {name:'Elder Wyvern',mult:4,reward:2.5},
-      {name:'Wyvern Lord',mult:5,reward:3},
-      {name:'Wyvern King',mult:6,reward:3.5},
-      {name:'Dragon Wyvern',mult:7,reward:4},
-      {name:'Ancient Wyvern',mult:8,reward:4.5},
-      {name:'Primordial Wyvern',mult:9,reward:5},
-      {name:'Wyvern God',mult:10,reward:10}
+      {name:'Wyvern',mult:1,reward:0.1},
+      {name:'Young Wyvern',mult:2,reward:0.2},
+      {name:'Adult Wyvern',mult:4,reward:0.4},
+      {name:'Elder Wyvern',mult:8,reward:0.8},
+      {name:'Wyvern Lord',mult:16,reward:1.6},
+      {name:'Wyvern King',mult:32,reward:3.2},
+      {name:'Dragon Wyvern',mult:64,reward:6.4},
+      {name:'Ancient Wyvern',mult:128,reward:12.8},
+      {name:'Primordial Wyvern',mult:256,reward:25.6},
+      {name:'Wyvern God',mult:512,reward:51.2}
+    ]},
+    Leviathan: {base:{hp:12,atk:8,def:6,boost:'atk'}, levels:[
+      {name:'Leviathan',mult:1,reward:0.1},
+      {name:'Young Leviathan',mult:2,reward:0.2},
+      {name:'Adult Leviathan',mult:4,reward:0.4},
+      {name:'Elder Leviathan',mult:8,reward:0.8},
+      {name:'Leviathan Lord',mult:16,reward:1.6},
+      {name:'Leviathan King',mult:32,reward:3.2},
+      {name:'Dragon Leviathan',mult:64,reward:6.4},
+      {name:'Ancient Leviathan',mult:128,reward:12.8},
+      {name:'Primordial Leviathan',mult:256,reward:25.6},
+      {name:'Leviathan God',mult:512,reward:51.2},
+      {name:'Leviathan Titan',mult:1024,reward:102.4},
+      {name:'Leviathan Emperor',mult:2048,reward:204.8},
+      {name:'Leviathan Overlord',mult:4096,reward:409.6},
+      {name:'Leviathan Destroyer',mult:8192,reward:819.2},
+      {name:'Leviathan',mult:16384,reward:1638.4}
+    ]},
+    DeathStar: {base:{hp:15,atk:7,def:8,boost:'def'}, levels:[
+      {name:'Death Star',mult:1,reward:0.1},
+      {name:'Young Death Star',mult:2,reward:0.2},
+      {name:'Adult Death Star',mult:4,reward:0.4},
+      {name:'Elder Death Star',mult:8,reward:0.8},
+      {name:'Death Star Lord',mult:16,reward:1.6},
+      {name:'Death Star King',mult:32,reward:3.2},
+      {name:'Dragon Death Star',mult:64,reward:6.4},
+      {name:'Ancient Death Star',mult:128,reward:12.8},
+      {name:'Primordial Death Star',mult:256,reward:25.6},
+      {name:'Death Star God',mult:512,reward:51.2},
+      {name:'Death Star Titan',mult:1024,reward:102.4},
+      {name:'Death Star Emperor',mult:2048,reward:204.8},
+      {name:'Death Star Overlord',mult:4096,reward:409.6},
+      {name:'Death Star Destroyer',mult:8192,reward:819.2},
+      {name:'Death Star',mult:16384,reward:1638.4}
+    ]},
+    Susano: {base:{hp:18,atk:9,def:7,boost:'maxHp'}, levels:[
+      {name:'Susano',mult:1,reward:0.1},
+      {name:'Young Susano',mult:2,reward:0.2},
+      {name:'Adult Susano',mult:4,reward:0.4},
+      {name:'Elder Susano',mult:8,reward:0.8},
+      {name:'Susano Lord',mult:16,reward:1.6},
+      {name:'Susano King',mult:32,reward:3.2},
+      {name:'Dragon Susano',mult:64,reward:6.4},
+      {name:'Ancient Susano',mult:128,reward:12.8},
+      {name:'Primordial Susano',mult:256,reward:25.6},
+      {name:'Susano God',mult:512,reward:51.2},
+      {name:'Susano Titan',mult:1024,reward:102.4},
+      {name:'Susano Emperor',mult:2048,reward:204.8},
+      {name:'Susano Overlord',mult:4096,reward:409.6},
+      {name:'Susano Destroyer',mult:8192,reward:819.2},
+      {name:'Susano',mult:16384,reward:1638.4}
     ]}
   };
 
@@ -368,7 +539,27 @@ body {
       }},
       {name:'Warrior\'s Elixir',price:30,apply:()=>{p.tempAtk={value:15,steps:50}}},
       {name:'Guardian Tonic',price:20,apply:()=>{p.tempDef={value:20,steps:60}}},
-      {name:'Master Crafter\'s Brew',price:100,apply:()=>{p.tempCraft={value:50,steps:30}}}
+      {name:'Master Crafter\'s Brew',price:100,apply:()=>{p.tempCraft={value:50,steps:30}}},
+      {name:'Orc\'s Rage',price:175,apply:()=>{
+        p.tempOrcsRage={atkBoost:200,defDebuff:0.5,steps:40};
+        log("Orc's Rage: +200 attack, -50% defense for 40 steps!");
+      }},
+      {name:'Angel\'s Touch',price:250,apply:()=>{
+        p.tempAngelsTouch={maxHpBoost:200,defBoost:100,atkDebuff:0.75,steps:40};
+        p.maxHp = round1(p.maxHp + 200);
+        p.hp = round1(p.hp + 200);
+        log("Angel's Touch: +200 max HP, +100 defense, -25% attack for 40 steps!");
+      }},
+      {name:'Dragon Fury',price:500,apply:()=>{
+        p.tempDragonFury={atkBoost:800,defDebuff:0.3,maxHpDebuff:0.5,steps:10};
+        p.maxHp = Math.max(1, round1(p.maxHp * 0.5));
+        p.hp = Math.min(p.hp, p.maxHp);
+        log("Dragon Fury: +800 attack, -70% defense, -50% max HP for 10 steps!");
+      }},
+      {name:'God\'s Gift',price:2500,apply:()=>{
+        p.tempGodsGift={defBoost:7000,steps:5};
+        log("God's Gift: +7000 defense for 5 steps!");
+      }}
     ], 
     'Blacksmith':[
       {name:'Iron Sword',price:20,apply:()=>{equip('Iron Sword')}}
@@ -380,29 +571,35 @@ body {
   };
 
   const itemDefs={
-    'Spear':{boost:{atk:2},maxD:100},
-    'Shield':{boost:{def:3},maxD:100},
-    'Greatsword':{boost:{atk:4},maxD:100},
-    'PlateArmor':{boost:{maxHp:10},maxD:100},
-    'Iron Sword':{boost:{atk:3},maxD:100},
-    'Skeleton_King_Bone':{boost:{def:1},maxD:50},
-    'Dire_Wolf_Pelt':{boost:{maxHp:5},maxD:50},
+    'Spear':{boost:{atk:2},maxD:100,level:1},
+    'Shield':{boost:{def:3},maxD:100,level:1},
+    'Greatsword':{boost:{atk:4},maxD:100,level:1},
+    'PlateArmor':{boost:{maxHp:10},maxD:100,level:1},
+    'Iron Sword':{boost:{atk:3},maxD:100,level:1},
+    'Skeleton_King_Bone':{boost:{def:1},maxD:50,level:1},
+    'Dire_Wolf_Pelt':{boost:{maxHp:5},maxD:50,level:1},
     // Level 10 special items
-    'Ancient_Goblin_Crown':{boost:{atk:5,def:2},maxD:200,value:200},
-    'Bone_Archlich_Staff':{boost:{atk:8},maxD:200,value:200},
-    'Primordial_Wolf_Fang':{boost:{atk:6,maxHp:8},maxD:200,value:200},
-    'Orc_Destroyer_Axe':{boost:{atk:10},maxD:200,value:200},
-    'Ancient_Ogre_Club':{boost:{atk:7,maxHp:15},maxD:200,value:200},
-    'Gnoll_Demigod_Spear':{boost:{atk:9,def:3},maxD:200,value:200},
-    'Wyvern_God_Scale':{boost:{atk:12,def:5,maxHp:10},maxD:200,value:200},
+    'Ancient_Goblin_Crown':{boost:{atk:5,def:2},maxD:200,value:200,level:1},
+    'Bone_Archlich_Staff':{boost:{atk:8},maxD:200,value:200,level:1},
+    'Primordial_Wolf_Fang':{boost:{atk:6,maxHp:8},maxD:200,value:200,level:1},
+    'Orc_Destroyer_Axe':{boost:{atk:10},maxD:200,value:200,level:1},
+    'Ancient_Ogre_Club':{boost:{atk:7,maxHp:15},maxD:200,value:200,level:1},
+    'Gnoll_Demigod_Spear':{boost:{atk:9,def:3},maxD:200,value:200,level:1},
+    'Wyvern_God_Scale':{boost:{atk:12,def:5,maxHp:10},maxD:200,value:200,level:1},
     // Ultimate legendary weapon
-    'Apex_Worldender':{boost:{atk:25,def:15,maxHp:25},maxD:500,value:1000},
+    'Apex_Predator':{boost:{atk:525,def:715,maxHp:1025},maxD:100,value:1000,level:1},
+    // New ultimate weapon
+    'Broken_Stick':{boost:{atk:50000},maxD:5,value:0,level:1,unsellable:true},
+    // Level 15 boss weapons - cannot be sold
+    'Tidepiercer':{boost:{atk:500,def:200},maxD:100,value:0,level:1,unsellable:true},
+    'Nova_Maul':{boost:{atk:300,maxHp:500,def:100},maxD:100,value:0,level:1,unsellable:true},
+    'Stormfang_Katana':{boost:{atk:1000,def:500},maxD:100,value:0,level:1,unsellable:true},
     // New weapons with random durability
-    'Shadowstrike_Blade':{boost:{atk:6,def:1},maxD:()=>roll(40,100),value:150},
-    'Thundercaller_Hammer':{boost:{atk:8,maxHp:5},maxD:()=>roll(40,100),value:180},
-    'Voidreaper_Scythe':{boost:{atk:10},maxD:()=>roll(40,100),value:200},
-    'Dragonbane_Spear':{boost:{atk:5,def:4},maxD:()=>roll(40,100),value:160},
-    'Soulrender_Axe':{boost:{atk:7,maxHp:3},maxD:()=>roll(40,100),value:170}
+    'Shadowstrike_Blade':{boost:{atk:6,def:1},maxD:()=>roll(40,100),value:150,level:1},
+    'Thundercaller_Hammer':{boost:{atk:8,maxHp:5},maxD:()=>roll(40,100),value:180,level:1},
+    'Voidreaper_Scythe':{boost:{atk:10},maxD:()=>roll(40,100),value:200,level:1},
+    'Dragonbane_Spear':{boost:{atk:5,def:4},maxD:()=>roll(40,100),value:160,level:1},
+    'Soulrender_Axe':{boost:{atk:7,maxHp:3},maxD:()=>roll(40,100),value:170,level:1}
   };
 
   const recipes=[
@@ -416,17 +613,18 @@ body {
     {name:'Voidreaper_Scythe',need:{'Iron Ingot':2,'Orc_Tusk':1,Wood:2}},
     {name:'Dragonbane_Spear',need:{'Iron Ingot':1,'Wolf_Pelt':1,Wood:3}},
     {name:'Soulrender_Axe',need:{'Iron Ingot':2,'Gnoll_Claw':1,Wood:1}},
-    {name:'Apex_Worldender',need:{'Ancient_Goblin_Crown':1,'Bone_Archlich_Staff':1,'Primordial_Wolf_Fang':1,'Orc_Destroyer_Axe':1,'Ancient_Ogre_Club':1,'Gnoll_Demigod_Spear':1,'Wyvern_God_Scale':1}}
+    {name:'Apex_Predator',need:{'Ancient_Goblin_Crown':1,'Bone_Archlich_Staff':1,'Primordial_Wolf_Fang':1,'Orc_Destroyer_Axe':1,'Ancient_Ogre_Club':1,'Gnoll_Demigod_Spear':1,'Wyvern_God_Scale':1}},
+    {name:'Broken_Stick',need:{'Apex_Predator':1,'Tidepiercer':1,'Nova_Maul':1,'Stormfang_Katana':1}}
   ];
 
   const npcProfs=['Hunter','Herbalist','Miner','Scout','Mercenary'];
   
   const fetchTpl={ 
     Hunter:{need:{Wolf_Pelt:3},reward:'Spear'}, 
-    Herbalist:{need:{Herb:3},rewardGold:15}, 
+    Herbalist:{need:{Herb:3},reward:'PlateArmor'}, 
     Miner:{need:{'Iron Ore':2},reward:'Greatsword'}, 
     Scout:{need:{Wood:3},reward:'Shield'},
-    Mercenary:{need:{Goblin_Ear:2},rewardGold:20}
+    Mercenary:{need:{Goblin_Ear:2},reward:'Iron Sword'}
   };
 
   const townQuests={ 
@@ -461,7 +659,10 @@ body {
       {name:'Orc Destroyer',type:'kill',desc:'Defeat the Orc Destroyer',need:{Orc_Destroyer:1},reward:{gold:500}},
       {name:'Ancient Ogre',type:'kill',desc:'Defeat the Ancient Ogre',need:{Ancient_Ogre:1},reward:{gold:500}},
       {name:'Gnoll Demigod',type:'kill',desc:'Defeat the Gnoll Demigod',need:{Gnoll_Demigod:1},reward:{gold:500}},
-      {name:'Wyvern God',type:'kill',desc:'Defeat the Wyvern God',need:{Wyvern_God:1},reward:{gold:500}}
+      {name:'Wyvern God',type:'kill',desc:'Defeat the Wyvern God',need:{Wyvern_God:1},reward:{gold:500}},
+      {name:'Leviathan Boss',type:'kill',desc:'Defeat the Level 15 Leviathan',need:{Leviathan:1},reward:{gold:10000}},
+      {name:'DeathStar Boss',type:'kill',desc:'Defeat the Level 15 DeathStar',need:{DeathStar:1},reward:{gold:10000}},
+      {name:'Susano Boss',type:'kill',desc:'Defeat the Level 15 Susano',need:{Susano:1},reward:{gold:10000}}
     ]
   };
   
@@ -553,11 +754,8 @@ body {
       const monsterTypes = ['Goblin','Skeleton','Wolf','Orc','Ogre','Gnoll','Wyvern'];
       const monsterType = monsterTypes[roll(0, monsterTypes.length-1)];
       
-      // Determine quest level based on distance
-      let questLevel = 0;
-      if(distFromTown > 6) questLevel = Math.min(8, Math.floor(distFromTown));
-      else if(distFromTown > 3) questLevel = Math.min(5, Math.floor(distFromTown));
-      else if(distFromTown > 1.5) questLevel = Math.min(3, Math.floor(distFromTown));
+      // Limit kill quests to levels 4-6 monsters only
+      let questLevel = roll(3, 5); // Levels 4-6 (index 3-5)
       
       const monsterData = monsterTpl[monsterType];
       const levelData = monsterData.levels[questLevel];
@@ -704,7 +902,7 @@ body {
   function gen(isTown, areaX, areaY){
     let tiles=Array.from({length:AREA},()=>Array.from({length:AREA},()=>({type:'empty'})));
     if(isTown){
-      ['Potion Seller','Blacksmith','Scroll Merchant','Quest Giver EM','Quest Giver H','Quest Giver S']
+      ['Potion Seller','Blacksmith','Scroll Merchant','Equipment Combiner','Quest Giver EM','Quest Giver H','Quest Giver L']
         .forEach(pr=>place(tiles,pr,true,areaX,areaY));
     } else {
       for(let i=0;i<2;i++) place(tiles,npcProfs[roll(0,npcProfs.length-1)],false,areaX,areaY);
@@ -714,13 +912,27 @@ body {
         if(r<20) { // Reduced from 30 to 20 for less clutter
           // Monster spawn based on distance from town - fixed distance calculation
           const distFromTown = Math.sqrt(Math.pow(areaX-TOWN,2) + Math.pow(areaY-TOWN,2));
-          const monsterTypes = ['Goblin','Skeleton','Wolf','Orc','Ogre','Gnoll','Wyvern'];
-          const monsterType = monsterTypes[roll(0,monsterTypes.length-1)];
+          
+          // Check if we're at the edge of the map for level 15 boss spawning
+          const isEdgeArea = (areaX <= 1 || areaX >= 30 || areaY <= 1 || areaY >= 30);
+          
+          let monsterTypes = ['Goblin','Skeleton','Wolf','Orc','Ogre','Gnoll','Wyvern'];
+          let monsterType = monsterTypes[roll(0,monsterTypes.length-1)];
+          
+          // 20% chance to spawn level 15 bosses in outermost areas (edge of map)
+          if(isEdgeArea && Math.random() < 0.2) {
+            const bossTypes = ['Leviathan','DeathStar','Susano'];
+            monsterType = bossTypes[roll(0,bossTypes.length-1)];
+          }
           const monsterData = monsterTpl[monsterType];
           
           // Fixed level spawning - areas adjacent to town only spawn level 1-2
           let maxLevel = 0;
-          if(distFromTown <= 1.5) {
+          
+          // Special handling for level 15 bosses
+          if(['Leviathan','DeathStar','Susano'].includes(monsterType)) {
+            maxLevel = 14; // Level 15 (index 14)
+          } else if(distFromTown <= 1.5) {
             // Adjacent areas: only level 1-2
             maxLevel = Math.random() < 0.7 ? 0 : 1;
           } else if(distFromTown <= 3) {
@@ -730,8 +942,12 @@ body {
             // Mid-distance: level 3-7
             maxLevel = Math.min(6, Math.floor(distFromTown) + 1);
           } else {
-            // Far areas: level 6-10
+            // Far areas: level 6-10, with 10% higher chance for level 10 in outermost areas
             maxLevel = Math.min(9, Math.floor(distFromTown));
+            // Boost level 10 spawns in outermost areas
+            if(distFromTown >= 8 && Math.random() < 0.15) { // 15% instead of normal 5% for level 10
+              maxLevel = 9; // Level 10 (index 9)
+            }
           }
           
           let level = 0;
@@ -742,7 +958,12 @@ body {
             }
           }
           
-          const levelData = monsterData.levels[level];
+          let levelData = monsterData.levels[level];
+          if(!levelData) {
+            // Fallback to level 0 if data is missing
+            level = 0;
+            levelData = monsterData.levels[0];
+          }
           const monster = {
             ...structuredClone(monsterData.base),
             name: levelData.name,
@@ -776,7 +997,7 @@ body {
       if(tiles[y][x].type==='empty'){
         let npc={type:'npc',data:{profession:prof}};
         if(town) {
-          npc.data.abbr = prof === 'Quest Giver S' ? 'S' : prof[0]; // Special handler for Quest Giver S
+          npc.data.abbr = prof === 'Quest Giver L' ? 'L' : prof[0]; // Special handler for Quest Giver L
           npc.data.isTown = true;
         } else {
           npc.data.abbr = 'N'; // Random NPCs show as 'N'
@@ -832,12 +1053,69 @@ body {
       }
     }
     
+    // Handle new potion effects
+    if(p.tempOrcsRage){
+      p.tempOrcsRage.steps--;
+      if(p.tempOrcsRage.steps <= 0){
+        p.tempOrcsRage = null;
+        log("Orc's Rage wore off!");
+      }
+    }
+    
+    if(p.tempAngelsTouch){
+      p.tempAngelsTouch.steps--;
+      if(p.tempAngelsTouch.steps <= 0){
+        p.maxHp = round1(p.maxHp - 200);
+        p.hp = Math.min(p.hp, p.maxHp);
+        p.tempAngelsTouch = null;
+        log("Angel's Touch wore off! Lost temporary max HP.");
+      }
+    }
+    
+    if(p.tempDragonFury){
+      p.tempDragonFury.steps--;
+      if(p.tempDragonFury.steps <= 0){
+        p.maxHp = round1(p.maxHp / 0.5); // Restore max HP
+        p.tempDragonFury = null;
+        log("Dragon Fury wore off! Max HP restored.");
+      }
+    }
+    
+    if(p.tempGodsGift){
+      p.tempGodsGift.steps--;
+      if(p.tempGodsGift.steps <= 0){
+        p.tempGodsGift = null;
+        log("God's Gift wore off!");
+      }
+    }
+    
     p.steps++;
     
-    const currentAtk = round1(p.atk + (p.tempAtk ? p.tempAtk.value : 0));
-    const currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
-    const currentDef = round1(p.def + (p.tempDef ? p.tempDef.value : 0));
-    const currentCraft = round1(p.craft + (p.tempCraft ? p.tempCraft.value : 0));
+    // Calculate current stats with all temporary effects
+    let currentAtk = round1(p.atk + (p.tempAtk ? p.tempAtk.value : 0));
+    let currentDef = round1(p.def + (p.tempDef ? p.tempDef.value : 0));
+    let currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
+    let currentCraft = round1(p.craft + (p.tempCraft ? p.tempCraft.value : 0));
+    
+    // Apply new potion effects
+    if(p.tempOrcsRage) {
+      currentAtk = round1(currentAtk + p.tempOrcsRage.atkBoost);
+      currentDef = round1(currentDef * p.tempOrcsRage.defDebuff);
+    }
+    
+    if(p.tempAngelsTouch) {
+      currentDef = round1(currentDef + p.tempAngelsTouch.defBoost);
+      currentAtk = round1(currentAtk * p.tempAngelsTouch.atkDebuff);
+    }
+    
+    if(p.tempDragonFury) {
+      currentAtk = round1(currentAtk + p.tempDragonFury.atkBoost);
+      currentDef = round1(currentDef * p.tempDragonFury.defDebuff);
+    }
+    
+    if(p.tempGodsGift) {
+      currentDef = round1(currentDef + p.tempGodsGift.defBoost);
+    }
     
     // Update stats display
     let statsHTML = `
@@ -965,16 +1243,44 @@ body {
   }
   
   function fight(m,x,y){
+    // Calculate player stats with all effects and equipment
     let playerAtk = round1(p.atk + (p.tempAtk ? p.tempAtk.value : 0));
+    let playerDef = round1(p.def + (p.tempDef ? p.tempDef.value : 0));
     let playerLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
     
-    // Calculate attack with equipment
-    let equipAtk = 0;
-    if(p.equipped && itemDefs[p.equipped.name] && itemDefs[p.equipped.name].boost && itemDefs[p.equipped.name].boost.atk) {
-      equipAtk = itemDefs[p.equipped.name].boost.atk;
+    // Apply new potion effects to combat stats
+    if(p.tempOrcsRage) {
+      playerAtk = round1(playerAtk + p.tempOrcsRage.atkBoost);
+      playerDef = round1(playerDef * p.tempOrcsRage.defDebuff);
+    }
+    
+    if(p.tempAngelsTouch) {
+      playerDef = round1(playerDef + p.tempAngelsTouch.defBoost);
+      playerAtk = round1(playerAtk * p.tempAngelsTouch.atkDebuff);
+    }
+    
+    if(p.tempDragonFury) {
+      playerAtk = round1(playerAtk + p.tempDragonFury.atkBoost);
+      playerDef = round1(playerDef * p.tempDragonFury.defDebuff);
+    }
+    
+    if(p.tempGodsGift) {
+      playerDef = round1(playerDef + p.tempGodsGift.defBoost);
+    }
+    
+    // Calculate attack with equipment (including custom boost from combined items)
+    let equipAtk = 0, equipDef = 0, equipHp = 0;
+    if(p.equipped) {
+      let boostToUse = p.equipped.boost || (itemDefs[p.equipped.name] && itemDefs[p.equipped.name].boost);
+      if(boostToUse) {
+        equipAtk = boostToUse.atk || 0;
+        equipDef = boostToUse.def || 0;
+        equipHp = boostToUse.maxHp || 0;
+      }
     }
     
     let totalPlayerAtk = playerAtk + equipAtk;
+    let totalPlayerDef = playerDef + equipDef;
     
     log("Fighting "+m.name+" (HP:"+m.hp+", ATK:"+m.atk+", DEF:"+m.def+")");
     
@@ -997,8 +1303,7 @@ body {
       
       // Monster attacks player
       let monsterDmg = roll(1, m.atk); // Random damage from 1 to attack stat
-      let currentPlayerDef = round1(p.def + (p.tempDef ? p.tempDef.value : 0));
-      let playerDefenseReduction = Math.floor(currentPlayerDef / 2); // Defense reduces damage by 1 per 2 defense
+      let playerDefenseReduction = Math.floor(totalPlayerDef / 2); // Defense reduces damage by 1 per 2 defense
       monsterDmg = Math.max(1, monsterDmg - playerDefenseReduction);
       
       p.hp = Math.max(0, round1(p.hp - monsterDmg));
@@ -1024,25 +1329,74 @@ body {
     log("You defeated "+m.name+"!");
     log("Remaining HP: " + round1(p.hp) + "/" + round1(p.maxHp));
     
-    // Award experience based on monster level and reward
-    let statGain = round1(m.reward || 0.1);
-    if(m.level === 10) statGain = round1((m.reward || 0.1) * 10); // Level 10 monsters give 10x rewards
+    // Level-based monster defeat rewards with tier-based doubling
+    let hpGain = m.level; // +1 HP per monster level
     
-    // Apply stat boost based on monster type
-    if(m.boost === 'atk') {
-      p.atk = round1(p.atk + statGain);
-      log("ATK +" + statGain);
-    } else if(m.boost === 'def') {
-      p.def = round1(p.def + statGain);
-      log("DEF +" + statGain);
-    } else if(m.boost === 'maxHp') {
-      p.maxHp = round1(p.maxHp + statGain);
-      p.hp = round1(p.hp + statGain);
-      log("HP +" + statGain);
+    // Calculate stat gain based on tier system
+    let atkDefGain;
+    if(m.level <= 3) {
+      // Level 1-3: 0.1, 0.2, 0.3
+      atkDefGain = round1(m.level * 0.1);
+    } else if(m.level <= 6) {
+      // Level 4-6: 0.6, 0.7, 0.8 (base 0.6 + extra levels)
+      atkDefGain = round1(0.6 + (m.level - 4) * 0.1);
+    } else if(m.level <= 9) {
+      // Level 7-9: 1.6, 1.7, 1.8 (base 1.6 + extra levels)
+      atkDefGain = round1(1.6 + (m.level - 7) * 0.1);
+    } else if(m.level == 10) {
+      // Level 10: 3.6
+      atkDefGain = 3.6;
+    } else {
+      // Levels above 10 follow the pattern (for future expansion)
+      atkDefGain = round1(m.level * 0.1);
     }
     
-    // Gold reward
-    let goldReward = roll(1, m.level * 5);
+    // Special rewards for level 15 bosses
+    if(m.level === 15) {
+      if(m.type === 'Leviathan') {
+        p.atk = round1(p.atk + 10);
+        p.luck = round1(p.luck + 0.2);
+        log("Leviathan defeated! +10 ATK, +0.2 LUCK");
+      } else if(m.type === 'DeathStar') {
+        p.def = round1(p.def + 10);
+        p.luck = round1(p.luck + 0.3);
+        log("Death Star defeated! +10 DEF, +0.3 LUCK");
+      } else if(m.type === 'Susano') {
+        p.maxHp = round1(p.maxHp + 10);
+        p.hp = round1(p.hp + 10);
+        p.luck = round1(p.luck + 0.5);
+        log("Susano defeated! +10 MAX HP, +0.5 LUCK");
+      }
+    } else {
+      // Apply stat gains based on monster's boost specialty
+      const monsterData = monsterTpl[m.type];
+      const boostType = monsterData && monsterData.base ? monsterData.base.boost : null;
+      
+      if(boostType === 'atk') {
+        // ATK specialty monsters give ATK bonus
+        p.atk = round1(p.atk + atkDefGain);
+        log("ATK +" + atkDefGain);
+      } else if(boostType === 'def') {
+        // DEF specialty monsters give DEF bonus
+        p.def = round1(p.def + atkDefGain);
+        log("DEF +" + atkDefGain);
+      } else if(boostType === 'maxHp') {
+        // HP specialty monsters give HP bonus
+        p.maxHp = round1(p.maxHp + hpGain);
+        p.hp = round1(p.hp + hpGain);
+        log("MAX HP +" + hpGain + ", HP +" + hpGain);
+      } else {
+        // Fallback for monsters without defined boost type
+        p.maxHp = round1(p.maxHp + hpGain);
+        p.hp = round1(p.hp + hpGain);
+        log("HP +" + hpGain);
+      }
+    }
+    
+    // Gold reward scales with monster level multiplier
+    let baseGoldReward = roll(1, 5);
+    let goldMultiplier = Math.pow(2, m.level - 1); // 2^(level-1) for exponential scaling
+    let goldReward = Math.floor(baseGoldReward * goldMultiplier);
     p.g = Math.max(0, (p.g || 0) + goldReward);
     log("+" + goldReward + " gold");
     
@@ -1053,8 +1407,8 @@ body {
     // Update quest progress for kill quests
     updateQuestProgress('kill', monsterKey);
     
-    // Level 10 monsters drop special items
-    if(m.level === 10) {
+    // Boss monsters (level 10) drop special items 50% of the time
+    if(m.level === 10 && Math.random() < 0.5) {
       let specialItems = {
         'Ancient_Goblin': 'Ancient_Goblin_Crown',
         'Bone_Archlich': 'Bone_Archlich_Staff',
@@ -1069,8 +1423,25 @@ body {
       if(itemKey) {
         let itemDef = itemDefs[itemKey];
         let durability = roll(1, itemDef.maxD);
-        p.eq.push({name: itemKey, durability: durability});
+        p.eq.push({name: itemKey, durability: durability, level: itemDef.level || 1});
         log("Found rare item: " + itemKey.replace(/_/g, ' ') + " (" + durability + " durability)");
+      }
+    }
+    
+    // Level 15 boss monsters drop legendary weapons 90% of the time
+    if(m.level === 15 && Math.random() < 0.9) {
+      let legendaryWeapons = {
+        'Leviathan': 'Tidepiercer',
+        'DeathStar': 'Nova_Maul',
+        'Susano': 'Stormfang_Katana'
+      };
+      
+      let weaponKey = legendaryWeapons[monsterKey];
+      if(weaponKey) {
+        let itemDef = itemDefs[weaponKey];
+        let durability = itemDef.maxD;
+        p.eq.push({name: weaponKey, durability: durability, level: itemDef.level || 1});
+        log("Found legendary weapon: " + weaponKey.replace(/_/g, ' ') + " (" + durability + " durability)");
       }
     }
     
@@ -1111,10 +1482,13 @@ body {
     if(n.profession==='Potion Seller'||n.profession==='Blacksmith'||n.profession==='Scroll Merchant'){
       openShop(n.profession);
     }
-    else if(n.profession==='Quest Giver EM'||n.profession==='Quest Giver H'||n.profession==='Quest Giver S'){
+    else if(n.profession==='Equipment Combiner'){
+      openCombiner();
+    }
+    else if(n.profession==='Quest Giver EM'||n.profession==='Quest Giver H'||n.profession==='Quest Giver L'){
       if(n.profession==='Quest Giver EM') openQuestGiver('easy','med');
       else if(n.profession==='Quest Giver H') openQuestGiver('hard','elite');
-      else if(n.profession==='Quest Giver S') openQuestGiver('legendary');
+      else if(n.profession==='Quest Giver L') openQuestGiver('legendary');
     }
     else if(n.quest){
       if(n.quest.state===0) {
@@ -1247,14 +1621,7 @@ body {
     openModal(html, btn => {
       if(btn.dataset.buy){
         let it=arr.find(x=>x.name===btn.dataset.buy);
-        const itemPrice = Number(it.price) || 0;
-        const playerGold = Number(p.g) || 0;
-        
-        if(playerGold >= itemPrice){
-          p.g = Math.max(0, playerGold - itemPrice);
-          it.apply();
-          log("Bought "+it.name);
-        } else log("Not enough gold");
+        showPurchaseConfirmation(it, prof);
       }
       updateUI();
     });
@@ -1459,13 +1826,16 @@ body {
       html+='<h3 style="color:#f44336; border-bottom:1px solid #555; padding-bottom:5px; margin-bottom:15px;">⚔️ Sell Equipment</h3>';
       html += '<div style="display:grid; gap:6px;">';
       p.eq.forEach((item,i)=>{
-        let value = itemDefs[item.name] && itemDefs[item.name].value ? itemDefs[item.name].value : 5;
-        let isEquipped = p.equipped && p.equipped.name === item.name;
-        let btnStyle = `padding:8px; border-radius:6px; border:1px solid #f44336; background:${isEquipped ? '#666' : '#C62828'}; color:${isEquipped ? '#999' : 'white'}; cursor:${isEquipped ? 'not-allowed' : 'pointer'}; display:flex; justify-content:space-between; align-items:center;`;
+        let itemDef = itemDefs[item.name];
+        let value = itemDef && itemDef.value ? itemDef.value : 5;
+        let isEquipped = p.equipped && p.equipped === item;
+        let isUnsellable = itemDef && itemDef.unsellable;
+        let isDisabled = isEquipped || isUnsellable;
+        let btnStyle = `padding:8px; border-radius:6px; border:1px solid #f44336; background:${isDisabled ? '#666' : '#C62828'}; color:${isDisabled ? '#999' : 'white'}; cursor:${isDisabled ? 'not-allowed' : 'pointer'}; display:flex; justify-content:space-between; align-items:center;`;
         
         html+=`<button data-selleq="${i}" style="${btnStyle}">`;
-        html+=`<span>${item.name.replace(/_/g, ' ')} (${item.durability})${isEquipped ? ' [EQUIPPED]' : ''}</span>`;
-        html+=`<span style="color:#FFD700; font-weight:bold;">${value}g</span>`;
+        html+=`<span>${item.name.replace(/_/g, ' ')} Lvl ${item.level || 1} (${item.durability})${isEquipped ? ' [EQUIPPED]' : ''}${isUnsellable ? ' [LEGENDARY]' : ''}</span>`;
+        html+=`<span style="color:#FFD700; font-weight:bold;">${isUnsellable ? 'UNSELLABLE' : value + 'g'}</span>`;
         html+=`</button>`;
       });
       html += '</div>';
@@ -1481,16 +1851,7 @@ body {
           });
         });
         if(shopItem) {
-          const itemPrice = Number(shopItem.price * 2) || 0;
-          const playerGold = Number(p.g) || 0;
-          
-          if(playerGold >= itemPrice) {
-            p.g = Math.max(0, playerGold - itemPrice);
-            shopItem.apply();
-            log("Bought " + itemName + " for " + itemPrice + "g");
-          } else {
-            log("Not enough gold");
-          }
+          showPurchaseConfirmation(shopItem, 'Market', shopItem.price * 2);
         }
       }
       if(btn.dataset.sell){
@@ -1504,10 +1865,16 @@ body {
       if(btn.dataset.selleq){
         let index = parseInt(btn.dataset.selleq);
         let item = p.eq[index];
-        let value = itemDefs[item.name] && itemDefs[item.name].value ? itemDefs[item.name].value : 5;
+        let itemDef = itemDefs[item.name];
+        let value = itemDef && itemDef.value ? itemDef.value : 5;
         
-        if(p.equipped && p.equipped.name === item.name) {
+        if(p.equipped && p.equipped === item) {
           log("Cannot sell equipped item!");
+          return;
+        }
+        
+        if(itemDef && itemDef.unsellable) {
+          log("This legendary weapon cannot be sold!");
           return;
         }
         
@@ -1519,6 +1886,95 @@ body {
     });
   }
   
+  function showPurchaseConfirmation(item, shopType, customPrice = null) {
+    const price = customPrice || item.price;
+    const canAfford = (p.g || 0) >= price;
+    
+    // Get item effects description
+    let effectsHtml = '';
+    const itemName = item.name.replace(/_/g, ' ');
+    
+    // Determine effects based on item type
+    if(item.name === 'Health Potion') {
+      effectsHtml = '<div style="color:#4CAF50;">✓ Restores HP to maximum</div>';
+    } else if(item.name === 'Strength Potion') {
+      effectsHtml = '<div style="color:#FF5722;">✓ +20 temporary ATK for 10 steps</div>';
+    } else if(item.name === 'Scroll of Healing') {
+      effectsHtml = '<div style="color:#4CAF50;">✓ Instantly restore full HP</div>';
+    } else if(item.name === 'Luck Charm') {
+      effectsHtml = '<div style="color:#FFD700;">✓ +10 temporary LUCK for 10 steps</div>';
+    } else if(itemDefs[item.name] && itemDefs[item.name].boost) {
+      // Equipment items
+      const boost = itemDefs[item.name].boost;
+      effectsHtml = Object.entries(boost).map(([stat, value]) => {
+        const statName = stat === 'maxHp' ? 'MAX HP' : stat.toUpperCase();
+        return `<div style="color:#9C27B0;">✓ +${value} ${statName}</div>`;
+      }).join('');
+      if(itemDefs[item.name].maxD) {
+        effectsHtml += `<div style="color:#666;">✓ ${itemDefs[item.name].maxD} Durability</div>`;
+      }
+    } else {
+      effectsHtml = '<div style="color:#999;">Item effects unknown</div>';
+    }
+    
+    let confirmHtml = `
+      <div style="text-align:center; padding:20px;">
+        <h3 style="color:#FFD700; margin-bottom:20px;">Purchase Confirmation</h3>
+        
+        <div style="background:#333; padding:15px; border-radius:8px; margin-bottom:20px;">
+          <h4 style="color:#fff; margin-bottom:10px;">${itemName}</h4>
+          <div style="margin-bottom:10px;">
+            ${effectsHtml}
+          </div>
+          <div style="color:#FFD700; font-size:18px; font-weight:bold;">
+            Price: ${price}g
+          </div>
+        </div>
+        
+        <div style="margin-bottom:20px; padding:10px; background:${canAfford ? '#2E7D32' : '#C62828'}; border-radius:6px;">
+          <div style="color:white; font-weight:bold;">
+            Your Gold: ${p.g}g
+          </div>
+          ${canAfford ? 
+            '<div style="color:#4CAF50; font-size:14px;">✓ You can afford this item</div>' : 
+            '<div style="color:#f44336; font-size:14px;">✗ Not enough gold</div>'
+          }
+        </div>
+        
+        <div style="display:flex; gap:10px; justify-content:center;">
+          <button id="confirm-purchase" style="background:${canAfford ? '#4CAF50' : '#666'}; color:white; border:none; padding:12px 24px; border-radius:6px; cursor:${canAfford ? 'pointer' : 'not-allowed'}; font-weight:bold;">
+            ${canAfford ? 'Purchase' : 'Cannot Afford'}
+          </button>
+          <button id="cancel-purchase" style="background:#f44336; color:white; border:none; padding:12px 24px; border-radius:6px; cursor:pointer; font-weight:bold;">
+            Cancel
+          </button>
+        </div>
+      </div>
+    `;
+    
+    // Open the confirmation modal
+    OV.style.display='block';
+    MD.style.display='block';
+    MD.innerHTML = confirmHtml;
+    
+    // Add event listeners
+    document.getElementById('confirm-purchase').onclick = () => {
+      if(canAfford) {
+        const playerGold = Number(p.g) || 0;
+        p.g = Math.max(0, playerGold - price);
+        item.apply();
+        log(`Bought ${itemName} for ${price}g`);
+        closeModal();
+        updateUI();
+      }
+    };
+    
+    document.getElementById('cancel-purchase').onclick = () => {
+      closeModal();
+      updateUI();
+    };
+  }
+  
   function openCraft(){
     let html='<h2 style="color:#FF9800; text-align:center; margin-bottom:15px;">🔨 Crafting</h2>';
     let currentCraft = round1(p.craft + (p.tempCraft ? p.tempCraft.value : 0));
@@ -1528,6 +1984,12 @@ body {
     
     html += '<div style="display:grid; gap:8px;">';
     recipes.forEach(r=>{
+      // Hide Broken Stick recipe unless all required items are available
+      if(r.name === 'Broken_Stick') {
+        let hasAllItems = materials(r.need);
+        if(!hasAllItems) return; // Skip showing this recipe
+      }
+      
       let canCraft = materials(r.need);
       let btnStyle = `padding:10px; border-radius:6px; border:1px solid ${canCraft ? '#4CAF50' : '#f44336'}; background:${canCraft ? '#2E7D32' : '#333'}; color:${canCraft ? 'white' : '#999'}; cursor:${canCraft ? 'pointer' : 'not-allowed'}; display:flex; justify-content:space-between; align-items:center;`;
       
@@ -1620,11 +2082,11 @@ body {
         html += '<h3 style="color:#FF6B6B; border-bottom:1px solid #555; padding-bottom:5px; margin-bottom:10px;">⚔️ Equipment</h3>';
         html += '<div style="display:grid; gap:8px;">';
         p.eq.forEach((item, index) => {
-          let isEquipped = p.equipped && p.equipped.name === item.name;
+          let isEquipped = p.equipped && p.equipped === item;
           let itemStyle = `padding:8px 12px; background:${isEquipped ? '#2E7D32' : '#333'}; border-radius:5px; border:1px solid ${isEquipped ? '#4CAF50' : '#555'}; display:flex; justify-content:space-between; align-items:center;`;
           
           html += `<div style="${itemStyle}">`;
-          html += `<span style="color:#eee;">${item.name.replace(/_/g, ' ')} (${item.durability} dur)${isEquipped ? ' [EQUIPPED]' : ''}</span>`;
+          html += `<span style="color:#eee;">${item.name.replace(/_/g, ' ')} Lvl ${item.level || 1} (${item.durability} dur)${isEquipped ? ' [EQUIPPED]' : ''}</span>`;
           html += `<div style="display:flex; gap:5px;">`;
           
           if (itemDefs[item.name]) {
@@ -1812,7 +2274,7 @@ body {
     let def=itemDefs[nm];
     let maxDurability = typeof def.maxD === 'function' ? def.maxD() : def.maxD;
     let d=roll(1,maxDurability);
-    p.eq.push({name:nm,durability:d});
+    p.eq.push({name:nm,durability:d,level:def.level||1});
     log("Got "+nm+"("+d+")");
   }
   
@@ -1825,8 +2287,9 @@ body {
     
     // Unequip current item first if any
     if(p.equipped){
-      if(itemDefs[p.equipped.name] && itemDefs[p.equipped.name].boost) {
-        Object.entries(itemDefs[p.equipped.name].boost).forEach(([stat,value])=>{
+      let boostToRemove = p.equipped.boost || itemDefs[p.equipped.name].boost;
+      if(boostToRemove) {
+        Object.entries(boostToRemove).forEach(([stat,value])=>{
           p[stat] = round1(p[stat] - value);
         });
         log("Unequipped " + p.equipped.name);
@@ -1835,8 +2298,9 @@ body {
     
     // Equip new item
     p.equipped = item;
-    if(itemDefs[item.name].boost) {
-      Object.entries(itemDefs[item.name].boost).forEach(([stat,value])=>{
+    let boostToUse = item.boost || itemDefs[item.name].boost;
+    if(boostToUse) {
+      Object.entries(boostToUse).forEach(([stat,value])=>{
         p[stat] = round1(p[stat] + value);
       });
     }
@@ -1845,8 +2309,9 @@ body {
   
   function unequipItem() {
     if(p.equipped) {
-      if(itemDefs[p.equipped.name] && itemDefs[p.equipped.name].boost) {
-        Object.entries(itemDefs[p.equipped.name].boost).forEach(([stat,value])=>{
+      let boostToRemove = p.equipped.boost || itemDefs[p.equipped.name].boost;
+      if(boostToRemove) {
+        Object.entries(boostToRemove).forEach(([stat,value])=>{
           p[stat] = round1(p[stat] - value);
         });
       }
@@ -1865,7 +2330,7 @@ body {
       updateUI();
     };
     if(act) {
-      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage]').forEach(b=>{
+      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage],button[data-combine]').forEach(b=>{
         b.onclick=(e)=>{
           e.preventDefault();
           act(b);
@@ -1874,6 +2339,109 @@ body {
     }
   }
   
+  function openCombiner(){
+    let html = '<h3>Equipment Combiner</h3>';
+    html += '<p>I can combine 2 identical equipment pieces into a stronger version!</p>';
+    html += '<p>Cost: Level 1→2: 100g, Level 2→3: 200g, Level 3→4: 300g, etc.</p>';
+    html += '<p>Stats increase by 50%, durability adds up (max 100)</p>';
+    
+    // Find combinable equipment
+    const equipmentCounts = {};
+    p.eq.forEach(eq => {
+      const key = `${eq.name}_${eq.level || 1}`;
+      if (!equipmentCounts[key]) equipmentCounts[key] = [];
+      equipmentCounts[key].push(eq);
+    });
+    
+    html += '<br><h4>Available Combinations:</h4>';
+    let hasOptions = false;
+    
+    Object.entries(equipmentCounts).forEach(([key, items]) => {
+      if(items.length >= 2) {
+        hasOptions = true;
+        const [name, level] = key.split('_');
+        const displayName = name.replace(/_/g, ' ');
+        const cost = parseInt(level) * 100;
+        const currentLevel = parseInt(level);
+        const newLevel = currentLevel + 1;
+        
+        html += `<div style="margin: 10px 0; padding: 10px; background: #333; border-radius: 5px;">`;
+        html += `<p>${displayName} Level ${currentLevel} → Level ${newLevel}</p>`;
+        html += `<p>Cost: ${cost}g (Have: ${items.length} pieces)</p>`;
+        html += `<button data-combine="${name}_${level}" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">Combine</button>`;
+        html += `</div>`;
+      }
+    });
+    
+    if(!hasOptions) {
+      html += '<p style="color: #999;">No equipment available for combining.</p>';
+    }
+    
+    openModal(html, (btn) => {
+      if(btn.dataset.combine) {
+        const [name, level] = btn.dataset.combine.split('_');
+        combineEquipment(name, parseInt(level));
+      }
+    });
+  }
+  
+  function combineEquipment(equipmentName, level) {
+    const cost = level * 100;
+    
+    if(p.g < cost) {
+      log("Not enough gold! Need " + cost + "g");
+      return;
+    }
+    
+    // Find two pieces of the same equipment and level
+    const targetEquipment = p.eq.filter(eq => eq.name === equipmentName && (eq.level || 1) == level);
+    
+    if(targetEquipment.length < 2) {
+      log("Need at least 2 pieces of the same equipment!");
+      return;
+    }
+    
+    // Remove the two pieces
+    const piece1 = targetEquipment[0];
+    const piece2 = targetEquipment[1];
+    
+    // Remove from equipment array
+    const index1 = p.eq.indexOf(piece1);
+    const index2 = p.eq.indexOf(piece2);
+    p.eq.splice(Math.max(index1, index2), 1);
+    p.eq.splice(Math.min(index1, index2), 1);
+    
+    // Create new combined piece
+    const itemDef = itemDefs[equipmentName];
+    const newLevel = level + 1;
+    const newBoost = {};
+    
+    // Calculate new stats (50% increase from base or existing custom boost)
+    const baseBoost = piece1.boost || itemDef.boost;
+    Object.entries(baseBoost).forEach(([stat, value]) => {
+      newBoost[stat] = Math.floor(value * 1.5);
+    });
+    
+    // Calculate new durability (add up but max 100, minimum 2)
+    const newDurability = Math.min(100, Math.max(2, piece1.durability + piece2.durability));
+    
+    const newItem = {
+      name: equipmentName,
+      level: newLevel,
+      durability: newDurability,
+      boost: newBoost
+    };
+    
+    p.eq.push(newItem);
+    
+    p.g -= cost;
+    log(`Combined ${equipmentName.replace(/_/g, ' ')} into Level ${newLevel}!`);
+    log(`New stats: ${JSON.stringify(newBoost)}, Durability: ${newDurability}`);
+    
+    closeModal();
+    updateUI();
+  }
+
   function closeModal(){
     OV.style.display='none';
     MD.style.display='none';
