@@ -608,43 +608,44 @@ body {
 
   const shops={ 
     'Potion Seller':[
-      {name:'Health Potion',price:5,apply:()=>{p.hp=Math.min(p.maxHp,round1(p.hp+10))}},
-      {name:'Strength Potion',price:10,apply:()=>{p.tempAtk={value:roll(10,20),steps:roll(30,90)}}},
-      {name:'Rage Potion',price:50,apply:()=>{
-        p.tempAtk={value:Math.floor(p.atk * 2),steps:30};
-        p.hp = Math.max(1, round1(p.hp * 0.75));
-        log("Rage consumes your health!");
+      {name:'Health Potion',price:5,desc:'Restores 10 HP',apply:()=>{p.hp=Math.min(p.maxHp,round1(p.hp+10))}},
+      {name:'Strength Potion',price:10,desc:'Temporary attack boost (10-20 ATK for 30-90 steps)',apply:()=>{p.tempAtk={value:roll(10,20),steps:roll(30,90)}}},
+      {name:'Rage Potion',price:100,desc:'Permanent +0.5 ATK, -5 max HP',apply:()=>{
+        p.atk = round1(p.atk + 0.5);
+        p.maxHp = Math.max(1, round1(p.maxHp - 5));
+        p.hp = Math.min(p.hp, p.maxHp);
+        log("Rage Potion: +0.5 ATK, -5 max HP permanently!");
       }},
-      {name:'Warrior\'s Elixir',price:30,apply:()=>{p.tempAtk={value:15,steps:50}}},
-      {name:'Guardian Tonic',price:20,apply:()=>{p.tempDef={value:20,steps:60}}},
-      {name:'Master Crafter\'s Brew',price:100,apply:()=>{p.tempCraft={value:50,steps:30}}},
-      {name:'Orc\'s Rage',price:175,apply:()=>{
+      {name:'Warrior\'s Elixir',price:30,desc:'Temporary +15 ATK for 50 steps',apply:()=>{p.tempAtk={value:15,steps:50}}},
+      {name:'Guardian Tonic',price:20,desc:'Temporary +20 DEF for 60 steps',apply:()=>{p.tempDef={value:20,steps:60}}},
+      {name:'Master Crafter\'s Brew',price:100,desc:'Temporary +50 craft skill for 30 steps',apply:()=>{p.tempCraft={value:50,steps:30}}},
+      {name:'Orc\'s Rage',price:175,desc:'Temporary +200 ATK, -50% DEF for 40 steps',apply:()=>{
         p.tempOrcsRage={atkBoost:200,defDebuff:0.5,steps:40};
         log("Orc's Rage: +200 attack, -50% defense for 40 steps!");
       }},
-      {name:'Angel\'s Touch',price:250,apply:()=>{
+      {name:'Angel\'s Touch',price:250,desc:'Temporary +200 max HP, +100 DEF, -25% ATK for 40 steps',apply:()=>{
         p.tempAngelsTouch={maxHpBoost:200,defBoost:100,atkDebuff:0.75,steps:40};
         p.maxHp = round1(p.maxHp + 200);
         p.hp = round1(p.hp + 200);
         log("Angel's Touch: +200 max HP, +100 defense, -25% attack for 40 steps!");
       }},
-      {name:'Dragon Fury',price:500,apply:()=>{
+      {name:'Dragon Fury',price:500,desc:'Temporary +800 ATK, -70% DEF, -50% max HP for 10 steps',apply:()=>{
         p.tempDragonFury={atkBoost:800,defDebuff:0.3,maxHpDebuff:0.5,steps:10};
         p.maxHp = Math.max(1, round1(p.maxHp * 0.5));
         p.hp = Math.min(p.hp, p.maxHp);
         log("Dragon Fury: +800 attack, -70% defense, -50% max HP for 10 steps!");
       }},
-      {name:'God\'s Gift',price:2500,apply:()=>{
+      {name:'God\'s Gift',price:2500,desc:'Temporary +7000 DEF for 5 steps',apply:()=>{
         p.tempGodsGift={defBoost:7000,steps:5};
         log("God's Gift: +7000 defense for 5 steps!");
       }}
     ], 
     'Blacksmith':[
-      {name:'Iron Sword',price:20,apply:()=>{equip('Iron Sword')}}
+      {name:'Iron Sword',price:20,desc:'Weapon: +3 ATK',apply:()=>{equip('Iron Sword')}}
     ], 
     'Scroll Merchant':[
-      {name:'Scroll of Healing',price:12,apply:()=>{p.hp=p.maxHp}},
-      {name:'Luck Charm',price:50,apply:()=>{p.tempLuck={value:10,steps:10}}}
+      {name:'Scroll of Healing',price:25,desc:'Restores full HP',apply:()=>{p.hp=p.maxHp}},
+      {name:'Luck Charm',price:50,desc:'Temporary +10 luck for 10 steps',apply:()=>{p.tempLuck={value:10,steps:10}}}
     ]
   };
 
@@ -2005,7 +2006,12 @@ body {
       let btnStyle = `padding:12px; border-radius:6px; border:1px solid ${canAfford ? '#4CAF50' : '#f44336'}; background:${canAfford ? '#2E7D32' : '#333'}; color:${canAfford ? 'white' : '#999'}; cursor:${canAfford ? 'pointer' : 'not-allowed'}; display:flex; justify-content:space-between; align-items:center;`;
       
       html += `<button data-buy="${it.name}" style="${btnStyle}">`;
+      html += `<div style="display:flex; flex-direction:column; align-items:flex-start;">`;
       html += `<div style="font-weight:bold;">${it.name.replace(/_/g, ' ')}</div>`;
+      if(it.desc) {
+        html += `<div style="font-size:0.9em; color:#ccc; margin-top:2px;">${it.desc}</div>`;
+      }
+      html += `</div>`;
       html += `<div style="color:#FFD700; font-weight:bold;">${it.price}g</div>`;
       html += `</button>`;
     });
@@ -2192,7 +2198,12 @@ body {
         let btnStyle = `padding:10px; border-radius:6px; border:1px solid ${canAfford ? '#4CAF50' : '#f44336'}; background:${canAfford ? '#2E7D32' : '#333'}; color:${canAfford ? 'white' : '#999'}; cursor:${canAfford ? 'pointer' : 'not-allowed'}; display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;`;
         
         html+=`<button data-buyg="${item.name}" style="${btnStyle}">`;
-        html+=`<span>${item.name.replace(/_/g, ' ')}</span>`;
+        html+=`<div style="display:flex; flex-direction:column; align-items:flex-start;">`;
+        html+=`<span style="font-weight:bold;">${item.name.replace(/_/g, ' ')}</span>`;
+        if(item.desc) {
+          html+=`<span style="font-size:0.9em; color:#ccc; margin-top:2px;">${item.desc}</span>`;
+        }
+        html+=`</div>`;
         html+=`<span style="color:#FFD700; font-weight:bold;">${item.price * 2}g</span>`;
         html+=`</button>`;
       });
