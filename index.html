@@ -960,6 +960,14 @@ body {
   }
 
   function acceptRandomNpcQuest(quest) {
+    // Initialize quest progress counters to 0 for kill quests
+    if (quest.type === 'kill') {
+      quest.progress = {};
+      Object.keys(quest.need).forEach(monster => {
+        quest.progress[monster] = 0;
+      });
+    }
+    
     // Add quest to active quests
     randomNpcActiveQuests.push(quest);
     log(`Accepted quest: ${quest.name}`);
