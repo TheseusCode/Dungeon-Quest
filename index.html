@@ -2796,8 +2796,10 @@ body {
     Object.entries(equipmentCounts).forEach(([key, items]) => {
       if(items.length >= 2) {
         hasOptions = true;
-        const [name, level] = key.split('_');
-        const displayName = name.replace(/_/g, ' ');
+        const lastUnderscoreIndex = key.lastIndexOf('_');
+        const name = key.substring(0, lastUnderscoreIndex);
+        const level = key.substring(lastUnderscoreIndex + 1);
+        const displayName = name;
         const cost = parseInt(level) * 100;
         const currentLevel = parseInt(level);
         const newLevel = currentLevel + 1;
@@ -2816,7 +2818,9 @@ body {
     
     openModal(html, (btn) => {
       if(btn.dataset.combine) {
-        const [name, level] = btn.dataset.combine.split('_');
+        const lastUnderscoreIndex = btn.dataset.combine.lastIndexOf('_');
+        const name = btn.dataset.combine.substring(0, lastUnderscoreIndex);
+        const level = btn.dataset.combine.substring(lastUnderscoreIndex + 1);
         combineEquipment(name, parseInt(level));
       }
     });
@@ -2853,14 +2857,14 @@ body {
     const newLevel = level + 1;
     const newBoost = {};
     
-    // Calculate new stats (50% increase from base or existing custom boost)
+    // Calculate new stats (50% increase from piece1's current stats)
     const baseBoost = piece1.boost || itemDef.boost;
     Object.entries(baseBoost).forEach(([stat, value]) => {
       newBoost[stat] = Math.floor(value * 1.5);
     });
     
-    // Calculate new durability (add up but max 100, minimum 2)
-    const newDurability = Math.min(100, Math.max(2, piece1.durability + piece2.durability));
+    // Calculate new durability (add both durabilities, cap at 100)
+    const newDurability = Math.min(100, piece1.durability + piece2.durability);
     
     const newItem = {
       name: equipmentName,
@@ -2872,7 +2876,7 @@ body {
     p.eq.push(newItem);
     
     p.g -= cost;
-    log(`Combined ${equipmentName.replace(/_/g, ' ')} into Level ${newLevel}!`);
+    log(`Combined ${equipmentName} into Level ${newLevel}!`);
     log(`New stats: ${JSON.stringify(newBoost)}, Durability: ${newDurability}`);
     
     closeModal();
