@@ -935,25 +935,16 @@ body {
     // Generate 2 NPCs per area
     for (let i = 0; i < 2; i++) {
       const npcName = npcNames[roll(0, npcNames.length - 1)] + ` ${String.fromCharCode(65 + roll(0, 25))}`;
-      const npcId = `${areaX}_${areaY}_${i}`;
+      // Generate unique ID with timestamp to ensure RNPCs refresh when areas are regenerated
+      const npcId = `${areaX}_${areaY}_${i}_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
       
-      // Check if this NPC already has an active quest
-      const existingQuest = randomNpcActiveQuests.find(q => q.id === npcId && !q.completed);
-      
-      if (!existingQuest) {
-        const quest = generateRandomNpcQuest(npcId, areaX, areaY);
-        npcs.push({
-          name: npcName,
-          symbol: 'N',
-          quest: quest
-        });
-      } else {
-        npcs.push({
-          name: npcName,
-          symbol: 'N',
-          quest: existingQuest
-        });
-      }
+      // Always generate new quest for fresh RNPCs when area refreshes
+      const quest = generateRandomNpcQuest(npcId, areaX, areaY);
+      npcs.push({
+        name: npcName,
+        symbol: 'N',
+        quest: quest
+      });
     }
     
     return npcs;
@@ -983,7 +974,7 @@ body {
       
       let canComplete = true;
       Object.entries(quest.need).forEach(([item, needed]) => {
-        const have = quest.type === 'kill' ? (p.kills[item] || 0) : (p.inv[item] || 0);
+        const have = quest.type === 'kill' ? (quest.progress[item] || 0) : (p.inv[item] || 0);
         quest.progress[item] = Math.min(have, needed);
         if (have < needed) canComplete = false;
       });
