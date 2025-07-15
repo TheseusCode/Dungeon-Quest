@@ -2767,7 +2767,7 @@ body {
       updateUI();
     };
     if(act) {
-      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage],button[data-combine]').forEach(b=>{
+      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage],button[data-use-scroll],button[data-combine]').forEach(b=>{
         b.onclick=(e)=>{
           e.preventDefault();
           act(b);
