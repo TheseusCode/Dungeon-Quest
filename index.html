@@ -1038,7 +1038,7 @@ body {
     
     let canComplete = true;
     Object.entries(quest.need).forEach(([item, needed]) => {
-      const have = quest.type === 'kill' ? (p.kills[item] || 0) : (p.inv[item] || 0);
+      const have = quest.type === 'kill' ? (quest.progress[item] || 0) : (p.inv[item] || 0);
       if (have < needed) canComplete = false;
     });
     
@@ -1107,7 +1107,7 @@ body {
       let progressText = `${npc.name || 'NPC'}: "${quest.desc}"\n\nProgress:\n`;
       
       Object.entries(quest.need).forEach(([item, needed]) => {
-        const have = quest.type === 'kill' ? (p.kills[item] || 0) : (p.inv[item] || 0);
+        const have = quest.type === 'kill' ? (quest.progress[item] || 0) : (p.inv[item] || 0);
         const current = Math.min(have, needed);
         progressText += `${item.replace(/_/g, ' ')}: ${current}/${needed}\n`;
         if (current < needed) canComplete = false;
@@ -1777,6 +1777,16 @@ body {
       }
     });
     
+    // Update normal quest kill progress
+    quests.forEach(quest => {
+      if(quest.type === 'kill' && quest.need[monsterKey]) {
+        quest.progress[monsterKey] = (quest.progress[monsterKey] || 0) + 1;
+        if(quest.progress[monsterKey] <= quest.need[monsterKey]) {
+          log(`Quest progress: ${quest.name} - ${quest.progress[monsterKey]}/${quest.need[monsterKey]} ${monsterKey.replace(/_/g, ' ')}`);
+        }
+      }
+    });
+    
     // Boss monsters (level 10) drop special items 50% of the time
     if(m.level === 10 && Math.random() < 0.5) {
       let specialItems = {
@@ -2108,7 +2118,7 @@ body {
         let canComplete = true;
         if(quest.type === 'kill') {
           Object.entries(quest.need).forEach(([monster, needed]) => {
-            if((p.kills[monster] || 0) < needed) canComplete = false;
+            if((quest.progress[monster] || 0) < needed) canComplete = false;
           });
         } else if(quest.type === 'fetch') {
           Object.entries(quest.need).forEach(([item, needed]) => {
@@ -2124,7 +2134,7 @@ body {
         html += '<div style="margin-bottom:8px;">';
         if(quest.type === 'kill') {
           Object.entries(quest.need).forEach(([monster, needed]) => {
-            let killed = p.kills[monster] || 0;
+            let killed = quest.progress[monster] || 0;
             let color = killed >= needed ? '#4CAF50' : '#FF9800';
             html += `<div style="color:${color}; font-size:13px;">• ${monster.replace(/_/g, ' ')}: ${killed}/${needed}</div>`;
           });
@@ -2156,7 +2166,7 @@ body {
         let canComplete = true;
         if(quest.type === 'kill') {
           Object.entries(quest.need).forEach(([monster, needed]) => {
-            if((p.kills[monster] || 0) < needed) canComplete = false;
+            if((quest.progress[monster] || 0) < needed) canComplete = false;
           });
         } else if(quest.type === 'fetch') {
           Object.entries(quest.need).forEach(([item, needed]) => {
@@ -2664,7 +2674,7 @@ body {
       questDesc += ` (Reward: ${q.reward})`;
     }
     
-    quests.push({
+    const quest = {
       name: questName,
       type: q.type,
       desc: questDesc,
@@ -2672,7 +2682,16 @@ body {
       progress: {},
       reward: { item: q.reward, gold: q.rewardGold },
       state: 1
-    });
+    };
+    
+    // Initialize quest progress counters to 0 for kill quests
+    if (quest.type === 'kill') {
+      Object.keys(quest.need).forEach(monster => {
+        quest.progress[monster] = 0;
+      });
+    }
+    
+    quests.push(quest);
     log("Accepted quest from " + n.profession);
   }
   
@@ -2893,7 +2912,7 @@ body {
         let canComplete = true;
         
         Object.entries(quest.need).forEach(([item, needed]) => {
-          const have = quest.type === 'kill' ? (p.kills[item] || 0) : (p.inv[item] || 0);
+          const have = quest.type === 'kill' ? (quest.progress[item] || 0) : (p.inv[item] || 0);
           const current = Math.min(have, needed);
           quest.progress[item] = current;
           const progressColor = current >= needed ? '#4CAF50' : '#FFA726';
