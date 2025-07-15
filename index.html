@@ -1597,6 +1597,10 @@ body {
       // Player moved to a new area - refresh the old area
       world[p.currentArea.y][p.currentArea.x] = gen(p.currentArea.x === TOWN && p.currentArea.y === TOWN, p.currentArea.x, p.currentArea.y);
       p.currentArea = {x: newAreaX, y: newAreaY};
+      
+      // Clear the log panel when entering a new area
+      LEl.innerHTML='';
+      
       log(`Entered area (${newAreaX}, ${newAreaY})`);
     }
   }
