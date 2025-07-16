@@ -2447,8 +2447,23 @@ body {
           let craftRoll = Math.random() * 100;
           
           if(craftRoll <= craftChance) {
-            p.inv[recipe.name]=(p.inv[recipe.name]||0)+1;
-            log(`Crafting SUCCESS! Made ${recipe.name} (${craftChance}% chance, rolled ${round1(craftRoll)})`);
+            // Check if item is equipment (has definition in itemDefs)
+            if(itemDefs[recipe.name]) {
+              // It's equipment - add to equipment array
+              const itemDef = itemDefs[recipe.name];
+              const durability = typeof itemDef.maxD === 'function' ? itemDef.maxD() : itemDef.maxD;
+              p.eq.push({
+                name: recipe.name,
+                durability: durability,
+                level: itemDef.level || 1,
+                boost: itemDef.boost
+              });
+              log(`Crafting SUCCESS! Made ${recipe.name.replace(/_/g, ' ')} (${craftChance}% chance, rolled ${round1(craftRoll)})`);
+            } else {
+              // It's a consumable - add to inventory
+              p.inv[recipe.name]=(p.inv[recipe.name]||0)+1;
+              log(`Crafting SUCCESS! Made ${recipe.name.replace(/_/g, ' ')} (${craftChance}% chance, rolled ${round1(craftRoll)})`);
+            }
           } else {
             log(`Crafting FAILED! Lost materials (${craftChance}% chance, rolled ${round1(craftRoll)})`);
           }
