@@ -612,11 +612,8 @@ body {
       {name:'Strength Potion',price:10,desc:'Temporary attack boost (10-20 ATK for 30-90 steps)',apply:()=>{
         const newValue = roll(10,20);
         const newSteps = roll(30,90);
-        if(p.tempAtk) {
-          p.tempAtk.steps += newSteps;
-        } else {
-          p.tempAtk={value:newValue,steps:newSteps};
-        }
+        applyPotionEffect({atk: newValue, steps: newSteps}, 'Strength Potion');
+        updateRealTimeDisplays();
       }},
       {name:'Rage Potion',price:100,desc:'Permanent +0.5 ATK, -5 max HP',apply:()=>{
         p.atk = round1(p.atk + 0.5);
@@ -625,25 +622,16 @@ body {
         log("Rage Potion: +0.5 ATK, -5 max HP permanently!");
       }},
       {name:'Warrior\'s Elixir',price:30,desc:'Temporary +15 ATK for 50 steps',apply:()=>{
-        if(p.tempAtk) {
-          p.tempAtk.steps += 50;
-        } else {
-          p.tempAtk={value:15,steps:50};
-        }
+        applyPotionEffect({atk: 15, steps: 50}, 'Warrior\'s Elixir');
+        updateRealTimeDisplays();
       }},
       {name:'Guardian Tonic',price:20,desc:'Temporary +20 DEF for 60 steps',apply:()=>{
-        if(p.tempDef) {
-          p.tempDef.steps += 60;
-        } else {
-          p.tempDef={value:20,steps:60};
-        }
+        applyPotionEffect({def: 20, steps: 60}, 'Guardian Tonic');
+        updateRealTimeDisplays();
       }},
       {name:'Master Crafter\'s Brew',price:100,desc:'Temporary +50 craft skill for 15 crafting attempts',apply:()=>{
-        if(p.tempCraft) {
-          p.tempCraft.steps += 15;
-        } else {
-          p.tempCraft={value:50,steps:15};
-        }
+        applyPotionEffect({craft: 50, steps: 15}, 'Master Crafter\'s Brew');
+        updateRealTimeDisplays();
       }},
       {name:'Orc\'s Rage',price:175,desc:'Temporary +200 ATK, -50% DEF for 40 steps',apply:()=>{
         p.tempOrcsRage={atkBoost:200,defDebuff:0.5,steps:40};
@@ -664,6 +652,14 @@ body {
       {name:'God\'s Gift',price:2500,desc:'Temporary +7000 DEF for 5 steps',apply:()=>{
         p.tempGodsGift={defBoost:7000,steps:5};
         log("God's Gift: +7000 defense for 5 steps!");
+      }},
+      {name:'Berserker\'s Blend',price:50,desc:'Multi-effect: +10 ATK, +10 DEF for 40 steps',apply:()=>{
+        applyPotionEffect({atk: 10, def: 10, steps: 40}, 'Berserker\'s Blend');
+        updateRealTimeDisplays();
+      }},
+      {name:'Battle Brew',price:75,desc:'Multi-effect: +12 ATK, +8 DEF, +5 LUCK for 30 steps',apply:()=>{
+        applyPotionEffect({atk: 12, def: 8, luck: 5, steps: 30}, 'Battle Brew');
+        updateRealTimeDisplays();
       }}
     ], 
     'Blacksmith':[
@@ -671,7 +667,7 @@ body {
     ], 
     'Scroll Merchant':[
       {name:'Scroll of Healing',price:25,desc:'Restores full HP',apply:()=>{p.hp=p.maxHp}},
-      {name:'Luck Charm',price:50,desc:'Temporary +20 luck for 20 steps',apply:()=>{p.tempLuck={value:20,steps:20}}}
+      {name:'Luck Charm',price:50,desc:'Temporary +20 luck for 20 steps',apply:()=>{applyPotionEffect({luck: 20, steps: 20}, 'Luck Charm');updateRealTimeDisplays();}}
     ]
   };
 
@@ -729,7 +725,10 @@ body {
     'Ice_Staff':{boost:{atk:6,maxHp:10},maxD:75,level:1},
     'Lightning_Spear':{boost:{atk:9},maxD:85,level:1},
     'Ancient_Relic':{boost:{atk:6,def:6,maxHp:15},maxD:100,level:1},
-    'Demon_Blade':{boost:{atk:12},maxD:80,level:1}
+    'Demon_Blade':{boost:{atk:12},maxD:80,level:1},
+    // New consumables
+    'Resurrection_Charm':{consumable:true,desc:'One-time reborn with all stats intact when you die',level:1},
+    'Asura_Blood':{consumable:true,desc:'100x all stats for 100 steps, then 75% stat reduction for 50 steps',level:1}
   };
 
   const recipes=[
@@ -1414,6 +1413,86 @@ body {
   
   function log(m){LEl.innerHTML+=m+'<br>';LEl.scrollTop=LEl.scrollHeight;save();}
   
+  // Priority system for consumable effects
+  function applyPotionEffect(effects, potionName) {
+    // Calculate priority: higher value = higher priority
+    // Multi-effect potions get +100 priority, single effects get base priority equal to their value
+    let priority = 0;
+    let effectCount = 0;
+    
+    if(effects.atk) { priority += effects.atk; effectCount++; }
+    if(effects.def) { priority += effects.def; effectCount++; }
+    if(effects.luck) { priority += effects.luck; effectCount++; }
+    if(effects.craft) { priority += effects.craft; effectCount++; }
+    
+    // Multi-effect bonus
+    if(effectCount > 1) priority += 100;
+    
+    // Apply ATK effects with priority
+    if(effects.atk) {
+      if(!p.tempAtk || priority > p.tempAtk.priority) {
+        if(p.tempAtk) {
+          log(`${potionName} (ATK +${effects.atk}) overwrote previous ATK effect!`);
+        }
+        p.tempAtk = {value: effects.atk, steps: effects.steps, priority: priority};
+      } else if(priority === p.tempAtk.priority) {
+        // Same priority, extend duration
+        p.tempAtk.steps += effects.steps;
+        log(`${potionName} extended ATK effect duration by ${effects.steps} steps!`);
+      } else {
+        log(`${potionName} ATK effect ignored (weaker than current effect)`);
+      }
+    }
+    
+    // Apply DEF effects with priority
+    if(effects.def) {
+      if(!p.tempDef || priority > p.tempDef.priority) {
+        if(p.tempDef) {
+          log(`${potionName} (DEF +${effects.def}) overwrote previous DEF effect!`);
+        }
+        p.tempDef = {value: effects.def, steps: effects.steps, priority: priority};
+      } else if(priority === p.tempDef.priority) {
+        // Same priority, extend duration
+        p.tempDef.steps += effects.steps;
+        log(`${potionName} extended DEF effect duration by ${effects.steps} steps!`);
+      } else {
+        log(`${potionName} DEF effect ignored (weaker than current effect)`);
+      }
+    }
+    
+    // Apply LUCK effects with priority
+    if(effects.luck) {
+      if(!p.tempLuck || priority > p.tempLuck.priority) {
+        if(p.tempLuck) {
+          log(`${potionName} (LUCK +${effects.luck}) overwrote previous LUCK effect!`);
+        }
+        p.tempLuck = {value: effects.luck, steps: effects.steps, priority: priority};
+      } else if(priority === p.tempLuck.priority) {
+        // Same priority, extend duration
+        p.tempLuck.steps += effects.steps;
+        log(`${potionName} extended LUCK effect duration by ${effects.steps} steps!`);
+      } else {
+        log(`${potionName} LUCK effect ignored (weaker than current effect)`);
+      }
+    }
+    
+    // Apply CRAFT effects with priority
+    if(effects.craft) {
+      if(!p.tempCraft || priority > p.tempCraft.priority) {
+        if(p.tempCraft) {
+          log(`${potionName} (CRAFT +${effects.craft}) overwrote previous CRAFT effect!`);
+        }
+        p.tempCraft = {value: effects.craft, steps: effects.steps, priority: priority};
+      } else if(priority === p.tempCraft.priority) {
+        // Same priority, extend duration
+        p.tempCraft.steps += effects.steps;
+        log(`${potionName} extended CRAFT effect duration by ${effects.steps} steps!`);
+      } else {
+        log(`${potionName} CRAFT effect ignored (weaker than current effect)`);
+      }
+    }
+  }
+  
   function updateUI(){
     // Handle temporary buffs
     if(p.tempAtk){
@@ -1421,6 +1500,7 @@ body {
       if(p.tempAtk.steps <= 0){
         p.tempAtk = null;
         log("Strength potion wore off!");
+        updateRealTimeDisplays();
       }
     }
     
@@ -1429,6 +1509,7 @@ body {
       if(p.tempLuck.steps <= 0){
         p.tempLuck = null;
         log("Luck charm wore off!");
+        updateRealTimeDisplays();
       }
     }
     
@@ -1437,6 +1518,7 @@ body {
       if(p.tempDef.steps <= 0){
         p.tempDef = null;
         log("Defense potion wore off!");
+        updateRealTimeDisplays();
       }
     }
     
@@ -1473,6 +1555,45 @@ body {
       if(p.tempGodsGift.steps <= 0){
         p.tempGodsGift = null;
         log("God's Gift wore off!");
+      }
+    }
+    
+    // Handle Asura Blood effects
+    if(p.asuraBlood && p.asuraBlood.active){
+      if(p.asuraBlood.boostSteps > 0){
+        if(p.asuraBlood.boostSteps <= 1){
+          log("Asura Blood boost phase ended! Stats returning to normal, then will be reduced by 75%...");
+          // Restore to original stats first
+          p.atk = p.asuraBlood.originalAtk;
+          p.def = p.asuraBlood.originalDef;
+          p.maxHp = p.asuraBlood.originalMaxHp;
+          p.hp = Math.min(p.hp, p.maxHp);
+          p.luck = p.asuraBlood.originalLuck;
+          p.craft = p.asuraBlood.originalCraft;
+          // Apply 75% reduction debuff
+          p.atk = round1(p.atk * 0.25);
+          p.def = round1(p.def * 0.25);
+          p.maxHp = round1(p.maxHp * 0.25);
+          p.hp = Math.min(p.hp, p.maxHp);
+          p.luck = round1(p.luck * 0.25);
+          p.craft = round1(p.craft * 0.25);
+          log("Asura Blood debuff applied! All stats reduced by 75% for 50 steps.");
+        }
+        p.asuraBlood.boostSteps--;
+      } else if(p.asuraBlood.debuffSteps > 0){
+        if(p.asuraBlood.debuffSteps <= 1){
+          // Restore to original stats
+          p.atk = p.asuraBlood.originalAtk;
+          p.def = p.asuraBlood.originalDef;
+          p.maxHp = p.asuraBlood.originalMaxHp;
+          p.hp = Math.min(p.hp, p.maxHp);
+          p.luck = p.asuraBlood.originalLuck;
+          p.craft = p.asuraBlood.originalCraft;
+          log("Asura Blood effects have completely worn off! Stats restored to normal.");
+          p.asuraBlood = null;
+        } else {
+          p.asuraBlood.debuffSteps--;
+        }
       }
     }
     
@@ -1517,6 +1638,27 @@ body {
     
     if(p.equipped) {
       statsHTML += `<div class="stat-bar"><span class="stat-name">EQUIP:</span> ${p.equipped.name}(${p.equipped.durability})</div>`;
+    }
+    
+    // Show active consumable effects
+    if(p.resurrectionCharm) {
+      statsHTML += `<div class="stat-bar" style="color:#9C27B0;"><span class="stat-name">EFFECT:</span> Resurrection Charm Active</div>`;
+    }
+    if(p.tempAtk && p.tempAtk.steps > 0) {
+      statsHTML += `<div class="stat-bar" style="color:#FF9800;"><span class="stat-name">EFFECT:</span> Strength Potion (${p.tempAtk.steps} steps)</div>`;
+    }
+    if(p.tempLuck && p.tempLuck.steps > 0) {
+      statsHTML += `<div class="stat-bar" style="color:#4CAF50;"><span class="stat-name">EFFECT:</span> Luck Charm (${p.tempLuck.steps} steps)</div>`;
+    }
+    if(p.tempDef && p.tempDef.steps > 0) {
+      statsHTML += `<div class="stat-bar" style="color:#2196F3;"><span class="stat-name">EFFECT:</span> Defense Potion (${p.tempDef.steps} steps)</div>`;
+    }
+    if(p.asuraBlood && p.asuraBlood.active) {
+      if(p.asuraBlood.boostSteps > 0) {
+        statsHTML += `<div class="stat-bar" style="color:#FF5722;"><span class="stat-name">EFFECT:</span> Asura Blood (${p.asuraBlood.boostSteps} steps)</div>`;
+      } else if(p.asuraBlood.debuffSteps > 0) {
+        statsHTML += `<div class="stat-bar" style="color:#FF5722;"><span class="stat-name">DEBUFF:</span> Asura Weakness (${p.asuraBlood.debuffSteps} steps)</div>`;
+      }
     }
     
     SEl.innerHTML = statsHTML;
@@ -1597,6 +1739,7 @@ body {
       
       checkAreaChange();
       updateUI();
+      updateRealTimeDisplays();
     }
     else if(t.type==='trap') {
       let dmg=roll(1,5);
@@ -1606,6 +1749,7 @@ body {
       p.x=nx; p.y=ny;
       checkAreaChange();
       updateUI();
+      updateRealTimeDisplays();
     }
     else if(t.type==='chest') {
       let g=roll(5,15);
@@ -1739,6 +1883,16 @@ body {
     if(p.hp <= 0) {
       p.hp = 0;
       log("You died!");
+      
+      // Check if player has resurrection charm active
+      if(p.resurrectionCharm) {
+        p.resurrectionCharm = false;
+        p.hp = p.maxHp;
+        p.x = 264; p.y = 264; // Return to town
+        log("Resurrection Charm activated! Automatically reborn with all stats intact!");
+        updateUI();
+        return;
+      }
       
       // Handle banking death logic
       if(p.bankGold > 0) {
@@ -1933,6 +2087,17 @@ body {
           }
         }
       });
+    }
+    
+    // Rare consumables drop from all monsters with specific drop rates
+    // Asura Blood: 0.0001% (0.000001) chance, Resurrection Charm: 0.001% (0.00001) chance
+    if(Math.random() < 0.000001) {
+      p.inv['Asura_Blood'] = (p.inv['Asura_Blood'] || 0) + 1;
+      log("Found Asura Blood!");
+    }
+    if(Math.random() < 0.00001) {
+      p.inv['Resurrection_Charm'] = (p.inv['Resurrection_Charm'] || 0) + 1;
+      log("Found Resurrection Charm!");
     }
     
     // Update quest progress for regular quests
@@ -2478,6 +2643,13 @@ body {
   }
   
   function openCraft(){
+    craftingModalOpen = true;
+    updateCraftingDisplay();
+  }
+  
+  function updateCraftingDisplay() {
+    if (!craftingModalOpen) return;
+    
     let html='<h2 style="color:#FF9800; text-align:center; margin-bottom:15px;">🔨 Crafting</h2>';
     let currentCraft = round1(p.craft + (p.tempCraft ? p.tempCraft.value : 0));
     let currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
@@ -2509,6 +2681,68 @@ body {
       html += `</button>`;
     });
     html += '</div>';
+    
+    // Update modal content
+    MD.innerHTML = html;
+    
+    // Re-add event listeners
+    document.querySelectorAll('[data-r]').forEach(btn => {
+      btn.onclick = () => {
+        if(btn.dataset.r){
+          let recipe = recipes.find(r => r.name === btn.dataset.r);
+          if(materials(recipe.need)){
+            // Always consume materials on attempt
+            Object.keys(recipe.need).forEach(k=>p.inv[k]-=recipe.need[k]);
+            
+            // Always increase craft skill by 0.1
+            p.craft = round1(p.craft + 0.1);
+            
+            // Reduce tempCraft attempts
+            if(p.tempCraft){
+              p.tempCraft.steps--;
+              if(p.tempCraft.steps <= 0){
+                p.tempCraft = null;
+                log("Crafting potion wore off!");
+              }
+            }
+            
+            // Check if crafting succeeded based on percentage (craft skill + luck bonus)
+            let currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
+            let craftChance = round1(p.craft + (p.tempCraft ? p.tempCraft.value : 0) + currentLuck);
+            let craftRoll = Math.random() * 100;
+            
+            if(craftRoll <= craftChance) {
+              // Check if item is equipment (has definition in itemDefs)
+              if(itemDefs[recipe.name]) {
+                // It's equipment - add to equipment array
+                const itemDef = itemDefs[recipe.name];
+                const durability = typeof itemDef.maxD === 'function' ? itemDef.maxD() : itemDef.maxD;
+                p.eq.push({
+                  name: recipe.name,
+                  durability: durability,
+                  level: itemDef.level || 1,
+                  boost: itemDef.boost
+                });
+                log(`Crafting SUCCESS! Made ${recipe.name.replace(/_/g, ' ')} (${craftChance}% chance, rolled ${round1(craftRoll)})`);
+              } else {
+                // It's a consumable - add to inventory
+                p.inv[recipe.name]=(p.inv[recipe.name]||0)+1;
+                log(`Crafting SUCCESS! Made ${recipe.name.replace(/_/g, ' ')} (${craftChance}% chance, rolled ${round1(craftRoll)})`);
+              }
+            } else {
+              log(`Crafting FAILED! Lost materials (${craftChance}% chance, rolled ${round1(craftRoll)})`);
+            }
+            
+            log(`Craft skill increased to ${round1(p.craft)}`);
+            updateUI();
+            updateRealTimeDisplays(); // Refresh all displays
+            updateCraftingDisplay(); // Update the crafting interface in real-time
+          } else {
+            log("Missing materials");
+          }
+        }
+      };
+    });
     
     openModal(html, btn => {
       if(btn.dataset.r){
@@ -2560,11 +2794,32 @@ body {
         } else log("Missing materials");
       }
       updateUI();
+      updateRealTimeDisplays(); // Refresh all displays
+      updateCraftingDisplay(); // Update the crafting interface in real-time
     });
   }
   
+  // Global variables to track if modals are open
+  let inventoryModalOpen = false;
+  let craftingModalOpen = false;
+  
+  // Function to update all real-time displays
+  function updateRealTimeDisplays() {
+    updateInventoryDisplay();
+    updateCraftingDisplay();
+  }
+  
   function openInventory() {
+    inventoryModalOpen = true;
+    updateInventoryDisplay();
+  }
+  
+  function updateInventoryDisplay() {
+    if (!inventoryModalOpen) return;
+    
     let html = '<h2 style="color:#4CAF50; text-align:center; margin-bottom:15px;">📦 Inventory</h2>';
+    
+
     
     if(Object.keys(p.inv).length === 0 && p.eq.length === 0) {
       html += '<div style="text-align:center; color:#888; padding:20px;">Empty inventory</div>';
@@ -2593,8 +2848,20 @@ body {
             if(item === 'Scroll of Healing') {
               html += ` <button data-use-scroll="${item}" style="background:#4CAF50; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Use</button>`;
             }
-            // Add equip button for equipment items that ended up in inventory
-            if(itemDefs[item]) {
+            if(item === 'Resurrection_Charm') {
+              html += ` <button data-use-resurrection="${item}" style="background:#9C27B0; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Use</button>`;
+            }
+            if(item === 'Asura_Blood') {
+              html += ` <button data-use-asura="${item}" style="background:#FF5722; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Use</button>`;
+            }
+            if(item === 'Berserker\'s Blend') {
+              html += ` <button data-use-berserker="${item}" style="background:#9C27B0; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Use</button>`;
+            }
+            if(item === 'Battle Brew') {
+              html += ` <button data-use-battle="${item}" style="background:#FF9800; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Use</button>`;
+            }
+            // Add equip button for equipment items that ended up in inventory (but not consumables)
+            if(itemDefs[item] && !itemDefs[item].consumable) {
               html += ` <button data-move-to-eq="${item}" style="background:#2196F3; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Move to Equipment</button>`;
             }
             
@@ -2634,49 +2901,135 @@ body {
       if (btn.dataset.equip !== undefined) {
         const index = parseInt(btn.dataset.equip);
         equipItem(p.eq[index]);
+        updateInventoryDisplay(); // Update inventory display in real-time
       }
       if (btn.dataset.unequip !== undefined) {
         unequipItem();
+        updateInventoryDisplay(); // Update inventory display in real-time
       }
       if (btn.dataset.useHealth !== undefined) {
         const potion = btn.dataset.useHealth;
         if(p.inv[potion] > 0) {
           p.inv[potion]--;
+          if(p.inv[potion] <= 0) {
+            delete p.inv[potion];
+          }
           p.hp = round1(Math.min(p.maxHp, p.hp + 10));
           log("Used Health Potion (+10 HP)");
+          closeModal();
+          updateInventoryDisplay(); // Refresh inventory
         }
       }
       if (btn.dataset.useStrength !== undefined) {
         const potion = btn.dataset.useStrength;
         if(p.inv[potion] > 0) {
           p.inv[potion]--;
+          if(p.inv[potion] <= 0) {
+            delete p.inv[potion];
+          }
           const newValue = roll(10,20);
           const newSteps = roll(30,90);
-          if(p.tempAtk) {
-            p.tempAtk.steps += newSteps;
-            log(`Used Strength Potion (Extended ATK buff by ${newSteps} steps, total: ${p.tempAtk.steps} steps)`);
-          } else {
-            p.tempAtk = {value: newValue, steps: newSteps};
-            log(`Used Strength Potion (+${p.tempAtk.value} ATK for ${p.tempAtk.steps} steps)`);
-          }
+          applyPotionEffect({atk: newValue, steps: newSteps}, 'Strength Potion');
+          updateRealTimeDisplays(); // Update stats display
+          closeModal();
+          updateInventoryDisplay(); // Refresh inventory
         }
       }
       if (btn.dataset.useRage !== undefined) {
         const potion = btn.dataset.useRage;
         if(p.inv[potion] > 0) {
           p.inv[potion]--;
+          if(p.inv[potion] <= 0) {
+            delete p.inv[potion];
+          }
           p.atk = round1(p.atk + 0.5);
           p.maxHp = Math.max(1, round1(p.maxHp - 5));
           p.hp = Math.min(p.hp, p.maxHp);
           log("Rage Potion: +0.5 ATK, -5 max HP permanently!");
+          closeModal();
+          updateInventoryDisplay(); // Refresh inventory
         }
       }
       if (btn.dataset.useScroll !== undefined) {
         const scroll = btn.dataset.useScroll;
         if(p.inv[scroll] > 0) {
           p.inv[scroll]--;
+          if(p.inv[scroll] <= 0) {
+            delete p.inv[scroll];
+          }
           p.hp = p.maxHp;
           log(`Used Scroll of Healing (Full HP restored)`);
+          closeModal();
+          updateInventoryDisplay(); // Refresh inventory
+        }
+      }
+      if (btn.dataset.useResurrection !== undefined) {
+        const charm = btn.dataset.useResurrection;
+        if(p.inv[charm] > 0) {
+          p.inv[charm]--;
+          if(p.inv[charm] <= 0) {
+            delete p.inv[charm];
+          }
+          p.resurrectionCharm = true;
+          log(`Used Resurrection Charm - You will be reborn with all stats intact on next death!`);
+          closeModal();
+          updateInventoryDisplay(); // Refresh inventory
+        }
+      }
+      if (btn.dataset.useAsura !== undefined) {
+        const blood = btn.dataset.useAsura;
+        if(p.inv[blood] > 0) {
+          p.inv[blood]--;
+          if(p.inv[blood] <= 0) {
+            delete p.inv[blood];
+          }
+          // Store current stats for restoration later
+          p.asuraBlood = {
+            originalAtk: p.atk,
+            originalDef: p.def,
+            originalMaxHp: p.maxHp,
+            originalLuck: p.luck,
+            originalCraft: p.craft,
+            boostSteps: 100,
+            debuffSteps: 50,
+            active: true
+          };
+          // Apply 100x boost to all stats
+          p.atk = round1(p.atk * 100);
+          p.def = round1(p.def * 100);
+          p.maxHp = round1(p.maxHp * 100);
+          p.hp = round1(p.hp * 100);
+          p.luck = round1(p.luck * 100);
+          p.craft = round1(p.craft * 100);
+          log(`Used Asura Blood - All stats boosted by 100x for 100 steps!`);
+          closeModal();
+          updateInventoryDisplay(); // Refresh inventory
+        }
+      }
+      if (btn.dataset.useBerserker !== undefined) {
+        const potion = btn.dataset.useBerserker;
+        if(p.inv[potion] > 0) {
+          p.inv[potion]--;
+          if(p.inv[potion] <= 0) {
+            delete p.inv[potion];
+          }
+          applyPotionEffect({atk: 10, def: 10, steps: 40}, 'Berserker\'s Blend');
+          updateRealTimeDisplays();
+          closeModal();
+          updateInventoryDisplay();
+        }
+      }
+      if (btn.dataset.useBattle !== undefined) {
+        const potion = btn.dataset.useBattle;
+        if(p.inv[potion] > 0) {
+          p.inv[potion]--;
+          if(p.inv[potion] <= 0) {
+            delete p.inv[potion];
+          }
+          applyPotionEffect({atk: 12, def: 8, luck: 5, steps: 30}, 'Battle Brew');
+          updateRealTimeDisplays();
+          closeModal();
+          updateInventoryDisplay();
         }
       }
       if (btn.dataset.moveToEq !== undefined) {
@@ -2878,6 +3231,7 @@ body {
       });
     }
     log("Equipped " + item.name);
+    updateRealTimeDisplays(); // Update all displays when equipment changes
   }
   
   function unequipItem() {
@@ -2890,6 +3244,7 @@ body {
       }
       log("Unequipped " + p.equipped.name);
       p.equipped = null;
+      updateRealTimeDisplays(); // Update all displays when equipment changes
     }
   }
   
@@ -2903,7 +3258,7 @@ body {
       updateUI();
     };
     if(act) {
-      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage],button[data-use-scroll],button[data-move-to-eq],button[data-combine],button[data-deposit],button[data-deposit-all],button[data-withdraw],button[data-withdraw-all]').forEach(b=>{
+      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage],button[data-use-scroll],button[data-use-resurrection],button[data-use-asura],button[data-move-to-eq],button[data-combine],button[data-deposit],button[data-deposit-all],button[data-withdraw],button[data-withdraw-all]').forEach(b=>{
         b.onclick=(e)=>{
           e.preventDefault();
           act(b);
@@ -3147,6 +3502,8 @@ body {
     OV.style.display='none';
     MD.style.display='none';
     MD.innerHTML='';
+    inventoryModalOpen = false;
+    craftingModalOpen = false;
   }
   
   // Welcome Modal
@@ -3221,6 +3578,17 @@ body {
     d('#btn-quests').onclick = openQuests;
     d('#btn-npc-quests').onclick = openNpcQuestLog;
     d('#btn-reborn').onclick = ()=>{
+      // Check if player has resurrection charm active
+      if(p.resurrectionCharm) {
+        // Resurrection charm provides one-time reborn with all stats intact
+        p.resurrectionCharm = false;
+        p.hp = p.maxHp;
+        p.x = 264; p.y = 264; // Return to town
+        log("Resurrection Charm activated! Reborn with all stats intact!");
+        updateUI();
+        return;
+      }
+      
       // Preserve banking data before reset
       const preservedBankGold = p.bankGold || 0;
       const preservedBankDeaths = p.bankDeaths || 0;
