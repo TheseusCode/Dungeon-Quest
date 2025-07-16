@@ -872,6 +872,9 @@ body {
       p.tempCraft = p.tempCraft || null;
       // Track current area for refresh system
       p.currentArea = p.currentArea || {x: TOWN, y: TOWN};
+      // Initialize banking system
+      p.bankGold = p.bankGold || 0;
+      p.bankDeaths = p.bankDeaths || 0;
       quests=o.quests||[];
       randomNpcActiveQuests=o.randomNpcActiveQuests||[];
     }catch{localStorage.removeItem(SAVE);return init();}
@@ -895,6 +898,8 @@ body {
       steps:0,
       kills:{},
       preventFlee:0,
+      bankGold:0,
+      bankDeaths:0,
       currentArea: {x: TOWN, y: TOWN}
     };
     world=Array.from({length:32},(_,y)=>Array.from({length:32},(_,x)=>gen(x===TOWN&&y===TOWN, x, y)));
@@ -1256,7 +1261,7 @@ body {
   function gen(isTown, areaX, areaY){
     let tiles=Array.from({length:AREA},()=>Array.from({length:AREA},()=>({type:'empty'})));
     if(isTown){
-      ['Potion Seller','Blacksmith','Scroll Merchant','Equipment Combiner','Quest Giver EM','Quest Giver H','Quest Giver L','Guild_Member']
+      ['Potion Seller','Blacksmith','Scroll Merchant','Equipment Combiner','Quest Giver EM','Quest Giver H','Quest Giver L','Guild_Member','Banker']
         .forEach(pr=>place(tiles,pr,true,areaX,areaY));
     } else {
       // Place 2 random NPCs with quests in non-town areas
@@ -1377,6 +1382,7 @@ body {
         if(town) {
           if(prof === 'Quest Giver L') npc.data.abbr = 'L';
           else if(prof === 'Guild_Member') npc.data.abbr = 'G';
+          else if(prof === 'Banker') npc.data.abbr = '$';
           else npc.data.abbr = prof[0];
           npc.data.isTown = true;
         } else {
@@ -1718,6 +1724,30 @@ body {
     if(p.hp <= 0) {
       p.hp = 0;
       log("You died!");
+      
+      // Handle banking death logic
+      if(p.bankGold > 0) {
+        // Player has gold in bank, increment death counter
+        p.bankDeaths++;
+        
+        // Check if remaining gold after fees would be less than 10
+        const totalFees = p.bankDeaths * 10;
+        const remainingGold = p.bankGold - totalFees;
+        
+        if(remainingGold < 10) {
+          // Close account and reset banking data
+          p.bankGold = 0;
+          p.bankDeaths = 0;
+          log("Bank account closed due to insufficient funds after death fees. Banking data reset.");
+        } else {
+          log(`Death recorded by banker. Outstanding fees: ${totalFees} gold`);
+        }
+      } else {
+        // Player has no gold in bank, reset banking data
+        p.bankDeaths = 0;
+        log("Bank services reset (no gold was stored)");
+      }
+      
       updateUI();
       return;
     }
@@ -1918,6 +1948,9 @@ body {
     }
     else if(n.profession==='Equipment Combiner'){
       openCombiner();
+    }
+    else if(n.profession==='Banker'){
+      openBanker();
     }
     else if(n.profession==='Quest Giver EM'||n.profession==='Quest Giver H'||n.profession==='Quest Giver L'){
       if(n.profession==='Quest Giver EM') openQuestGiver('easy','med');
@@ -2848,13 +2881,137 @@ body {
       updateUI();
     };
     if(act) {
-      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage],button[data-use-scroll],button[data-move-to-eq],button[data-combine]').forEach(b=>{
+      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage],button[data-use-scroll],button[data-move-to-eq],button[data-combine],button[data-deposit],button[data-deposit-all],button[data-withdraw],button[data-withdraw-all]').forEach(b=>{
         b.onclick=(e)=>{
           e.preventDefault();
           act(b);
         };
       });
     }
+  }
+  
+  function openBanker(){
+    let html = '<h2 style="color:#FFD700; text-align:center; margin-bottom:15px;">💰 Bank Services</h2>';
+    
+    // Show financial statement if player has gold stored
+    if(p.bankGold > 0) {
+      html += '<div style="background:#2E7D32; padding:15px; border-radius:8px; margin-bottom:20px; border:1px solid #4CAF50;">';
+      html += '<h3 style="color:#FFD700; margin:0 0 10px 0; text-align:center;">💼 Financial Statement</h3>';
+      html += `<div style="color:white; line-height:1.6;">`;
+      html += `<div>💰 Gold in Bank: <span style="color:#FFD700; font-weight:bold;">${p.bankGold}</span></div>`;
+      html += `<div>☠️ Deaths Since Banking: <span style="color:#ff6666; font-weight:bold;">${p.bankDeaths}</span></div>`;
+      if(p.bankDeaths > 0) {
+        html += `<div style="margin-top:8px; padding:8px; background:#8B0000; border-radius:4px; border:1px solid #ff4444;">`;
+        html += `⚠️ Outstanding Fees: <span style="color:#ffff00; font-weight:bold;">${p.bankDeaths * 10} gold</span>`;
+        html += `</div>`;
+      }
+      html += `</div></div>`;
+    }
+    
+    html += `<div style="text-align:center; margin-bottom:20px; padding:10px; background:#333; border-radius:6px; color:#FFD700;">`;
+    html += `<strong>Your Current Gold: ${p.g}</strong>`;
+    html += `</div>`;
+    
+    html += '<div style="display:grid; gap:12px;">';
+    
+    // Deposit section
+    html += '<div style="background:#1a1a1a; padding:15px; border-radius:8px; border:1px solid #555;">';
+    html += '<h3 style="color:#4CAF50; margin:0 0 10px 0;">💵 Deposit Gold</h3>';
+    html += '<div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">';
+    html += '<input type="number" id="deposit-amount" placeholder="Amount" min="1" max="' + p.g + '" style="flex:1; padding:8px; border-radius:4px; border:1px solid #555; background:#333; color:white;">';
+    html += '<button data-deposit style="background:#4CAF50; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">Deposit</button>';
+    html += '</div>';
+    html += '<button data-deposit-all style="background:#2E7D32; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%;">Deposit All</button>';
+    html += '</div>';
+    
+    // Withdrawal section (only if has gold in bank)
+    if(p.bankGold > 0) {
+      const availableGold = Math.max(0, p.bankGold - (p.bankDeaths * 10));
+      html += '<div style="background:#1a1a1a; padding:15px; border-radius:8px; border:1px solid #555;">';
+      html += '<h3 style="color:#FF9800; margin:0 0 10px 0;">💸 Withdraw Gold</h3>';
+      if(p.bankDeaths > 0) {
+        html += `<div style="color:#ffaa00; margin-bottom:10px; font-size:0.9em;">Note: ${p.bankDeaths * 10} gold will be deducted as death fees</div>`;
+      }
+      html += `<div style="color:#ccc; margin-bottom:10px;">Available: ${availableGold} gold</div>`;
+      html += '<div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">';
+      html += '<input type="number" id="withdraw-amount" placeholder="Amount" min="1" max="' + availableGold + '" style="flex:1; padding:8px; border-radius:4px; border:1px solid #555; background:#333; color:white;">';
+      html += '<button data-withdraw style="background:#FF9800; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">Withdraw</button>';
+      html += '</div>';
+      html += '<button data-withdraw-all style="background:#F57C00; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; width:100%;">Withdraw All</button>';
+      html += '</div>';
+    }
+    
+    html += '</div>';
+    
+    html += '<div style="margin-top:20px; padding:12px; background:#1a1a1a; border-radius:6px; border:1px solid #555; color:#ccc; font-size:0.9em;">';
+    html += '<strong style="color:#FFD700;">Banking Services:</strong><br>';
+    html += '• Your banked gold is safe even if you die<br>';
+    html += '• 10 gold fee charged per death (only if you have banked gold)<br>';
+    html += '• Bank resets if you die without any gold stored<br>';
+    html += '• Account automatically closes if remaining gold after fees would be less than 10<br>';
+    html += '• Banking data persists through reborn (unless account was closed)';
+    html += '</div>';
+    
+    openModal(html, btn => {
+      if (btn.dataset.deposit !== undefined) {
+        const amount = parseInt(document.getElementById('deposit-amount').value);
+        if(amount > 0 && amount <= p.g) {
+          p.g -= amount;
+          p.bankGold += amount;
+          log(`Deposited ${amount} gold. Bank balance: ${p.bankGold}`);
+          closeModal();
+          openBanker(); // Refresh the interface
+        }
+      }
+      if (btn.dataset.depositAll !== undefined) {
+        if(p.g > 0) {
+          const amount = p.g;
+          p.bankGold += amount;
+          p.g = 0;
+          log(`Deposited all ${amount} gold. Bank balance: ${p.bankGold}`);
+          closeModal();
+          openBanker(); // Refresh the interface
+        }
+      }
+      if (btn.dataset.withdraw !== undefined) {
+        const amount = parseInt(document.getElementById('withdraw-amount').value);
+        const fees = p.bankDeaths * 10;
+        const available = Math.max(0, p.bankGold - fees);
+        if(amount > 0 && amount <= available) {
+          p.bankGold -= amount;
+          p.g += amount;
+          // Deduct fees
+          if(fees > 0) {
+            p.bankGold -= fees;
+            p.bankDeaths = 0;
+            log(`Withdrew ${amount} gold. Death fees (${fees} gold) deducted. Bank balance: ${p.bankGold}`);
+          } else {
+            log(`Withdrew ${amount} gold. Bank balance: ${p.bankGold}`);
+          }
+          closeModal();
+          openBanker(); // Refresh the interface
+        }
+      }
+      if (btn.dataset.withdrawAll !== undefined) {
+        const fees = p.bankDeaths * 10;
+        const available = Math.max(0, p.bankGold - fees);
+        if(available > 0) {
+          p.g += available;
+          p.bankGold -= available;
+          // Deduct fees
+          if(fees > 0) {
+            p.bankGold -= fees;
+            p.bankDeaths = 0;
+            log(`Withdrew all ${available} gold. Death fees (${fees} gold) deducted. Bank balance: ${p.bankGold}`);
+          } else {
+            log(`Withdrew all ${available} gold. Bank balance: ${p.bankGold}`);
+          }
+          closeModal();
+          openBanker(); // Refresh the interface
+        }
+      }
+      updateUI();
+    });
   }
   
   function openCombiner(){
@@ -3042,12 +3199,21 @@ body {
     d('#btn-quests').onclick = openQuests;
     d('#btn-npc-quests').onclick = openNpcQuestLog;
     d('#btn-reborn').onclick = ()=>{
+      // Preserve banking data before reset
+      const preservedBankGold = p.bankGold || 0;
+      const preservedBankDeaths = p.bankDeaths || 0;
+      
       localStorage.removeItem(SAVE);
       LEl.innerHTML='';
       quests = []; // Clear quests array
       randomNpcActiveQuests = []; // Clear random NPC quests
       init();
-      log("Reborn!");
+      
+      // Restore banking data after reset
+      p.bankGold = preservedBankGold;
+      p.bankDeaths = preservedBankDeaths;
+      
+      log("Reborn! Your banked gold has been preserved.");
       updateUI();
     };
     
