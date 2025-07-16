@@ -609,16 +609,42 @@ body {
   const shops={ 
     'Potion Seller':[
       {name:'Health Potion',price:5,desc:'Restores 10 HP',apply:()=>{p.hp=Math.min(p.maxHp,round1(p.hp+10))}},
-      {name:'Strength Potion',price:10,desc:'Temporary attack boost (10-20 ATK for 30-90 steps)',apply:()=>{p.tempAtk={value:roll(10,20),steps:roll(30,90)}}},
+      {name:'Strength Potion',price:10,desc:'Temporary attack boost (10-20 ATK for 30-90 steps)',apply:()=>{
+        const newValue = roll(10,20);
+        const newSteps = roll(30,90);
+        if(p.tempAtk) {
+          p.tempAtk.steps += newSteps;
+        } else {
+          p.tempAtk={value:newValue,steps:newSteps};
+        }
+      }},
       {name:'Rage Potion',price:100,desc:'Permanent +0.5 ATK, -5 max HP',apply:()=>{
         p.atk = round1(p.atk + 0.5);
         p.maxHp = Math.max(1, round1(p.maxHp - 5));
         p.hp = Math.min(p.hp, p.maxHp);
         log("Rage Potion: +0.5 ATK, -5 max HP permanently!");
       }},
-      {name:'Warrior\'s Elixir',price:30,desc:'Temporary +15 ATK for 50 steps',apply:()=>{p.tempAtk={value:15,steps:50}}},
-      {name:'Guardian Tonic',price:20,desc:'Temporary +20 DEF for 60 steps',apply:()=>{p.tempDef={value:20,steps:60}}},
-      {name:'Master Crafter\'s Brew',price:100,desc:'Temporary +50 craft skill for 30 steps',apply:()=>{p.tempCraft={value:50,steps:30}}},
+      {name:'Warrior\'s Elixir',price:30,desc:'Temporary +15 ATK for 50 steps',apply:()=>{
+        if(p.tempAtk) {
+          p.tempAtk.steps += 50;
+        } else {
+          p.tempAtk={value:15,steps:50};
+        }
+      }},
+      {name:'Guardian Tonic',price:20,desc:'Temporary +20 DEF for 60 steps',apply:()=>{
+        if(p.tempDef) {
+          p.tempDef.steps += 60;
+        } else {
+          p.tempDef={value:20,steps:60};
+        }
+      }},
+      {name:'Master Crafter\'s Brew',price:100,desc:'Temporary +50 craft skill for 15 crafting attempts',apply:()=>{
+        if(p.tempCraft) {
+          p.tempCraft.steps += 15;
+        } else {
+          p.tempCraft={value:50,steps:15};
+        }
+      }},
       {name:'Orc\'s Rage',price:175,desc:'Temporary +200 ATK, -50% DEF for 40 steps',apply:()=>{
         p.tempOrcsRage={atkBoost:200,defDebuff:0.5,steps:40};
         log("Orc's Rage: +200 attack, -50% defense for 40 steps!");
@@ -2569,17 +2595,25 @@ body {
         const potion = btn.dataset.useStrength;
         if(p.inv[potion] > 0) {
           p.inv[potion]--;
-          p.tempAtk = {value: roll(10,20), steps: roll(30,90)};
-          log(`Used Strength Potion (+${p.tempAtk.value} ATK for ${p.tempAtk.steps} steps)`);
+          const newValue = roll(10,20);
+          const newSteps = roll(30,90);
+          if(p.tempAtk) {
+            p.tempAtk.steps += newSteps;
+            log(`Used Strength Potion (Extended ATK buff by ${newSteps} steps, total: ${p.tempAtk.steps} steps)`);
+          } else {
+            p.tempAtk = {value: newValue, steps: newSteps};
+            log(`Used Strength Potion (+${p.tempAtk.value} ATK for ${p.tempAtk.steps} steps)`);
+          }
         }
       }
       if (btn.dataset.useRage !== undefined) {
         const potion = btn.dataset.useRage;
         if(p.inv[potion] > 0) {
           p.inv[potion]--;
-          p.tempAtk = {value: Math.floor(p.atk * 2), steps: 30};
-          p.hp = Math.max(1, round1(p.hp * 0.75));
-          log("RAGE! ATK doubled, HP reduced by 25% for 30 steps");
+          p.atk = round1(p.atk + 0.5);
+          p.maxHp = Math.max(1, round1(p.maxHp - 5));
+          p.hp = Math.min(p.hp, p.maxHp);
+          log("Rage Potion: +0.5 ATK, -5 max HP permanently!");
         }
       }
       if (btn.dataset.useScroll !== undefined) {
