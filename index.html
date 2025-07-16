@@ -671,7 +671,7 @@ body {
     ], 
     'Scroll Merchant':[
       {name:'Scroll of Healing',price:25,desc:'Restores full HP',apply:()=>{p.hp=p.maxHp}},
-      {name:'Luck Charm',price:50,desc:'Temporary +10 luck for 10 steps',apply:()=>{p.tempLuck={value:10,steps:10}}}
+      {name:'Luck Charm',price:50,desc:'Temporary +20 luck for 20 steps',apply:()=>{p.tempLuck={value:20,steps:20}}}
     ]
   };
 
@@ -1609,8 +1609,23 @@ body {
     }
     else if(t.type==='chest') {
       let g=roll(5,15);
+      
+      // Apply luck multiplier - every 5 luck beyond 5 increases multiplier
+      let currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
+      let multiplier = 1;
+      if(currentLuck > 5) {
+        multiplier = Math.floor((currentLuck - 1) / 5);
+      }
+      
+      g = g * multiplier;
       p.g = Math.max(0, (p.g || 0) + g);
-      log("Chest! +"+g+" gold");
+      
+      if(multiplier > 1) {
+        log(`Chest! +${g} gold (${multiplier}x luck bonus!)`);
+      } else {
+        log("Chest! +"+g+" gold");
+      }
+      
       setT(nx,ny,{type:'empty'});
       p.x=nx; p.y=ny;
       checkAreaChange();
@@ -1850,8 +1865,10 @@ body {
       }
     });
     
-    // Boss monsters (level 10) drop special items 50% of the time
-    if(m.level === 10 && Math.random() < 0.5) {
+    // Boss monsters (level 10) drop special items 50% of the time + luck bonus
+    let currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
+    let bossDropChance = 0.5 + (currentLuck / 100);
+    if(m.level === 10 && Math.random() < bossDropChance) {
       let specialItems = {
         'Ancient_Goblin': 'Ancient_Goblin_Crown',
         'Bone_Archlich': 'Bone_Archlich_Staff',
@@ -1871,8 +1888,9 @@ body {
       }
     }
     
-    // Level 15 boss monsters drop legendary weapons 90% of the time
-    if(m.level === 15 && Math.random() < 0.9) {
+    // Level 15 boss monsters drop legendary weapons 90% of the time + luck bonus
+    let legendaryDropChance = 0.9 + (currentLuck / 100);
+    if(m.level === 15 && Math.random() < legendaryDropChance) {
       let legendaryWeapons = {
         'Leviathan': 'Tidepiercer',
         'DeathStar': 'Nova_Maul',
@@ -1888,8 +1906,9 @@ body {
       }
     }
     
-    // Random resource drop
-    if(Math.random() < 0.3) {
+    // Random resource drop (30% base chance + luck bonus)
+    let resourceDropChance = 0.3 + (currentLuck / 100);
+    if(Math.random() < resourceDropChance) {
       let resourceMap = {
         'Goblin': 'Goblin_Ear',
         'Skeleton': 'Skeleton_Bone',
@@ -2461,8 +2480,10 @@ body {
   function openCraft(){
     let html='<h2 style="color:#FF9800; text-align:center; margin-bottom:15px;">🔨 Crafting</h2>';
     let currentCraft = round1(p.craft + (p.tempCraft ? p.tempCraft.value : 0));
+    let currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
+    let totalChance = currentCraft + currentLuck;
     html += `<div style="text-align:center; margin-bottom:20px; padding:10px; background:#2E7D32; border-radius:6px; color:white;">`;
-    html += `<strong>Craft Skill: ${currentCraft}% success chance</strong>`;
+    html += `<strong>Success Chance: ${totalChance}% (${currentCraft}% craft + ${currentLuck}% luck)</strong>`;
     html += `</div>`;
     
     html += '<div style="display:grid; gap:8px;">';
@@ -2482,7 +2503,7 @@ body {
       html += `<div style="font-size:12px; opacity:0.8;">Materials: ${Object.entries(r.need).map(e=>e.join('x')).join(', ')}</div>`;
       html += `</div>`;
       html += `<div style="text-align:right;">`;
-      html += `<div style="font-size:12px; color:#FFD700;">${currentCraft}% chance</div>`;
+      html += `<div style="font-size:12px; color:#FFD700;">${totalChance}% chance</div>`;
       html += `<div style="font-size:10px; opacity:0.6;">+0.1 skill</div>`;
       html += `</div>`;
       html += `</button>`;
@@ -2508,8 +2529,9 @@ body {
             }
           }
           
-          // Check if crafting succeeded based on percentage
-          let craftChance = round1(p.craft + (p.tempCraft ? p.tempCraft.value : 0));
+          // Check if crafting succeeded based on percentage (craft skill + luck bonus)
+          let currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
+          let craftChance = round1(p.craft + (p.tempCraft ? p.tempCraft.value : 0) + currentLuck);
           let craftRoll = Math.random() * 100;
           
           if(craftRoll <= craftChance) {
