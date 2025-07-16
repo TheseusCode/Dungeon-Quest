@@ -2505,6 +2505,10 @@ body {
             if(item === 'Scroll of Healing') {
               html += ` <button data-use-scroll="${item}" style="background:#4CAF50; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Use</button>`;
             }
+            // Add equip button for equipment items that ended up in inventory
+            if(itemDefs[item]) {
+              html += ` <button data-move-to-eq="${item}" style="background:#2196F3; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Move to Equipment</button>`;
+            }
             
             html += `</div></div>`;
           }
@@ -2577,6 +2581,27 @@ body {
           p.inv[scroll]--;
           p.hp = p.maxHp;
           log(`Used Scroll of Healing (Full HP restored)`);
+        }
+      }
+      if (btn.dataset.moveToEq !== undefined) {
+        const itemName = btn.dataset.moveToEq;
+        if(p.inv[itemName] > 0 && itemDefs[itemName]) {
+          // Remove from inventory
+          p.inv[itemName]--;
+          if(p.inv[itemName] <= 0) {
+            delete p.inv[itemName];
+          }
+          
+          // Add to equipment
+          const itemDef = itemDefs[itemName];
+          const durability = typeof itemDef.maxD === 'function' ? itemDef.maxD() : itemDef.maxD;
+          p.eq.push({
+            name: itemName,
+            durability: durability,
+            level: itemDef.level || 1,
+            boost: itemDef.boost
+          });
+          log(`Moved ${itemName.replace(/_/g, ' ')} to equipment`);
         }
       }
       updateUI();
@@ -2782,7 +2807,7 @@ body {
       updateUI();
     };
     if(act) {
-      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage],button[data-use-scroll],button[data-combine]').forEach(b=>{
+      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage],button[data-use-scroll],button[data-move-to-eq],button[data-combine]').forEach(b=>{
         b.onclick=(e)=>{
           e.preventDefault();
           act(b);
