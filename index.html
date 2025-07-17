@@ -835,6 +835,7 @@ body {
   // State - changed to 1024x1024 map (64x64 areas of 16x16 tiles)
   const AREA=16,GRID_W=16,GRID_H=16,TOWN=32,SIZE=1024,SAVE='dqSave';
   let p,world,quests=[],randomNpcActiveQuests=[];
+  let isQuestPopupOpen = false; // Track if quest popup is currently open
   const d=s=>document.querySelector(s),dA=s=>document.querySelectorAll(s),
         SEl=d('#stats'),MEl=d('#map'),LEl=d('#log'),OV=d('#overlay'),MD=d('#modal'),
         QM=d('#quest-modal');
@@ -1819,6 +1820,23 @@ body {
         }
       });
       
+      // Update normal fetch quest progress and refresh popup if needed
+      let fetchQuestProgressUpdated = false;
+      quests.forEach(quest => {
+        if(quest.type === 'fetch' && quest.need[t.data]) {
+          const currentProgress = Math.min(p.inv[t.data] || 0, quest.need[t.data]);
+          if(currentProgress > quest.progress[t.data]) {
+            quest.progress[t.data] = currentProgress;
+            fetchQuestProgressUpdated = true;
+            log(`Quest progress: ${quest.name} - ${quest.progress[t.data]}/${quest.need[t.data]} ${t.data.replace(/_/g, ' ')}`);
+          }
+        }
+      });
+      
+      if(fetchQuestProgressUpdated) {
+        refreshQuestPopup();
+      }
+      
       setT(nx,ny,{type:'empty'});
       p.x=nx; p.y=ny;
       
@@ -2093,14 +2111,21 @@ body {
     });
     
     // Update normal quest kill progress
+    let questProgressUpdated = false;
     quests.forEach(quest => {
       if(quest.type === 'kill' && quest.need[monsterKey]) {
         quest.progress[monsterKey] = (quest.progress[monsterKey] || 0) + 1;
+        questProgressUpdated = true;
         if(quest.progress[monsterKey] <= quest.need[monsterKey]) {
           log(`Quest progress: ${quest.name} - ${quest.progress[monsterKey]}/${quest.need[monsterKey]} ${monsterKey.replace(/_/g, ' ')}`);
         }
       }
     });
+    
+    // Refresh quest popup if open and progress was updated
+    if(questProgressUpdated) {
+      refreshQuestPopup();
+    }
     
     // Boss monsters (level 10) drop special items 50% of the time + luck bonus
     let currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
@@ -2171,6 +2196,23 @@ body {
           }
         }
       });
+      
+      // Update normal fetch quest progress and refresh popup if needed
+      let fetchQuestProgressUpdated = false;
+      quests.forEach(quest => {
+        if(quest.type === 'fetch' && quest.need[resource]) {
+          const currentProgress = Math.min(p.inv[resource] || 0, quest.need[resource]);
+          if(currentProgress > quest.progress[resource]) {
+            quest.progress[resource] = currentProgress;
+            fetchQuestProgressUpdated = true;
+            log(`Quest progress: ${quest.name} - ${quest.progress[resource]}/${quest.need[resource]} ${resource.replace(/_/g, ' ')}`);
+          }
+        }
+      });
+      
+      if(fetchQuestProgressUpdated) {
+        refreshQuestPopup();
+      }
     }
     
     // Rare consumables drop from all monsters with specific drop rates
@@ -2426,7 +2468,7 @@ body {
     });
   }
   
-  function openQuests() {
+  function generateQuestLogHTML() {
     let html = '<h2 style="color:#FFD700; text-align:center; margin-bottom:15px;">📋 Active Quests</h2>';
     if(quests.length === 0) {
       html += '<div style="text-align:center; color:#888; padding:20px;">No active quests</div>';
@@ -2475,8 +2517,63 @@ body {
       });
       html += '</div>';
     }
+    return html;
+  }
+
+  function refreshQuestPopup() {
+    if(!isQuestPopupOpen) return;
     
-    openModal(html, btn => {
+    const modal = d('#modal');
+    if(modal && modal.style.display !== 'none') {
+      modal.innerHTML = generateQuestLogHTML();
+      
+      // Re-attach event listeners to buttons
+      modal.querySelectorAll('button[data-turn]').forEach(btn => {
+        btn.onclick = () => {
+          let index = parseInt(btn.dataset.turn);
+          let quest = quests[index];
+          
+          // Validate quest completion before completing
+          let canComplete = true;
+          if(quest.type === 'kill') {
+            Object.entries(quest.need).forEach(([monster, needed]) => {
+              if((quest.progress[monster] || 0) < needed) canComplete = false;
+            });
+          } else if(quest.type === 'fetch') {
+            Object.entries(quest.need).forEach(([item, needed]) => {
+              if((p.inv[item] || 0) < needed) canComplete = false;
+            });
+          }
+          
+          if(!canComplete) {
+            log("Quest requirements not met!");
+            return;
+          }
+          
+          // Complete quest
+          if(quest.type === 'fetch') {
+            Object.entries(quest.need).forEach(([item, needed]) => {
+              p.inv[item] = (p.inv[item] || 0) - needed;
+            });
+          }
+          
+          const goldReward = Number(quest.reward.gold) || 0;
+          p.g = Math.max(0, (p.g || 0) + goldReward);
+          log("Quest completed: " + quest.name + " (+" + goldReward + " gold)");
+          quests.splice(index, 1);
+          
+          // Refresh the popup after completing quest
+          refreshQuestPopup();
+          updateUI();
+        };
+      });
+    }
+  }
+
+  function openQuests() {
+    isQuestPopupOpen = true;
+    
+    openModal(generateQuestLogHTML(), btn => {
       if(btn.dataset.turn) {
         let index = parseInt(btn.dataset.turn);
         let quest = quests[index];
@@ -2509,6 +2606,9 @@ body {
         p.g = Math.max(0, (p.g || 0) + goldReward);
         log("Quest completed: " + quest.name + " (+" + goldReward + " gold)");
         quests.splice(index, 1);
+        
+        // Refresh the popup after completing quest
+        refreshQuestPopup();
       }
       updateUI();
     });
@@ -3755,6 +3855,7 @@ body {
     MD.innerHTML='';
     inventoryModalOpen = false;
     craftingModalOpen = false;
+    isQuestPopupOpen = false; // Reset quest popup flag when modal is closed
   }
   
   // Welcome Modal
