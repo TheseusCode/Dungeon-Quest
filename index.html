@@ -848,6 +848,10 @@ body {
     
     if (!world[areaY][areaX]) {
       world[areaY][areaX] = gen(areaX === TOWN && areaY === TOWN, areaX, areaY);
+      // Debug logging for area generation
+      if (areaX !== TOWN || areaY !== TOWN) {
+        console.log(`Generated area (${areaX}, ${areaY}) lazily`);
+      }
     }
     return world[areaY][areaX];
   }
@@ -1295,8 +1299,11 @@ body {
     
     // If not found, look for it in NPCs across all areas
     if (!quest) {
-      for (let area of world.flat()) {
-        if (area.tiles) {
+      // Make sure current area is loaded
+      ensureWorldArea(p.currentArea.x, p.currentArea.y);
+      
+      for (let area of world.flat().filter(a => a !== null)) {
+        if (area && area.tiles) {
           for (let row of area.tiles) {
             for (let tile of row) {
               if (tile.type === 'npc' && tile.data && tile.data.quest && tile.data.quest.id === questId) {
@@ -1316,7 +1323,10 @@ body {
       const alreadyAccepted = randomNpcActiveQuests.some(q => q.id === questId);
       if (!alreadyAccepted) {
         acceptRandomNpcQuest(quest);
+        log(`Quest accepted: ${quest.name}`);
       }
+    } else {
+      log('Quest not found or already accepted');
     }
     closeRandomQuestPopup();
   }
@@ -1768,7 +1778,7 @@ body {
         if(tx===lx&&ty===ly) ch='P';
         else {
           let c=getT(tx+ax*AREA,ty+ay*AREA);
-          if(c.type==='monster') {
+          if(c && c.type==='monster') {
             let levelClass = `monster-lvl${Math.min(10, c.data.level)}`;
             let symbol = 'M';
             
@@ -1783,10 +1793,10 @@ body {
             
             ch=`<span class="${levelClass}">${symbol}</span>`;
           }
-          else if(c.type==='resource') ch=`<span class="resource">R</span>`;
-          else if(c.type==='trap') ch='T';
-          else if(c.type==='chest') ch='<span class="chest">C</span>';
-          else if(c.type==='npc') {
+          else if(c && c.type==='resource') ch=`<span class="resource">R</span>`;
+          else if(c && c.type==='trap') ch='T';
+          else if(c && c.type==='chest') ch='<span class="chest">C</span>';
+          else if(c && c.type==='npc') {
             if(c.data && c.data.isTown) {
               ch=`<span class="town-npc">${c.data.abbr || 'N'}</span>`;
             } else {
@@ -1817,14 +1827,14 @@ body {
     if(nx<0||nx>=SIZE||ny<0||ny>=SIZE) return;
     
     let t=getT(nx,ny);
-    if(t.type==='monster') {
+    if(t && t.type==='monster') {
       if(p.preventFlee>0) {
         log("Cannot flee!");
         return;
       }
       fight(t.data,nx,ny);
     }
-    else if(t.type==='resource') {
+    else if(t && t.type==='resource') {
       p.inv[t.data]=(p.inv[t.data]||0)+1;
       log("Found "+t.data);
       
@@ -1863,7 +1873,7 @@ body {
       updateUI();
       updateRealTimeDisplays();
     }
-    else if(t.type==='trap') {
+    else if(t && t.type==='trap') {
       let dmg=roll(1,5);
       p.hp=Math.max(0,round1(p.hp-dmg));
       log("Trap! -"+dmg+" HP");
@@ -1873,7 +1883,7 @@ body {
       updateUI();
       updateRealTimeDisplays();
     }
-    else if(t.type==='chest') {
+    else if(t && t.type==='chest') {
       let g=roll(5,15);
       
       // Apply luck multiplier - every 5 luck beyond 5 increases multiplier
@@ -1897,7 +1907,7 @@ body {
       checkAreaChange();
       updateUI();
     }
-    else if(t.type==='npc') {
+    else if(t && t.type==='npc') {
       interact(t.data);
     }
     else {
@@ -1914,8 +1924,8 @@ body {
     let newAreaY = Math.floor(p.y / AREA);
     
     if(newAreaX !== p.currentArea.x || newAreaY !== p.currentArea.y) {
-      // Player moved to a new area - refresh the old area
-      ensureWorldArea(p.currentArea.x, p.currentArea.y);
+      // Player moved to a new area - ensure new area is loaded
+      ensureWorldArea(newAreaX, newAreaY);
       p.currentArea = {x: newAreaX, y: newAreaY};
       
       // Clear the log panel when entering a new area
