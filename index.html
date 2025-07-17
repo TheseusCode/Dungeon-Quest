@@ -629,8 +629,8 @@ body {
         applyPotionEffect({def: 20, steps: 60}, 'Guardian Tonic');
         updateRealTimeDisplays();
       }},
-      {name:'Master Crafter\'s Brew',price:100,desc:'Temporary +50 craft skill for 15 crafting attempts',apply:()=>{
-        applyPotionEffect({craft: 50, steps: 15}, 'Master Crafter\'s Brew');
+      {name:'Master Crafter\'s Brew',price:100,desc:'Temporary +50 craft skill for 50 steps',apply:()=>{
+        applyPotionEffect({craft: 50, steps: 50}, 'Master Crafter\'s Brew');
         updateRealTimeDisplays();
       }},
       {name:'Orc\'s Rage',price:175,desc:'Temporary +200 ATK, -50% DEF for 40 steps',apply:()=>{
@@ -667,7 +667,7 @@ body {
     ], 
     'Scroll Merchant':[
       {name:'Scroll of Healing',price:25,desc:'Restores full HP',apply:()=>{p.hp=p.maxHp}},
-      {name:'Luck Charm',price:50,desc:'Temporary +20 luck for 20 steps',apply:()=>{applyPotionEffect({luck: 20, steps: 20}, 'Luck Charm');updateRealTimeDisplays();}}
+      {name:'Luck Charm',price:50,desc:'Temporary +20 luck for 30 steps',apply:()=>{applyPotionEffect({luck: 20, steps: 30}, 'Luck Charm');updateRealTimeDisplays();}}
     ]
   };
 
