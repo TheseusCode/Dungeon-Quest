@@ -233,7 +233,7 @@ body {
 .monster-lvl7 { color: #660000; }
 .monster-lvl8 { color: #aa0000; }
 .monster-lvl9 { color: #440000; }
-.monster-lvl10 { color: #220000; }
+.monster-lvl10 { color: #9b59b6; }
 .chest { color: #ffff00; }
 .town-npc { color: #55ffff; }
 .resource { color: #55ff55; }
@@ -568,7 +568,7 @@ body {
       {name:'Leviathan Emperor',mult:2048,reward:204.8},
       {name:'Leviathan Overlord',mult:4096,reward:409.6},
       {name:'Leviathan Destroyer',mult:8192,reward:819.2},
-      {name:'Leviathan',mult:16384,reward:1638.4}
+      {name:'Primordial Leviathan God',mult:16384,reward:1638.4}
     ]},
     DeathStar: {base:{hp:15,atk:7,def:8,boost:'def'}, levels:[
       {name:'Death Star',mult:1,reward:0.1},
@@ -585,7 +585,7 @@ body {
       {name:'Death Star Emperor',mult:2048,reward:204.8},
       {name:'Death Star Overlord',mult:4096,reward:409.6},
       {name:'Death Star Destroyer',mult:8192,reward:819.2},
-      {name:'Death Star',mult:16384,reward:1638.4}
+      {name:'Primordial Death Star God',mult:16384,reward:1638.4}
     ]},
     Susano: {base:{hp:18,atk:9,def:7,boost:'maxHp'}, levels:[
       {name:'Susano',mult:1,reward:0.1},
@@ -602,7 +602,7 @@ body {
       {name:'Susano Emperor',mult:2048,reward:204.8},
       {name:'Susano Overlord',mult:4096,reward:409.6},
       {name:'Susano Destroyer',mult:8192,reward:819.2},
-      {name:'Susano',mult:16384,reward:1638.4}
+      {name:'Primordial Susano God',mult:16384,reward:1638.4}
     ]}
   };
 
@@ -680,21 +680,21 @@ body {
     'Skeleton_King_Bone':{boost:{def:1},maxD:50,level:1},
     'Dire_Wolf_Pelt':{boost:{maxHp:5},maxD:50,level:1},
     // Level 10 special items
-    'Ancient_Goblin_Crown':{boost:{atk:5,def:2},maxD:200,value:200,level:1},
-    'Bone_Archlich_Staff':{boost:{atk:8},maxD:200,value:200,level:1},
-    'Primordial_Wolf_Fang':{boost:{atk:6,maxHp:8},maxD:200,value:200,level:1},
-    'Orc_Destroyer_Axe':{boost:{atk:10},maxD:200,value:200,level:1},
-    'Ancient_Ogre_Club':{boost:{atk:7,maxHp:15},maxD:200,value:200,level:1},
-    'Gnoll_Demigod_Spear':{boost:{atk:9,def:3},maxD:200,value:200,level:1},
-    'Wyvern_God_Scale':{boost:{atk:12,def:5,maxHp:10},maxD:200,value:200,level:1},
+    'Ancient_Goblin_Crown':{boost:{atk:250,def:100},maxD:200,value:200,level:1},
+    'Bone_Archlich_Staff':{boost:{atk:400},maxD:200,value:200,level:1},
+    'Primordial_Wolf_Fang':{boost:{atk:300,maxHp:400},maxD:200,value:200,level:1},
+    'Orc_Destroyer_Axe':{boost:{atk:500},maxD:200,value:200,level:1},
+    'Ancient_Ogre_Club':{boost:{atk:350,maxHp:750},maxD:200,value:200,level:1},
+    'Gnoll_Demigod_Spear':{boost:{atk:450,def:150},maxD:200,value:200,level:1},
+    'Wyvern_God_Scale':{boost:{atk:600,def:250,maxHp:500},maxD:200,value:200,level:1},
     // Ultimate legendary weapon
-    'Apex_Predator':{boost:{atk:525,def:715,maxHp:1025},maxD:100,value:1000,level:1},
+    'Apex_Predator':{boost:{atk:800,def:800,maxHp:1200},maxD:100,value:1000,level:1},
     // New ultimate weapon
     'Broken_Stick':{boost:{atk:50000},maxD:5,value:0,level:1,unsellable:true},
     // Level 15 boss weapons - cannot be sold
-    'Tidepiercer':{boost:{atk:500,def:200},maxD:100,value:0,level:1,unsellable:true},
-    'Nova_Maul':{boost:{atk:300,maxHp:500,def:100},maxD:100,value:0,level:1,unsellable:true},
-    'Stormfang_Katana':{boost:{atk:1000,def:500},maxD:100,value:0,level:1,unsellable:true},
+    'Tidepiercer':{boost:{atk:1000,def:400},maxD:100,value:0,level:1,unsellable:true},
+    'Nova_Maul':{boost:{atk:600,maxHp:1000,def:200},maxD:100,value:0,level:1,unsellable:true},
+    'Stormfang_Katana':{boost:{atk:2000,def:1000},maxD:100,value:0,level:1,unsellable:true},
     // New weapons with random durability
     'Shadowstrike_Blade':{boost:{atk:6,def:1},maxD:()=>roll(40,100),value:150,level:1},
     'Thundercaller_Hammer':{boost:{atk:8,maxHp:5},maxD:()=>roll(40,100),value:180,level:1},
@@ -706,26 +706,29 @@ body {
     'Hide_Shield':{boost:{def:7},maxD:()=>roll(40,100),value:200,level:1},
     'Wild_Cape':{boost:{atk:5,def:5,maxHp:-15},maxD:()=>roll(40,100),value:250,level:1},
     // Random NPC Quest Reward Equipment
-    'Rusty_Dagger':{boost:{atk:1},maxD:50,level:1},
-    'Leather_Gloves':{boost:{atk:1,def:1},maxD:40,level:1},
-    'Iron_Boots':{boost:{def:2},maxD:60,level:1},
-    'Steel_Helm':{boost:{def:3,maxHp:5},maxD:70,level:1},
-    'Hunter_Bow':{boost:{atk:3},maxD:55,level:1},
+    // Low Level Equipment (Level 1-3 monsters)
+    'Rusty_Dagger':{boost:{atk:2},maxD:50,level:1},
+    'Leather_Gloves':{boost:{atk:2,def:2},maxD:40,level:1},
+    'Iron_Boots':{boost:{def:3},maxD:50,level:1},
+    'Steel_Helm':{boost:{def:2,maxHp:5},maxD:50,level:1},
+    'Hunter_Bow':{boost:{atk:3},maxD:50,level:1},
+    // Mid Level Equipment (Level 4-6 monsters)
     'Chain_Mail':{boost:{def:4,maxHp:8},maxD:80,level:1},
-    'Battle_Axe':{boost:{atk:5},maxD:65,level:1},
-    'Magic_Ring':{boost:{atk:2,def:2,maxHp:3},maxD:90,level:1},
-    'Dragon_Scale_Armor':{boost:{def:6,maxHp:12},maxD:85,level:1},
-    'Enchanted_Blade':{boost:{atk:7},maxD:75,level:1},
-    'Guardian_Shield':{boost:{def:8},maxD:95,level:1},
-    'Mystic_Cloak':{boost:{atk:3,def:5},maxD:70,level:1},
-    'Warrior_Gauntlets':{boost:{atk:4,def:3},maxD:65,level:1},
+    'Battle_Axe':{boost:{atk:20},maxD:50,level:1},
+    'Magic_Ring':{boost:{atk:22,def:15,maxHp:10},maxD:30,level:1},
+    'Enchanted_Blade':{boost:{atk:27},maxD:50,level:1},
+    'Guardian_Shield':{boost:{def:28},maxD:40,level:1},
+    'Shadow_Boots':{boost:{atk:25,def:22},maxD:50,level:1},
+    // High Level Equipment (Level 7-9 monsters)
+    'Dragon_Scale_Armor':{boost:{def:76,maxHp:72},maxD:60,level:1},
+    'Mystic_Cloak':{boost:{maxHp:80,def:45},maxD:60,level:1},
+    'Warrior_Gauntlets':{boost:{atk:90},maxD:50,level:1},
     'Crystal_Amulet':{boost:{atk:5,def:2,maxHp:7},maxD:80,level:1},
-    'Shadow_Boots':{boost:{atk:2,def:4},maxD:60,level:1},
-    'Fire_Sword':{boost:{atk:8},maxD:70,level:1},
-    'Ice_Staff':{boost:{atk:6,maxHp:10},maxD:75,level:1},
-    'Lightning_Spear':{boost:{atk:9},maxD:85,level:1},
-    'Ancient_Relic':{boost:{atk:6,def:6,maxHp:15},maxD:100,level:1},
-    'Demon_Blade':{boost:{atk:12},maxD:80,level:1},
+    'Ice_Staff':{boost:{atk:99},maxD:50,level:1},
+    'Fire_Sword':{boost:{atk:88,maxHp:30},maxD:50,level:1},
+    'Lightning_Spear':{boost:{atk:99},maxD:50,level:1},
+    'Ancient_Relic':{boost:{atk:96,def:96,maxHp:115},maxD:90,level:1},
+    'Demon_Blade':{boost:{atk:150},maxD:50,level:1},
     // New consumables
     'Resurrection_Charm':{consumable:true,desc:'One-time reborn with all stats intact when you die',level:1},
     'Asura_Blood':{consumable:true,desc:'100x all stats for 100 steps, then 75% stat reduction for 50 steps',level:1}
@@ -745,7 +748,7 @@ body {
     {name:'Scale_Dagger',need:{'Wyvern_Scale':2,'Skeleton_Bone':2}},
     {name:'Hide_Shield',need:{'Orc_Tusk':5,'Ogre_Hide':1,'Skeleton_Bone':10}},
     {name:'Wild_Cape',need:{'Ogre_Hide':5,'Goblin_Ear':2,'Wolf_Pelt':4}},
-    {name:'Apex_Predator',need:{'Ancient_Goblin_Crown':1,'Bone_Archlich_Staff':1,'Primordial_Wolf_Fang':1,'Orc_Destroyer_Axe':1,'Ancient_Ogre_Club':1,'Gnoll_Demigod_Spear':1,'Wyvern_God_Scale':1}},
+    {name:'Apex_Predator',need:{'Ancient_Goblin_Crown':1,'Bone_Archlich_Staff':1,'Primordial_Wolf_Fang':1,'Orc_Destroyer_Axe':1,'Ancient_Ogre_Club':1,'Gnoll_Demigod_Spear':1,'Wyvern_God_Scale':1},anyFourOf:true},
     {name:'Broken_Stick',need:{'Apex_Predator':1,'Tidepiercer':1,'Nova_Maul':1,'Stormfang_Katana':1}}
   ];
 
@@ -761,90 +764,76 @@ body {
 
   const townQuests={ 
     easy:[
-      {name:'Help Herbalist',type:'fetch',desc:'Bring 2 Herbs',need:{Herb:2},reward:{gold:10}},
-      {name:'Wolf Pelt',type:'fetch',desc:'Bring 1 Wolf Pelt',need:{Wolf_Pelt:1},reward:{gold:15}},
-      {name:'Orc Tusks',type:'fetch',desc:'Bring 2 Orc Tusks',need:{Orc_Tusk:2},reward:{gold:20}},
-      {name:'Gnoll Claws',type:'fetch',desc:'Bring 1 Gnoll Claw',need:{Gnoll_Claw:1},reward:{gold:18}}
+      {name:'Help Herbalist',type:'fetch',desc:'Bring 2 Herbs',need:{Herb:2},reward:{gold:20}},
+      {name:'Wolf Pelt',type:'fetch',desc:'Bring 1 Wolf Pelt',need:{Wolf_Pelt:1},reward:{gold:30}},
+      {name:'Orc Tusks',type:'fetch',desc:'Bring 2 Orc Tusks',need:{Orc_Tusk:2},reward:{gold:40}},
+      {name:'Gnoll Claws',type:'fetch',desc:'Bring 1 Gnoll Claw',need:{Gnoll_Claw:1},reward:{gold:36}}
     ], 
     med:[
-      {name:'Slay Goblins',type:'kill',desc:'Defeat 3 Goblins',need:{Goblin:3},reward:{gold:15}},
-      {name:'Skeleton Bones',type:'fetch',desc:'Bring 2 Skeleton Bones',need:{Skeleton_Bone:2},reward:{gold:20}},
-      {name:'Orc Hunt',type:'kill',desc:'Defeat 2 Orcs',need:{Orc:2},reward:{gold:25}},
-      {name:'Ogre Challenge',type:'kill',desc:'Defeat 1 Ogre',need:{Ogre:1},reward:{gold:30}}
+      {name:'Slay Goblins',type:'kill',desc:'Defeat 3 Goblins',need:{Goblin:3},reward:{gold:30}},
+      {name:'Skeleton Bones',type:'fetch',desc:'Bring 2 Skeleton Bones',need:{Skeleton_Bone:2},reward:{gold:40}},
+      {name:'Orc Hunt',type:'kill',desc:'Defeat 2 Orcs',need:{Orc:2},reward:{gold:50}},
+      {name:'Ogre Challenge',type:'kill',desc:'Defeat 1 Ogre',need:{Ogre:1},reward:{gold:60}}
     ], 
     hard:[
-      {name:'Defeat Skeletons',type:'kill',desc:'Defeat 2 Skeleton Soldiers',need:{Skeleton_Soldier:2},reward:{gold:25}},
-      {name:'Hob Goblin Challenge',type:'kill',desc:'Defeat 1 Hobgoblin',need:{Hobgoblin:1},reward:{gold:30}},
-      {name:'Wyvern Hunt',type:'kill',desc:'Defeat 1 Wyvern',need:{Wyvern:1},reward:{gold:40}},
-      {name:'Gnoll Pack',type:'kill',desc:'Defeat 3 Gnoll Hunters',need:{Gnoll_Hunter:3},reward:{gold:45}}
+      {name:'Defeat Skeletons',type:'kill',desc:'Defeat 2 Skeleton Soldiers',need:{Skeleton_Soldier:2},reward:{gold:50}},
+      {name:'Hob Goblin Challenge',type:'kill',desc:'Defeat 1 Hobgoblin',need:{Hobgoblin:1},reward:{gold:60}},
+      {name:'Wyvern Hunt',type:'kill',desc:'Defeat 1 Wyvern',need:{Wyvern:1},reward:{gold:80}},
+      {name:'Gnoll Pack',type:'kill',desc:'Defeat 3 Gnoll Hunters',need:{Gnoll_Hunter:3},reward:{gold:90}}
     ],
     elite:[
-      {name:'Goblin King',type:'kill',desc:'Defeat the Goblin King',need:{Goblin_King:1},reward:{gold:50}},
-      {name:'Skeleton Duke',type:'kill',desc:'Defeat a Skeleton Duke',need:{Skeleton_Duke:1},reward:{gold:60}},
-      {name:'Orc Warlord',type:'kill',desc:'Defeat an Orc Warlord',need:{Orc_Warlord:1},reward:{gold:70}},
-      {name:'Elder Wyvern',type:'kill',desc:'Defeat an Elder Wyvern',need:{Elder_Wyvern:1},reward:{gold:80}}
+      {name:'Goblin King',type:'kill',desc:'Defeat the Goblin King',need:{Goblin_King:1},reward:{gold:100}},
+      {name:'Skeleton Duke',type:'kill',desc:'Defeat a Skeleton Duke',need:{Skeleton_Duke:1},reward:{gold:120}},
+      {name:'Orc Warlord',type:'kill',desc:'Defeat an Orc Warlord',need:{Orc_Warlord:1},reward:{gold:140}},
+      {name:'Elder Wyvern',type:'kill',desc:'Defeat an Elder Wyvern',need:{Elder_Wyvern:1},reward:{gold:160}}
     ],
     legendary:[
-      {name:'Ancient Goblin',type:'kill',desc:'Defeat the Ancient Goblin',need:{Ancient_Goblin:1},reward:{gold:500}},
-      {name:'Bone Archlich',type:'kill',desc:'Defeat the Bone Archlich',need:{Bone_Archlich:1},reward:{gold:500}},
-      {name:'Primordial Wolf',type:'kill',desc:'Defeat the Primordial Wolf',need:{Primordial_Wolf:1},reward:{gold:500}},
-      {name:'Orc Destroyer',type:'kill',desc:'Defeat the Orc Destroyer',need:{Orc_Destroyer:1},reward:{gold:500}},
-      {name:'Ancient Ogre',type:'kill',desc:'Defeat the Ancient Ogre',need:{Ancient_Ogre:1},reward:{gold:500}},
-      {name:'Gnoll Demigod',type:'kill',desc:'Defeat the Gnoll Demigod',need:{Gnoll_Demigod:1},reward:{gold:500}},
-      {name:'Wyvern God',type:'kill',desc:'Defeat the Wyvern God',need:{Wyvern_God:1},reward:{gold:500}},
-      {name:'Leviathan Boss',type:'kill',desc:'Defeat the Level 15 Leviathan',need:{Leviathan:1},reward:{gold:10000}},
-      {name:'DeathStar Boss',type:'kill',desc:'Defeat the Level 15 DeathStar',need:{DeathStar:1},reward:{gold:10000}},
-      {name:'Susano Boss',type:'kill',desc:'Defeat the Level 15 Susano',need:{Susano:1},reward:{gold:10000}}
+      {name:'Ancient Goblin',type:'kill',desc:'Defeat the Ancient Goblin',need:{Ancient_Goblin:1},reward:{gold:5000}},
+      {name:'Bone Archlich',type:'kill',desc:'Defeat the Bone Archlich',need:{Bone_Archlich:1},reward:{gold:5000}},
+      {name:'Primordial Wolf',type:'kill',desc:'Defeat the Primordial Wolf',need:{Primordial_Wolf:1},reward:{gold:5000}},
+      {name:'Orc Destroyer',type:'kill',desc:'Defeat the Orc Destroyer',need:{Orc_Destroyer:1},reward:{gold:5000}},
+      {name:'Ancient Ogre',type:'kill',desc:'Defeat the Ancient Ogre',need:{Ancient_Ogre:1},reward:{gold:5000}},
+      {name:'Gnoll Demigod',type:'kill',desc:'Defeat the Gnoll Demigod',need:{Gnoll_Demigod:1},reward:{gold:5000}},
+      {name:'Wyvern God',type:'kill',desc:'Defeat the Wyvern God',need:{Wyvern_God:1},reward:{gold:5000}},
+      {name:'Leviathan Boss',type:'kill',desc:'Defeat the Level 15 Leviathan',need:{Leviathan:1},reward:{gold:100000}},
+      {name:'DeathStar Boss',type:'kill',desc:'Defeat the Level 15 DeathStar',need:{DeathStar:1},reward:{gold:100000}},
+      {name:'Susano Boss',type:'kill',desc:'Defeat the Level 15 Susano',need:{Susano:1},reward:{gold:100000}}
     ]
   };
 
-  // 30 Custom Random NPC Quests
+  // 20 Random NPC Kill Quests - Organized by distance tiers matching monster spawning logic
   const randomNpcQuests = [
-    // Easy Area Quests (1-2 distance from town)
-    {name:'Goblin Cleaner',type:'kill',desc:'Clear out 2 Goblins',need:{Goblin:2},reward:'Rusty_Dagger',consumableChance:0.2},
-    {name:'Herb Collector',type:'fetch',desc:'Gather 3 Herbs',need:{Herb:3},reward:'Leather_Gloves',consumableChance:0.2},
-    {name:'Wolf Hunt',type:'kill',desc:'Hunt 1 Wolf',need:{Wolf:1},reward:'Iron_Boots',consumableChance:0.2},
-    {name:'Skeleton Patrol',type:'kill',desc:'Eliminate 1 Skeleton',need:{Skeleton:1},reward:'Steel_Helm',consumableChance:0.2},
-    {name:'Wood Gatherer',type:'fetch',desc:'Collect 4 Wood',need:{Wood:4},reward:'Hunter_Bow',consumableChance:0.2},
+    // EASY TIER (Distance ≤ 3): Level 1-2 monsters, F-D tier equipment
+    {name:'Goblin Menace',type:'kill',desc:'Kill 3 Goblins',need:{Goblin:3},reward:'Rusty_Dagger',consumableChance:0.2},
+    {name:'Wolf Pack',type:'kill',desc:'Kill 2 Wolves',need:{Wolf:2},reward:'Leather_Gloves',consumableChance:0.2},
+    {name:'Skeleton Guard',type:'kill',desc:'Kill 2 Skeletons',need:{Skeleton:2},reward:'Iron_Boots',consumableChance:0.2},
+    {name:'Orc Scouts',type:'kill',desc:'Kill 1 Orc',need:{Orc:1},reward:'Steel_Helm',consumableChance:0.2},
+    {name:'Hobgoblin Hunt',type:'kill',desc:'Kill 1 Hobgoblin',need:{Hobgoblin:1},reward:'Hunter_Bow',consumableChance:0.2},
     
-    // Medium Area Quests (3-4 distance from town)
-    {name:'Orc Extermination',type:'kill',desc:'Slay 2 Orcs',need:{Orc:2},reward:'Chain_Mail',consumableChance:0.2},
-    {name:'Fierce Goblin Hunt',type:'kill',desc:'Defeat 1 Fierce Goblin',need:{'Fierce Goblin':1},reward:'Battle_Axe',consumableChance:0.2},
-    {name:'Iron Ore Mining',type:'fetch',desc:'Mine 3 Iron Ore',need:{'Iron Ore':3},reward:'Magic_Ring',consumableChance:0.2},
-    {name:'Skeleton Warrior Slayer',type:'kill',desc:'Destroy 1 Skeleton Warrior',need:{'Skeleton Warrior':1},reward:'Dragon_Scale_Armor',consumableChance:0.2},
-    {name:'Wild Wolf Tracker',type:'kill',desc:'Track and kill 1 Wild Wolf',need:{'Wild Wolf':1},reward:'Enchanted_Blade',consumableChance:0.2},
+    // MEDIUM TIER (Distance 4-8): Level 2-4 monsters, C-B tier equipment
+    {name:'Orc War Party',type:'kill',desc:'Kill 2 Orcs',need:{Orc:2},reward:'Chain_Mail',consumableChance:0.2},
+    {name:'Skeleton Warriors',type:'kill',desc:'Kill 2 Skeleton Warriors',need:{'Skeleton Warrior':2},reward:'Battle_Axe',consumableChance:0.2},
+    {name:'Wild Wolf Pack',type:'kill',desc:'Kill 2 Wild Wolves',need:{'Wild Wolf':2},reward:'Magic_Ring',consumableChance:0.2},
+    {name:'Goblin Warriors',type:'kill',desc:'Kill 1 Goblin Warrior',need:{'Goblin Warrior':1},reward:'Enchanted_Blade',consumableChance:0.2},
+    {name:'Gnoll Hunters',type:'kill',desc:'Kill 1 Gnoll',need:{Gnoll:1},reward:'Guardian_Shield',consumableChance:0.2},
     
-    // Hard Area Quests (5-6 distance from town)  
-    {name:'Ogre Slayer',type:'kill',desc:'Defeat 1 Ogre',need:{Ogre:1},reward:'Guardian_Shield',consumableChance:0.2},
-    {name:'Savage Goblin Crusher',type:'kill',desc:'Crush 1 Savage Goblin',need:{'Savage Goblin':1},reward:'Mystic_Cloak',consumableChance:0.2},
-    {name:'Gnoll Hunter',type:'kill',desc:'Hunt 1 Gnoll',need:{Gnoll:1},reward:'Warrior_Gauntlets',consumableChance:0.2},
-    {name:'Dark Wolf Stalker',type:'kill',desc:'Stalk and kill 1 Dark Wolf',need:{'Dark Wolf':1},reward:'Crystal_Amulet',consumableChance:0.2},
-    {name:'Skeleton Soldier Eliminator',type:'kill',desc:'Eliminate 1 Skeleton Soldier',need:{'Skeleton Soldier':1},reward:'Shadow_Boots',consumableChance:0.2},
+    // HARD TIER (Distance 9-16): Level 3-7 monsters, B-A tier equipment
+    {name:'Ogre Domination',type:'kill',desc:'Kill 1 Ogre',need:{Ogre:1},reward:'Shadow_Boots',consumableChance:0.2},
+    {name:'Dark Wolf Alpha',type:'kill',desc:'Kill 1 Dark Wolf',need:{'Dark Wolf':1},reward:'Mystic_Cloak',consumableChance:0.2},
+    {name:'Skeleton Soldiers',type:'kill',desc:'Kill 2 Skeleton Soldiers',need:{'Skeleton Soldier':2},reward:'Crystal_Amulet',consumableChance:0.2},
+    {name:'Gnoll Warband',type:'kill',desc:'Kill 2 Gnolls',need:{Gnoll:2},reward:'Warrior_Gauntlets',consumableChance:0.2},
+    {name:'Orc Berserkers',type:'kill',desc:'Kill 1 Orc Berserker',need:{'Orc Berserker':1},reward:'Dragon_Scale_Armor',consumableChance:0.2},
     
-    // Elite Area Quests (7-8 distance from town)
-    {name:'Brutal Goblin Destroyer',type:'kill',desc:'Destroy 1 Brutal Goblin',need:{'Brutal Goblin':1},reward:'Fire_Sword',consumableChance:0.2},
-    {name:'Orc Scout Ambusher',type:'kill',desc:'Ambush 1 Orc Scout',need:{'Orc Scout':1},reward:'Ice_Staff',consumableChance:0.2},
-    {name:'Dire Wolf Alpha',type:'kill',desc:'Take down 1 Dire Wolf',need:{'Dire Wolf':1},reward:'Lightning_Spear',consumableChance:0.2},
-    {name:'Skeleton Knight Challenger',type:'kill',desc:'Challenge 1 Skeleton Knight',need:{'Skeleton Knight':1},reward:'Ancient_Relic',consumableChance:0.2},
-    {name:'Ogre Brute Smasher',type:'kill',desc:'Smash 1 Ogre Brute',need:{'Ogre Brute':1},reward:'Demon_Blade',consumableChance:0.2},
-    
-    // Special Collection Quests
-    {name:'Coal Supplier',type:'fetch',desc:'Supply 5 Coal',need:{Coal:5},reward:'Rusty_Dagger',consumableChance:0.2},
-    {name:'Potion Materials',type:'fetch',desc:'Gather 2 Bottles',need:{Bottle:2},reward:'Leather_Gloves',consumableChance:0.2},
-    {name:'Bone Collector',type:'fetch',desc:'Collect 2 Skeleton Bones',need:{Skeleton_Bone:2},reward:'Iron_Boots',consumableChance:0.2},
-    {name:'Pelt Trader',type:'fetch',desc:'Trade 2 Wolf Pelts',need:{Wolf_Pelt:2},reward:'Steel_Helm',consumableChance:0.2},
-    {name:'Tusk Hunter',type:'fetch',desc:'Hunt for 1 Orc Tusk',need:{Orc_Tusk:1},reward:'Hunter_Bow',consumableChance:0.2},
-    
-    // Multi-target Quests
-    {name:'Goblin Horde',type:'kill',desc:'Defeat 3 Goblins',need:{Goblin:3},reward:'Chain_Mail',consumableChance:0.2},
-    {name:'Skeleton Army',type:'kill',desc:'Destroy 2 Skeletons',need:{Skeleton:2},reward:'Battle_Axe',consumableChance:0.2},
-    {name:'Wolf Pack Leader',type:'kill',desc:'Eliminate 2 Wolves',need:{Wolf:2},reward:'Magic_Ring',consumableChance:0.2},
-    {name:'Mixed Hunt',type:'kill',desc:'Kill 1 Goblin and 1 Skeleton',need:{Goblin:1,Skeleton:1},reward:'Dragon_Scale_Armor',consumableChance:0.2},
-    {name:'Resource Master',type:'fetch',desc:'Gather 2 Herbs and 2 Wood',need:{Herb:2,Wood:2},reward:'Enchanted_Blade',consumableChance:0.2}
+    // ELITE TIER (Distance 17+): Level 6-10 monsters, A-S tier equipment
+    {name:'Dire Wolf Hunt',type:'kill',desc:'Kill 1 Dire Wolf',need:{'Dire Wolf':1},reward:'Fire_Sword',consumableChance:0.2},
+    {name:'Goblin Elite',type:'kill',desc:'Kill 1 Goblin Elite',need:{'Goblin Elite':1},reward:'Ice_Staff',consumableChance:0.2},
+    {name:'Skeleton Knights',type:'kill',desc:'Kill 1 Skeleton Knight',need:{'Skeleton Knight':1},reward:'Lightning_Spear',consumableChance:0.2},
+    {name:'Ogre Brutes',type:'kill',desc:'Kill 1 Ogre Brute',need:{'Ogre Brute':1},reward:'Demon_Blade',consumableChance:0.2},
+    {name:'Orc Scout',type:'kill',desc:'Kill 1 Orc Scout',need:{'Orc Scout':1},reward:'Ancient_Relic',consumableChance:0.2}
   ];
   
-  // State - changed to 512x512 map (32x32 areas of 16x16 tiles)
-  const AREA=16,GRID_W=16,GRID_H=16,TOWN=16,SIZE=512,SAVE='dqSave';
+  // State - changed to 1024x1024 map (64x64 areas of 16x16 tiles)
+  const AREA=16,GRID_W=16,GRID_H=16,TOWN=32,SIZE=1024,SAVE='dqSave';
   let p,world,quests=[],randomNpcActiveQuests=[];
   const d=s=>document.querySelector(s),dA=s=>document.querySelectorAll(s),
         SEl=d('#stats'),MEl=d('#map'),LEl=d('#log'),OV=d('#overlay'),MD=d('#modal'),
@@ -857,34 +846,37 @@ body {
     if(s) try{ 
       let o=JSON.parse(s); 
       p=o.player; 
-      // Ensure all numeric values are properly typed and rounded
-      p.atk = round1(p.atk);
-      p.def = round1(p.def);
-      p.luck = round1(p.luck);
-      p.maxHp = round1(p.maxHp);
-      p.hp = round1(p.hp);
-      p.craft = round1(p.craft);
+      // Validate and ensure all numeric values are properly typed and rounded
+      p.atk = Number(p.atk) ? round1(p.atk) : roll(1,8);
+      p.def = Number(p.def) ? round1(p.def) : roll(1,8);
+      p.luck = Number(p.luck) ? round1(p.luck) : roll(1,8);
+      p.maxHp = Number(p.maxHp) ? round1(p.maxHp) : 20;
+      p.hp = Number(p.hp) ? round1(p.hp) : p.maxHp;
+      p.craft = Number(p.craft) ? round1(p.craft) : 0;
       // Fix gold to ensure it's always a number
       p.g = Number(p.g) || 0;
-      // Initialize missing temporary effects
-      p.tempDef = p.tempDef || null;
-      p.tempCraft = p.tempCraft || null;
+      // Initialize missing temporary effects with validation
+      p.tempAtk = p.tempAtk && p.tempAtk.steps > 0 ? p.tempAtk : null;
+      p.tempDef = p.tempDef && p.tempDef.steps > 0 ? p.tempDef : null;
+      p.tempLuck = p.tempLuck && p.tempLuck.steps > 0 ? p.tempLuck : null;
+      p.tempCraft = p.tempCraft && p.tempCraft.steps > 0 ? p.tempCraft : null;
       // Track current area for refresh system
       p.currentArea = p.currentArea || {x: TOWN, y: TOWN};
-      // Initialize banking system
-      p.bankGold = p.bankGold || 0;
-      p.bankDeaths = p.bankDeaths || 0;
-      quests=o.quests||[];
-      randomNpcActiveQuests=o.randomNpcActiveQuests||[];
+      // Initialize banking system with validation
+      p.bankGold = Number(p.bankGold) || 0;
+      p.bankDeaths = Number(p.bankDeaths) || 0;
+      // Validate arrays
+      quests=Array.isArray(o.quests) ? o.quests : [];
+      randomNpcActiveQuests=Array.isArray(o.randomNpcActiveQuests) ? o.randomNpcActiveQuests : [];
     }catch{localStorage.removeItem(SAVE);return init();}
     else p={
       x:TOWN*AREA+8,
       y:TOWN*AREA+8,
       maxHp:20,
       hp:20,
-      atk:round1(roll(1,7)),
-      def:round1(roll(1,7)),
-      luck:round1(roll(1,5)),
+      atk:roll(1,8),
+      def:roll(1,8),
+      luck:roll(1,8),
       g:0,
       inv:{},
       eq:[],
@@ -901,47 +893,74 @@ body {
       bankDeaths:0,
       currentArea: {x: TOWN, y: TOWN}
     };
-    world=Array.from({length:32},(_,y)=>Array.from({length:32},(_,x)=>gen(x===TOWN&&y===TOWN, x, y)));
+    world=Array.from({length:64},(_,y)=>Array.from({length:64},(_,x)=>gen(x===TOWN&&y===TOWN, x, y)));
     save();
   }
   
   function save(){
-    // Round all numeric values before saving
+    // Validate and round all numeric values before saving
     const saveData = {
       player: {
         ...p,
-        atk: round1(p.atk),
-        def: round1(p.def),
-        luck: round1(p.luck),
-        maxHp: round1(p.maxHp),
-        hp: round1(p.hp),
-        craft: round1(p.craft),
-        g: Number(p.g) || 0
+        atk: Number(p.atk) ? round1(p.atk) : 1,
+        def: Number(p.def) ? round1(p.def) : 1,
+        luck: Number(p.luck) ? round1(p.luck) : 1,
+        maxHp: Number(p.maxHp) ? round1(p.maxHp) : 20,
+        hp: Number(p.hp) ? round1(p.hp) : 20,
+        craft: Number(p.craft) ? round1(p.craft) : 0,
+        g: Number(p.g) || 0,
+        bankGold: Number(p.bankGold) || 0,
+        bankDeaths: Number(p.bankDeaths) || 0
       },
-      quests: quests,
-      randomNpcActiveQuests: randomNpcActiveQuests
+      quests: Array.isArray(quests) ? quests : [],
+      randomNpcActiveQuests: Array.isArray(randomNpcActiveQuests) ? randomNpcActiveQuests : []
     };
-    localStorage.setItem(SAVE,JSON.stringify(saveData));
+    try {
+      localStorage.setItem(SAVE,JSON.stringify(saveData));
+    } catch(e) {
+      log("Error saving game data. Storage may be full.");
+    }
   }
 
-  // Random NPC Quest System Functions
-  function getRandomNpcQuest(distFromTown) {
-    // Select quest based on distance from town
-    const questPool = randomNpcQuests.filter(quest => {
-      if (distFromTown <= 2) return quest.name.includes('Goblin Cleaner') || quest.name.includes('Herb Collector') || quest.name.includes('Wolf Hunt') || quest.name.includes('Skeleton Patrol') || quest.name.includes('Wood Gatherer');
-      if (distFromTown <= 4) return quest.name.includes('Orc Extermination') || quest.name.includes('Fierce Goblin') || quest.name.includes('Iron Ore') || quest.name.includes('Skeleton Warrior') || quest.name.includes('Wild Wolf');
-      if (distFromTown <= 6) return quest.name.includes('Ogre Slayer') || quest.name.includes('Savage Goblin') || quest.name.includes('Gnoll Hunter') || quest.name.includes('Dark Wolf') || quest.name.includes('Skeleton Soldier');
-      if (distFromTown <= 8) return quest.name.includes('Brutal Goblin') || quest.name.includes('Orc Scout') || quest.name.includes('Dire Wolf') || quest.name.includes('Skeleton Knight') || quest.name.includes('Ogre Brute');
-      return quest.name.includes('Coal') || quest.name.includes('Bottle') || quest.name.includes('Bone Collector') || quest.name.includes('Pelt Trader') || quest.name.includes('Tusk Hunter') || quest.name.includes('Goblin Horde') || quest.name.includes('Skeleton Army') || quest.name.includes('Wolf Pack') || quest.name.includes('Mixed Hunt') || quest.name.includes('Resource Master');
-    });
+  // Random NPC Quest System Functions - Uses same distance logic as monster spawning
+  function getRandomNpcQuest(distFromTown, areaX, areaY) {
+    // Use the same distance calculation as monster spawning for consistency
+    const euclideanDistance = Math.sqrt(Math.pow(areaX-TOWN,2) + Math.pow(areaY-TOWN,2));
     
-    if (questPool.length === 0) return randomNpcQuests[roll(0, randomNpcQuests.length - 1)];
-    return questPool[roll(0, questPool.length - 1)];
+    // Apply the same area-based logic as monster spawning to quest tiers
+    let questTier;
+    if (euclideanDistance <= 3) {
+      // Adjacent areas: Easy quests (Level 1-2 monsters)
+      questTier = 'easy';
+    } else if (euclideanDistance <= 8) {
+      // Nearby areas: Easy to Medium quests (Level 1-4 monsters)
+      questTier = Math.random() < 0.6 ? 'easy' : 'medium';
+    } else if (euclideanDistance <= 16) {
+      // Mid-distance: Medium to Hard quests (Level 3-7 monsters)
+      questTier = Math.random() < 0.5 ? 'medium' : 'hard';
+    } else if (euclideanDistance <= 24) {
+      // Far areas: Hard to Elite quests (Level 6-10 monsters)
+      questTier = Math.random() < 0.4 ? 'hard' : 'elite';
+    } else {
+      // Outermost areas: Elite quests only (Level 8-10 monsters)
+      questTier = 'elite';
+    }
+    
+    // Filter quests by calculated tier
+    const questsByTier = {
+      easy: randomNpcQuests.slice(0, 5),     // First 5 quests (indices 0-4)
+      medium: randomNpcQuests.slice(5, 10),  // Next 5 quests (indices 5-9)
+      hard: randomNpcQuests.slice(10, 15),   // Next 5 quests (indices 10-14)
+      elite: randomNpcQuests.slice(15, 20)   // Last 5 quests (indices 15-19)
+    };
+    
+    const availableQuests = questsByTier[questTier];
+    return availableQuests[roll(0, availableQuests.length - 1)];
   }
 
   function generateRandomNpcQuest(npcId, areaX, areaY) {
     const distFromTown = Math.abs(areaX - TOWN) + Math.abs(areaY - TOWN);
-    const questTemplate = getRandomNpcQuest(distFromTown);
+    const questTemplate = getRandomNpcQuest(distFromTown, areaX, areaY);
     
     // 20% chance for consumable reward instead of equipment
     const isConsumable = Math.random() < questTemplate.consumableChance;
@@ -958,6 +977,7 @@ body {
       isConsumable: isConsumable,
       areaX: areaX,
       areaY: areaY,
+      equipLevel: questTemplate.equipLevel,
       completed: false
     };
   }
@@ -1012,7 +1032,7 @@ body {
       let canComplete = true;
       Object.entries(quest.need).forEach(([item, needed]) => {
         const have = quest.type === 'kill' ? (quest.progress[item] || 0) : (p.inv[item] || 0);
-        quest.progress[item] = Math.min(have, needed);
+        // Don't overwrite progress, just check if requirement is met
         if (have < needed) canComplete = false;
       });
       
@@ -1037,16 +1057,33 @@ body {
             log(`Completed ${quest.name}! Received: Strength Potion`);
           }
         } else {
-          // Equipment reward
+          // Equipment reward with level scaling
           const itemData = itemDefs[quest.reward];
           if (itemData) {
             const durability = typeof itemData.maxD === 'function' ? itemData.maxD() : itemData.maxD;
+            
+            // Calculate equipment level based on area-based quest requirements or distance from town
+            let equipmentLevel = itemData.level || 1;
+            
+            // First check if this quest has a specific equipment level requirement
+            if (quest.equipLevel) {
+              equipmentLevel = quest.equipLevel;
+            } else {
+              // Fall back to distance-based scaling for areas 50-60
+              const questDistance = Math.abs(quest.areaX - TOWN) + Math.abs(quest.areaY - TOWN);
+              if (questDistance >= 18) { // Areas 50-60 (town is at 32, so distance 18+ is around areas 50+)
+                equipmentLevel = Math.min(6, Math.max(3, Math.floor(questDistance / 6) + 1));
+              }
+            }
+            
+            // Use base stats without scaling multipliers
             p.eq.push({
               name: quest.reward,
               durability: durability,
+              level: equipmentLevel,
               boost: itemData.boost
             });
-            log(`Completed ${quest.name}! Received: ${quest.reward.replace(/_/g, ' ')}`);
+            log(`Completed ${quest.name}! Received: ${quest.reward.replace(/_/g, ' ')} Level ${equipmentLevel}`);
           }
         }
         
@@ -1102,16 +1139,27 @@ body {
         log(`Completed ${quest.name}! Received: Strength Potion`);
       }
     } else {
-      // Equipment reward
+      // Equipment reward with level scaling for areas 50-60
       const itemData = itemDefs[quest.reward];
       if (itemData) {
         const durability = typeof itemData.maxD === 'function' ? itemData.maxD() : itemData.maxD;
+        
+        // Calculate equipment level based on distance from town for areas 50-60
+        let equipmentLevel = itemData.level || 1;
+        const questDistance = Math.abs(quest.areaX - TOWN) + Math.abs(quest.areaY - TOWN);
+        
+        if (questDistance >= 18) { // Areas 50-60 (town is at 32, so distance 18+ is around areas 50+)
+          equipmentLevel = Math.min(6, Math.max(3, Math.floor(questDistance / 6) + 1));
+        }
+        
+        // Use base stats without scaling multipliers
         p.eq.push({
           name: quest.reward,
           durability: durability,
+          level: equipmentLevel,
           boost: itemData.boost
         });
-        log(`Completed ${quest.name}! Received: ${quest.reward.replace(/_/g, ' ')}`);
+        log(`Completed ${quest.name}! Received: ${quest.reward.replace(/_/g, ' ')} Level ${equipmentLevel}`);
       }
     }
     
@@ -1260,7 +1308,7 @@ body {
   function gen(isTown, areaX, areaY){
     let tiles=Array.from({length:AREA},()=>Array.from({length:AREA},()=>({type:'empty'})));
     if(isTown){
-      ['Potion Seller','Blacksmith','Scroll Merchant','Equipment Combiner','Quest Giver EM','Quest Giver H','Quest Giver L','Guild_Member','Banker']
+      ['Potion Seller','Blacksmith','Scroll Merchant','Equipment Combiner','Quest Giver EM','Quest Giver H','Quest Giver L','Guild_Member','Banker','Repairer']
         .forEach(pr=>place(tiles,pr,true,areaX,areaY));
     } else {
       // Place 2 random NPCs with quests in non-town areas
@@ -1296,13 +1344,14 @@ body {
           const distFromTown = Math.sqrt(Math.pow(areaX-TOWN,2) + Math.pow(areaY-TOWN,2));
           
           // Check if we're at the edge of the map for level 15 boss spawning
-          const isEdgeArea = (areaX <= 1 || areaX >= 30 || areaY <= 1 || areaY >= 30);
+          const mapSizeInAreas = SIZE / AREA; // 64 areas for 1024x1024 map
+          const isEdgeArea = (areaX <= 1 || areaX >= mapSizeInAreas-2 || areaY <= 1 || areaY >= mapSizeInAreas-2);
           
           let monsterTypes = ['Goblin','Skeleton','Wolf','Orc','Ogre','Gnoll','Wyvern'];
           let monsterType = monsterTypes[roll(0,monsterTypes.length-1)];
           
-          // 20% chance to spawn level 15 bosses in outermost areas (edge of map)
-          if(isEdgeArea && Math.random() < 0.2) {
+          // 5% chance to spawn level 15 bosses in outermost areas (edge of map)
+          if(isEdgeArea && Math.random() < 0.05) {
             const bossTypes = ['Leviathan','DeathStar','Susano'];
             monsterType = bossTypes[roll(0,bossTypes.length-1)];
           }
@@ -1311,32 +1360,42 @@ body {
           // Fixed level spawning - areas adjacent to town only spawn level 1-2
           let maxLevel = 0;
           
+          let level = 0;
+          
           // Special handling for level 15 bosses
           if(['Leviathan','DeathStar','Susano'].includes(monsterType)) {
             maxLevel = 14; // Level 15 (index 14)
-          } else if(distFromTown <= 1.5) {
+            level = 14; // Force level 15 for world bosses
+          } else if(distFromTown <= 3) {
             // Adjacent areas: only level 1-2
             maxLevel = Math.random() < 0.7 ? 0 : 1;
-          } else if(distFromTown <= 3) {
+          } else if(distFromTown <= 8) {
             // Nearby areas: level 1-4
-            maxLevel = Math.min(3, Math.floor(distFromTown));
-          } else if(distFromTown <= 6) {
+            maxLevel = Math.min(3, Math.floor(distFromTown / 2));
+          } else if(distFromTown <= 16) {
             // Mid-distance: level 3-7
-            maxLevel = Math.min(6, Math.floor(distFromTown) + 1);
+            maxLevel = Math.min(6, Math.floor(distFromTown / 2));
+          } else if(distFromTown <= 24) {
+            // Far areas: level 6-10, with 40% chance for level 10 in outermost areas
+            maxLevel = Math.min(9, Math.floor(distFromTown / 3));
+            if(distFromTown >= 20 && Math.random() < 0.4) { // 40% chance for level 10 bosses
+              maxLevel = 9; // Level 10 (index 9)
+            }
           } else {
-            // Far areas: level 6-10, with 10% higher chance for level 10 in outermost areas
-            maxLevel = Math.min(9, Math.floor(distFromTown));
-            // Boost level 10 spawns in outermost areas
-            if(distFromTown >= 8 && Math.random() < 0.15) { // 15% instead of normal 5% for level 10
+            // Outermost areas: level 8-10 only
+            maxLevel = Math.max(7, Math.min(9, Math.floor(distFromTown / 3)));
+            if(Math.random() < 0.4) { // 40% chance for level 10 bosses
               maxLevel = 9; // Level 10 (index 9)
             }
           }
           
-          let level = 0;
-          for(let l=maxLevel;l>=0;l--){
-            if(Math.random() < 1/Math.pow(1.5,l)){
-              level = l;
-              break;
+          // Only run level generation for non-world bosses
+          if(!['Leviathan','DeathStar','Susano'].includes(monsterType)) {
+            for(let l=maxLevel;l>=0;l--){
+              if(Math.random() < 1/Math.pow(1.5,l)){
+                level = l;
+                break;
+              }
             }
           }
           
@@ -1360,6 +1419,11 @@ body {
             if(stat !== 'boost') monster[stat] = Math.floor(monster[stat] * levelData.mult);
           });
           
+          // Debug log for level 15 bosses
+          if(monster.level === 15) {
+            console.log(`Level 15 Boss: ${monster.name}, HP: ${monster.hp}, Multiplier: ${levelData.mult}`);
+          }
+          
           tiles[y][x]={type:'monster',data:monster};
         }
         else if(r<40) { // Reduced from 55 to 40 for less clutter
@@ -1382,6 +1446,7 @@ body {
           if(prof === 'Quest Giver L') npc.data.abbr = 'L';
           else if(prof === 'Guild_Member') npc.data.abbr = 'G';
           else if(prof === 'Banker') npc.data.abbr = '$';
+          else if(prof === 'Repairer') npc.data.abbr = 'R';
           else npc.data.abbr = prof[0];
           npc.data.isTown = true;
         } else {
@@ -1522,6 +1587,15 @@ body {
       }
     }
     
+    if(p.tempCraft){
+      p.tempCraft.steps--;
+      if(p.tempCraft.steps <= 0){
+        p.tempCraft = null;
+        log("Crafting potion wore off!");
+        updateRealTimeDisplays();
+      }
+    }
+    
     // Handle new potion effects
     if(p.tempOrcsRage){
       p.tempOrcsRage.steps--;
@@ -1544,7 +1618,7 @@ body {
     if(p.tempDragonFury){
       p.tempDragonFury.steps--;
       if(p.tempDragonFury.steps <= 0){
-        p.maxHp = round1(p.maxHp / 0.5); // Restore max HP
+        p.maxHp = round1(p.maxHp * 2); // Restore max HP (was halved, so multiply by 2)
         p.tempDragonFury = null;
         log("Dragon Fury wore off! Max HP restored.");
       }
@@ -1675,8 +1749,19 @@ body {
         else {
           let c=getT(tx+ax*AREA,ty+ay*AREA);
           if(c.type==='monster') {
-            const levelClass = `monster-lvl${Math.min(10, c.data.level)}`;
-            ch=`<span class="${levelClass}">M</span>`;
+            let levelClass = `monster-lvl${Math.min(10, c.data.level)}`;
+            let symbol = 'M';
+            
+            // Special symbols for bosses
+            if(c.data.level === 10) {
+              symbol = 'B'; // Level 10 bosses
+              levelClass = 'monster-lvl10'; // Use purple color
+            } else if(c.data.level === 15) {
+              symbol = 'G'; // Level 15 bosses
+              levelClass = 'monster-lvl10'; // Use purple color for level 15 bosses too
+            }
+            
+            ch=`<span class="${levelClass}">${symbol}</span>`;
           }
           else if(c.type==='resource') ch=`<span class="resource">R</span>`;
           else if(c.type==='trap') ch='T';
@@ -1859,8 +1944,6 @@ body {
       
       m.hp = Math.max(0, m.hp - playerDmg);
       log("You deal "+playerDmg+" damage to "+m.name);
-      
-      if(m.hp <= 0) break;
       
       // Monster attacks player
       let monsterDmg = roll(1, m.atk); // Random damage from 1 to attack stat
@@ -2051,7 +2134,8 @@ body {
         'Susano': 'Stormfang_Katana'
       };
       
-      let weaponKey = legendaryWeapons[monsterKey];
+      // Use monster type instead of full monster key for level 15 bosses
+      let weaponKey = legendaryWeapons[m.type];
       if(weaponKey) {
         let itemDef = itemDefs[weaponKey];
         let durability = itemDef.maxD;
@@ -2090,35 +2174,17 @@ body {
     }
     
     // Rare consumables drop from all monsters with specific drop rates
-    // Asura Blood: 0.0001% (0.000001) chance, Resurrection Charm: 0.001% (0.00001) chance
-    if(Math.random() < 0.000001) {
+    // Asura Blood: 0.0001% chance, Resurrection Charm: 0.001% chance
+    if(Math.random() < 0.000001) { // 0.0001% = 0.000001
       p.inv['Asura_Blood'] = (p.inv['Asura_Blood'] || 0) + 1;
       log("Found Asura Blood!");
     }
-    if(Math.random() < 0.00001) {
+    if(Math.random() < 0.00001) { // 0.001% = 0.00001
       p.inv['Resurrection_Charm'] = (p.inv['Resurrection_Charm'] || 0) + 1;
       log("Found Resurrection Charm!");
     }
     
-    // Update quest progress for regular quests
-    quests.forEach(q => {
-      if(q.state === 1 && q.type === 'kill' && q.need[monsterKey]) {
-        q.progress[monsterKey] = (q.progress[monsterKey] || 0) + 1;
-        if(q.progress[monsterKey] >= q.need[monsterKey]) {
-          log("Quest progress: " + q.name);
-        }
-      }
-    });
-    
-    // Update random NPC quest progress
-    randomNpcActiveQuests.forEach(quest => {
-      if(quest.type === 'kill' && quest.need[monsterKey]) {
-        quest.progress[monsterKey] = (quest.progress[monsterKey] || 0) + 1;
-        if(quest.progress[monsterKey] >= quest.need[monsterKey]) {
-          log(`Random quest progress: ${quest.name} - ${quest.progress[monsterKey]}/${quest.need[monsterKey]} ${monsterKey.replace(/_/g, ' ')}`);
-        }
-      }
-    });
+    // This quest progress tracking was moved earlier in the function to avoid duplicates
     
     setT(x,y,{type:'empty'});
     p.x=x; p.y=y;
@@ -2135,6 +2201,9 @@ body {
     }
     else if(n.profession==='Banker'){
       openBanker();
+    }
+    else if(n.profession==='Repairer'){
+      openRepairer();
     }
     else if(n.profession==='Quest Giver EM'||n.profession==='Quest Giver H'||n.profession==='Quest Giver L'){
       if(n.profession==='Quest Giver EM') openQuestGiver('easy','med');
@@ -2627,6 +2696,12 @@ body {
     // Add event listeners
     document.getElementById('confirm-purchase').onclick = () => {
       if(canAfford) {
+        // Check if player is dead when buying healing items
+        if((item.name === 'Health Potion' || item.name === 'Scroll of Healing') && p.hp <= 0) {
+          log("Cannot use healing items when dead! Use Reborn to restart.");
+          closeModal();
+          return;
+        }
         const playerGold = Number(p.g) || 0;
         p.g = Math.max(0, playerGold - price);
         item.apply();
@@ -2662,17 +2737,26 @@ body {
     recipes.forEach(r=>{
       // Hide Broken Stick recipe unless all required items are available
       if(r.name === 'Broken_Stick') {
-        let hasAllItems = materials(r.need);
+        let hasAllItems = materials(r.need, r);
         if(!hasAllItems) return; // Skip showing this recipe
       }
       
-      let canCraft = materials(r.need);
+      let canCraft = materials(r.need, r);
       let btnStyle = `padding:10px; border-radius:6px; border:1px solid ${canCraft ? '#4CAF50' : '#f44336'}; background:${canCraft ? '#2E7D32' : '#333'}; color:${canCraft ? 'white' : '#999'}; cursor:${canCraft ? 'pointer' : 'not-allowed'}; display:flex; justify-content:space-between; align-items:center;`;
       
       html += `<button data-r="${r.name}" style="${btnStyle}">`;
       html += `<div>`;
       html += `<div style="font-weight:bold; margin-bottom:4px;">${r.name.replace(/_/g, ' ')}</div>`;
-      html += `<div style="font-size:12px; opacity:0.8;">Materials: ${Object.entries(r.need).map(e=>e.join('x')).join(', ')}</div>`;
+      
+      // Special display for Apex Predator "any 4 of 7" requirement
+      if(r.anyFourOf) {
+        html += `<div style="font-size:12px; opacity:0.8;">Materials: Any 4 of these 7 items</div>`;
+        html += `<div style="font-size:11px; opacity:0.6;">${Object.entries(r.need).map(e=>e.join('x')).join(', ')}</div>`;
+        const availableItems = Object.keys(r.need).filter(item => (p.inv[item] || 0) >= r.need[item]);
+        html += `<div style="font-size:11px; color:#FFD700;">Available: ${availableItems.length}/4 required</div>`;
+      } else {
+        html += `<div style="font-size:12px; opacity:0.8;">Materials: ${Object.entries(r.need).map(e=>e.join('x')).join(', ')}</div>`;
+      }
       html += `</div>`;
       html += `<div style="text-align:right;">`;
       html += `<div style="font-size:12px; color:#FFD700;">${totalChance}% chance</div>`;
@@ -2690,9 +2774,20 @@ body {
       btn.onclick = () => {
         if(btn.dataset.r){
           let recipe = recipes.find(r => r.name === btn.dataset.r);
-          if(materials(recipe.need)){
-            // Always consume materials on attempt
-            Object.keys(recipe.need).forEach(k=>p.inv[k]-=recipe.need[k]);
+          if(materials(recipe.need, recipe)){
+            // Special handling for Apex Predator "any 4 of 7" requirement
+            if(recipe.anyFourOf) {
+              const availableItems = Object.keys(recipe.need).filter(item => (p.inv[item] || 0) >= recipe.need[item]);
+              // Select first 4 available items
+              const selectedItems = availableItems.slice(0, 4);
+              selectedItems.forEach(item => {
+                p.inv[item] -= recipe.need[item];
+                if(p.inv[item] <= 0) delete p.inv[item];
+              });
+            } else {
+              // Always consume materials on attempt
+              Object.keys(recipe.need).forEach(k=>p.inv[k]-=recipe.need[k]);
+            }
             
             // Always increase craft skill by 0.1
             p.craft = round1(p.craft + 0.1);
@@ -2908,6 +3003,10 @@ body {
         updateInventoryDisplay(); // Update inventory display in real-time
       }
       if (btn.dataset.useHealth !== undefined) {
+        if (p.hp <= 0) {
+          log("Cannot use healing items when dead! Use Reborn to restart.");
+          return;
+        }
         const potion = btn.dataset.useHealth;
         if(p.inv[potion] > 0) {
           p.inv[potion]--;
@@ -2951,6 +3050,10 @@ body {
         }
       }
       if (btn.dataset.useScroll !== undefined) {
+        if (p.hp <= 0) {
+          log("Cannot use healing items when dead! Use Reborn to restart.");
+          return;
+        }
         const scroll = btn.dataset.useScroll;
         if(p.inv[scroll] > 0) {
           p.inv[scroll]--;
@@ -3189,7 +3292,13 @@ body {
     OV.style.display = 'none';
   }
   
-  function materials(req){
+  function materials(req, recipe = null){
+    // Special handling for Apex Predator "any 4 of 7" requirement
+    if(recipe && recipe.anyFourOf) {
+      const availableItems = Object.keys(req).filter(item => (p.inv[item] || 0) >= req[item]);
+      return availableItems.length >= 4;
+    }
+    
     for(let k in req){
       if((p.inv[k]||0)<req[k]) return false;
     }
@@ -3258,7 +3367,7 @@ body {
       updateUI();
     };
     if(act) {
-      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage],button[data-use-scroll],button[data-use-resurrection],button[data-use-asura],button[data-move-to-eq],button[data-combine],button[data-deposit],button[data-deposit-all],button[data-withdraw],button[data-withdraw-all]').forEach(b=>{
+      MD.querySelectorAll('button[data-buy],button[data-buyg],button[data-sell],button[data-selleq],button[data-q],button[data-r],button[data-turn],button[data-equip],button[data-unequip],button[data-use-health],button[data-use-strength],button[data-use-rage],button[data-use-scroll],button[data-use-resurrection],button[data-use-asura],button[data-move-to-eq],button[data-combine],button[data-deposit],button[data-deposit-all],button[data-withdraw],button[data-withdraw-all],button[data-repair],button[data-iron-repair]').forEach(b=>{
         b.onclick=(e)=>{
           e.preventDefault();
           act(b);
@@ -3333,8 +3442,8 @@ body {
       if (btn.dataset.deposit !== undefined) {
         const amount = parseInt(document.getElementById('deposit-amount').value);
         if(amount > 0 && amount <= p.g) {
-          p.g -= amount;
-          p.bankGold += amount;
+          p.g = Math.max(0, p.g - amount);
+          p.bankGold = Math.max(0, (p.bankGold || 0) + amount);
           log(`Deposited ${amount} gold. Bank balance: ${p.bankGold}`);
           closeModal();
           openBanker(); // Refresh the interface
@@ -3343,7 +3452,7 @@ body {
       if (btn.dataset.depositAll !== undefined) {
         if(p.g > 0) {
           const amount = p.g;
-          p.bankGold += amount;
+          p.bankGold = Math.max(0, (p.bankGold || 0) + amount);
           p.g = 0;
           log(`Deposited all ${amount} gold. Bank balance: ${p.bankGold}`);
           closeModal();
@@ -3355,11 +3464,11 @@ body {
         const fees = p.bankDeaths * 10;
         const available = Math.max(0, p.bankGold - fees);
         if(amount > 0 && amount <= available) {
-          p.bankGold -= amount;
-          p.g += amount;
+          p.g = Math.max(0, (p.g || 0) + amount);
+          p.bankGold = Math.max(0, p.bankGold - amount);
           // Deduct fees
           if(fees > 0) {
-            p.bankGold -= fees;
+            p.bankGold = Math.max(0, p.bankGold - fees);
             p.bankDeaths = 0;
             log(`Withdrew ${amount} gold. Death fees (${fees} gold) deducted. Bank balance: ${p.bankGold}`);
           } else {
@@ -3373,11 +3482,11 @@ body {
         const fees = p.bankDeaths * 10;
         const available = Math.max(0, p.bankGold - fees);
         if(available > 0) {
-          p.g += available;
-          p.bankGold -= available;
+          p.g = Math.max(0, (p.g || 0) + available);
+          p.bankGold = Math.max(0, p.bankGold - available);
           // Deduct fees
           if(fees > 0) {
-            p.bankGold -= fees;
+            p.bankGold = Math.max(0, p.bankGold - fees);
             p.bankDeaths = 0;
             log(`Withdrew all ${available} gold. Death fees (${fees} gold) deducted. Bank balance: ${p.bankGold}`);
           } else {
@@ -3396,10 +3505,13 @@ body {
     html += '<p>I can combine 2 identical equipment pieces into a stronger version!</p>';
     html += '<p>Cost: Level 1→2: 100g, Level 2→3: 200g, Level 3→4: 300g, etc.</p>';
     html += '<p>Stats increase by 50%, durability adds up (max 100)</p>';
+    html += '<p style="color:#f44336;">Note: Level 15 boss weapons cannot be combined!</p>';
     
-    // Find combinable equipment
+    // Find combinable equipment (excluding Level 15 boss weapons)
+    const excludedWeapons = ['Tidepiercer', 'Nova_Maul', 'Stormfang_Katana'];
     const equipmentCounts = {};
     p.eq.forEach(eq => {
+      if (excludedWeapons.includes(eq.name)) return; // Skip Level 15 boss weapons
       const key = `${eq.name}_${eq.level || 1}`;
       if (!equipmentCounts[key]) equipmentCounts[key] = [];
       equipmentCounts[key].push(eq);
@@ -3493,6 +3605,145 @@ body {
     p.g -= cost;
     log(`Combined ${equipmentName} into Level ${newLevel}!`);
     log(`New stats: ${JSON.stringify(newBoost)}, Durability: ${newDurability}`);
+    
+    closeModal();
+    updateUI();
+  }
+
+  function openRepairer(){
+    let html = '<h2 style="color:#FFD700; text-align:center; margin-bottom:15px;">🔧 Equipment Repairer</h2>';
+    html += '<p style="text-align:center; color:#ccc; margin-bottom:10px;">I only repair Level 2+ equipment! Choose your repair method:</p>';
+    html += '<p style="text-align:center; color:#FFD700; margin-bottom:10px;">Option 1: Level 1 version + 100 gold (adds 20-60 durability)</p>';
+    html += '<p style="text-align:center; color:#4CAF50; margin-bottom:20px;">Option 2: 10 iron ore + 200 gold (adds 10 durability)</p>';
+    html += `<div style="text-align:center; margin-bottom:20px; padding:8px; background:#333; border-radius:6px; color:#FFD700;">`;
+    html += `<strong>Your Gold: ${p.g} | Iron Ore: ${p.inv['Iron Ore'] || 0}</strong>`;
+    html += `</div>`;
+    
+    // Find damaged equipment (durability < 100 and level 2+)
+    const damagedEquipment = p.eq.filter(eq => eq.durability < 100 && (eq.level || 1) >= 2);
+    
+    if(damagedEquipment.length === 0) {
+      html += '<p style="color:#4CAF50; text-align:center;">All your equipment is in perfect condition!</p>';
+    } else {
+      html += '<h3 style="color:#ff9999; margin-bottom:10px;">Damaged Equipment:</h3>';
+      html += '<div style="display:grid; gap:8px; margin-bottom:20px;">';
+      
+      damagedEquipment.forEach((eq, index) => {
+        // Check if player has a level 1 version of this equipment
+        const level1Version = p.eq.find(item => item.name === eq.name && (item.level || 1) === 1 && item !== eq);
+        const canLevel1Repair = level1Version && p.g >= 100;
+        
+        // Check iron ore repair option
+        const ironOre = p.inv['Iron Ore'] || 0;
+        const canIronRepair = ironOre >= 10 && p.g >= 200;
+        
+        const durabilityColor = eq.durability < 30 ? '#ff4444' : eq.durability < 70 ? '#ffaa00' : '#ffff00';
+        
+        html += `<div style="padding:12px; border-radius:6px; border:1px solid #444; background:#333; color:white; margin-bottom:10px;">`;
+        html += `<div style="display:flex; flex-direction:column; align-items:flex-start; margin-bottom:10px;">`;
+        html += `<span style="font-weight:bold;">${eq.name.replace(/_/g, ' ')} Level ${eq.level || 1}</span>`;
+        html += `<span style="color:${durabilityColor}; font-size:0.9em;">Durability: ${eq.durability}/100</span>`;
+        html += `</div>`;
+        
+        html += `<div style="display:flex; gap:10px; flex-wrap:wrap;">`;
+        
+        // Level 1 repair option
+        if(canLevel1Repair) {
+          html += `<button data-repair="${index}" style="background:#4CAF50; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">Level 1 Repair (100g)</button>`;
+        } else {
+          let reason = !level1Version ? 'Need Level 1 version' : 'Need 100 gold';
+          html += `<button style="background:#666; color:#999; border:none; padding:8px 12px; border-radius:4px; cursor:not-allowed;">${reason}</button>`;
+        }
+        
+        // Iron ore repair option
+        if(canIronRepair) {
+          html += `<button data-iron-repair="${index}" style="background:#FF9800; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer;">Iron Ore Repair (200g)</button>`;
+        } else {
+          html += `<button style="background:#666; color:#999; border:none; padding:8px 12px; border-radius:4px; cursor:not-allowed;">Need 10 Iron Ore & 200g</button>`;
+        }
+        
+        html += `</div>`;
+        html += `</div>`;
+      });
+      
+      html += '</div>';
+    }
+    
+    openModal(html, (btn) => {
+      console.log('Button clicked:', btn.dataset);
+      if(btn.dataset.repair !== undefined) {
+        const equipmentIndex = parseInt(btn.dataset.repair);
+        repairEquipment(damagedEquipment[equipmentIndex]);
+      } else if(btn.dataset.ironRepair !== undefined) {
+        const equipmentIndex = parseInt(btn.dataset.ironRepair);
+        console.log('Iron repair clicked for equipment:', equipmentIndex);
+        ironOreRepair(damagedEquipment[equipmentIndex]);
+      }
+    });
+  }
+  
+  function repairEquipment(equipment) {
+    if(p.g < 100) {
+      log("Not enough gold! Need 100g for repair.");
+      return;
+    }
+    
+    // Find level 1 version of the same equipment
+    const level1Index = p.eq.findIndex(item => 
+      item.name === equipment.name && 
+      (item.level || 1) === 1 && 
+      item !== equipment
+    );
+    
+    if(level1Index === -1) {
+      log("Need a Level 1 version of this equipment to repair it!");
+      return;
+    }
+    
+    // Remove the level 1 version
+    p.eq.splice(level1Index, 1);
+    
+    // Add random durability (20-60) to equipment, max 100
+    const repairAmount = Math.floor(Math.random() * 41) + 20; // 20-60
+    const newDurability = Math.min(100, equipment.durability + repairAmount);
+    equipment.durability = newDurability;
+    
+    p.g -= 100;
+    
+    log(`Repaired ${equipment.name.replace(/_/g, ' ')} Level ${equipment.level || 1}!`);
+    log(`Durability restored by ${repairAmount} (now ${newDurability}/100)`);
+    
+    closeModal();
+    updateUI();
+  }
+
+  function ironOreRepair(equipment) {
+    const ironOre = p.inv['Iron Ore'] || 0;
+    
+    if(p.g < 200) {
+      log("Not enough gold! Need 200g for iron ore repair.");
+      return;
+    }
+    
+    if(ironOre < 10) {
+      log("Not enough iron ore! Need at least 10 iron ore.");
+      return;
+    }
+    
+    // Use exactly 10 iron ore for 10 durability
+    const ironOreAmount = 10;
+    const durabilityAmount = 10;
+    
+    // Remove iron ore and gold
+    p.inv['Iron Ore'] -= ironOreAmount;
+    p.g -= 200;
+    
+    // Add 10 durability, max 100
+    const newDurability = Math.min(100, equipment.durability + durabilityAmount);
+    equipment.durability = newDurability;
+    
+    log(`Iron ore repair complete! Used ${ironOreAmount} iron ore and 200 gold.`);
+    log(`${equipment.name.replace(/_/g, ' ')} Level ${equipment.level || 1} durability: ${newDurability}/100`);
     
     closeModal();
     updateUI();
