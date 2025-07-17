@@ -846,11 +846,22 @@ body {
   function ensureWorldArea(areaX, areaY) {
     if (areaX < 0 || areaX >= 64 || areaY < 0 || areaY >= 64) return null;
     
+    // Double-check that world array exists and has the right structure
+    if (!world || !world[areaY]) {
+      console.error(`World structure invalid at (${areaX}, ${areaY})`);
+      return null;
+    }
+    
     if (!world[areaY][areaX]) {
-      world[areaY][areaX] = gen(areaX === TOWN && areaY === TOWN, areaX, areaY);
-      // Debug logging for area generation
-      if (areaX !== TOWN || areaY !== TOWN) {
-        console.log(`Generated area (${areaX}, ${areaY}) lazily`);
+      try {
+        world[areaY][areaX] = gen(areaX === TOWN && areaY === TOWN, areaX, areaY);
+        // Debug logging for area generation
+        if (areaX !== TOWN || areaY !== TOWN) {
+          console.log(`Generated area (${areaX}, ${areaY}) lazily`);
+        }
+      } catch (error) {
+        console.error(`Error generating area (${areaX}, ${areaY}):`, error);
+        return null;
       }
     }
     return world[areaY][areaX];
@@ -1299,10 +1310,39 @@ body {
     
     // If not found, look for it in NPCs across all areas
     if (!quest) {
-      // Make sure current area is loaded
+      // Make sure current area is loaded first
       ensureWorldArea(p.currentArea.x, p.currentArea.y);
       
-      for (let area of world.flat().filter(a => a !== null)) {
+      // Search through all loaded areas AND ensure we check adjacent areas
+      const searchAreas = [];
+      
+      // Add all currently loaded areas
+      for (let y = 0; y < 64; y++) {
+        for (let x = 0; x < 64; x++) {
+          if (world[y][x] !== null) {
+            searchAreas.push({x, y, area: world[y][x]});
+          }
+        }
+      }
+      
+      // Also check adjacent areas to current position (lazy load them)
+      const currentX = p.currentArea.x;
+      const currentY = p.currentArea.y;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const areaX = currentX + dx;
+          const areaY = currentY + dy;
+          if (areaX >= 0 && areaX < 64 && areaY >= 0 && areaY < 64) {
+            const area = ensureWorldArea(areaX, areaY);
+            if (area) {
+              searchAreas.push({x: areaX, y: areaY, area});
+            }
+          }
+        }
+      }
+      
+      // Now search through all areas
+      for (let {area} of searchAreas) {
         if (area && area.tiles) {
           for (let row of area.tiles) {
             for (let tile of row) {
@@ -1326,7 +1366,7 @@ body {
         log(`Quest accepted: ${quest.name}`);
       }
     } else {
-      log('Quest not found or already accepted');
+      log('Quest not found. Try moving closer to the quest giver.');
     }
     closeRandomQuestPopup();
   }
@@ -1495,14 +1535,24 @@ body {
   function getT(x,y){
     let ax=Math.floor(x/AREA),ay=Math.floor(y/AREA),lx=x%AREA,ly=y%AREA;
     let area = ensureWorldArea(ax, ay);
-    return area ? area.tiles[ly][lx] : null;
+    
+    // Additional safety checks
+    if (!area || !area.tiles || !area.tiles[ly] || !area.tiles[ly][lx]) {
+      return {type: 'empty'}; // Return empty tile instead of null for safety
+    }
+    
+    return area.tiles[ly][lx];
   }
   
   function setT(x,y,t){
     let ax=Math.floor(x/AREA),ay=Math.floor(y/AREA),lx=x%AREA,ly=y%AREA;
     let area = ensureWorldArea(ax, ay);
-    if (area) {
+    
+    // Additional safety checks
+    if (area && area.tiles && area.tiles[ly] && area.tiles[ly][lx] !== undefined) {
       area.tiles[ly][lx] = t;
+    } else {
+      console.warn(`Cannot set tile at (${x}, ${y}) - area not accessible`);
     }
   }
   
@@ -1924,7 +1974,24 @@ body {
     let newAreaY = Math.floor(p.y / AREA);
     
     if(newAreaX !== p.currentArea.x || newAreaY !== p.currentArea.y) {
-      // Player moved to a new area - ensure new area is loaded
+      // Player moved to a new area - refresh the old area (regenerate monsters, resources, etc.)
+      let oldAreaX = p.currentArea.x;
+      let oldAreaY = p.currentArea.y;
+      
+      // Don't refresh the town area - it should stay static  
+      // Also check if the old area was actually loaded before trying to refresh
+      if((oldAreaX !== TOWN || oldAreaY !== TOWN) && 
+         world[oldAreaY] && world[oldAreaY][oldAreaX] &&
+         oldAreaX >= 0 && oldAreaX < 64 && oldAreaY >= 0 && oldAreaY < 64) {
+        try {
+          world[oldAreaY][oldAreaX] = gen(false, oldAreaX, oldAreaY);
+          console.log(`Refreshed area (${oldAreaX}, ${oldAreaY}) - new monsters and resources spawned`);
+        } catch (error) {
+          console.error(`Error refreshing area (${oldAreaX}, ${oldAreaY}):`, error);
+        }
+      }
+      
+      // Ensure new area is loaded
       ensureWorldArea(newAreaX, newAreaY);
       p.currentArea = {x: newAreaX, y: newAreaY};
       
