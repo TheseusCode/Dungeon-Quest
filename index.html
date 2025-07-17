@@ -842,6 +842,16 @@ body {
   
   function roll(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
   
+  // Lazy loading function for world areas
+  function ensureWorldArea(areaX, areaY) {
+    if (areaX < 0 || areaX >= 64 || areaY < 0 || areaY >= 64) return null;
+    
+    if (!world[areaY][areaX]) {
+      world[areaY][areaX] = gen(areaX === TOWN && areaY === TOWN, areaX, areaY);
+    }
+    return world[areaY][areaX];
+  }
+  
   function init(){
     const s=localStorage.getItem(SAVE);
     if(s) try{ 
@@ -894,7 +904,12 @@ body {
       bankDeaths:0,
       currentArea: {x: TOWN, y: TOWN}
     };
-    world=Array.from({length:64},(_,y)=>Array.from({length:64},(_,x)=>gen(x===TOWN&&y===TOWN, x, y)));
+    // Initialize world as empty 64x64 array for lazy loading
+    world=Array.from({length:64},()=>Array.from({length:64},()=>null));
+    
+    // Only generate the town area initially (where player starts)
+    world[TOWN][TOWN] = gen(true, TOWN, TOWN);
+    
     save();
   }
   
@@ -1469,12 +1484,16 @@ body {
   
   function getT(x,y){
     let ax=Math.floor(x/AREA),ay=Math.floor(y/AREA),lx=x%AREA,ly=y%AREA;
-    return world[ay][ax].tiles[ly][lx];
+    let area = ensureWorldArea(ax, ay);
+    return area ? area.tiles[ly][lx] : null;
   }
   
   function setT(x,y,t){
     let ax=Math.floor(x/AREA),ay=Math.floor(y/AREA),lx=x%AREA,ly=y%AREA;
-    world[ay][ax].tiles[ly][lx]=t;
+    let area = ensureWorldArea(ax, ay);
+    if (area) {
+      area.tiles[ly][lx] = t;
+    }
   }
   
   function log(m){LEl.innerHTML+=m+'<br>';LEl.scrollTop=LEl.scrollHeight;save();}
@@ -1896,7 +1915,7 @@ body {
     
     if(newAreaX !== p.currentArea.x || newAreaY !== p.currentArea.y) {
       // Player moved to a new area - refresh the old area
-      world[p.currentArea.y][p.currentArea.x] = gen(p.currentArea.x === TOWN && p.currentArea.y === TOWN, p.currentArea.x, p.currentArea.y);
+      ensureWorldArea(p.currentArea.x, p.currentArea.y);
       p.currentArea = {x: newAreaX, y: newAreaY};
       
       // Clear the log panel when entering a new area
@@ -3941,22 +3960,52 @@ body {
         return;
       }
       
-      // Preserve banking data before reset
-      const preservedBankGold = p.bankGold || 0;
-      const preservedBankDeaths = p.bankDeaths || 0;
+      // Disable the reborn button to prevent double clicks
+      const rebornBtn = d('#btn-reborn');
+      rebornBtn.disabled = true;
+      rebornBtn.style.opacity = '0.5';
+      rebornBtn.textContent = 'Reborning...';
       
-      localStorage.removeItem(SAVE);
-      LEl.innerHTML='';
-      quests = []; // Clear quests array
-      randomNpcActiveQuests = []; // Clear random NPC quests
-      init();
+      // Show loading message
+      log("Reborning... Please wait.");
       
-      // Restore banking data after reset
-      p.bankGold = preservedBankGold;
-      p.bankDeaths = preservedBankDeaths;
-      
-      log("Reborn! Your banked gold has been preserved.");
-      updateUI();
+      // Use setTimeout to defer heavy operations to next tick
+      setTimeout(() => {
+        try {
+          // Preserve banking data before reset
+          const preservedBankGold = p.bankGold || 0;
+          const preservedBankDeaths = p.bankDeaths || 0;
+          
+          // Clear save data
+          localStorage.removeItem(SAVE);
+          LEl.innerHTML='';
+          
+          // Clear quest arrays
+          quests = [];
+          randomNpcActiveQuests = [];
+          
+          // Reset quest popup state
+          isQuestPopupOpen = false;
+          
+          // Reinitialize game
+          init();
+          
+          // Restore banking data after reset
+          p.bankGold = preservedBankGold;
+          p.bankDeaths = preservedBankDeaths;
+          
+          log("Reborn! Your banked gold has been preserved.");
+          updateUI();
+          
+        } catch (error) {
+          log("Error during reborn process: " + error.message);
+        } finally {
+          // Re-enable the reborn button
+          rebornBtn.disabled = false;
+          rebornBtn.style.opacity = '1';
+          rebornBtn.textContent = 'Reborn';
+        }
+      }, 100); // Small delay to allow UI to update
     };
     
     // Welcome modal functionality
