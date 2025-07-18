@@ -914,9 +914,17 @@ body {
           log(`Equipment unequipped on reload: ${p.equipped.name} - stats reset`);
         }
         
-        // Move equipped item back to equipment array
-        if(!p.eq.some(item => item === p.equipped)) {
+        // Move equipped item back to equipment array only if it's not already there
+        // Check by name and durability to avoid duplicates
+        const itemExists = p.eq.some(item => 
+          item.name === p.equipped.name && 
+          item.durability === p.equipped.durability &&
+          item.level === p.equipped.level
+        );
+        
+        if(!itemExists) {
           p.eq.push(p.equipped);
+          log(`Moved ${p.equipped.name} back to equipment inventory`);
         }
         
         // Clear equipped slot
