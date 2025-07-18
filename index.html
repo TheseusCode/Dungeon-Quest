@@ -901,18 +901,27 @@ body {
       // Initialize lastPosition for step tracking
       lastPosition = { x: p.x, y: p.y };
       
-      // Re-apply equipment effects after loading (fix equipment persistence bug)
-      if(p.equipped && p.equipped.name) {
-        let boostToApply = p.equipped.boost || (itemDefs[p.equipped.name] && itemDefs[p.equipped.name].boost);
-        if(boostToApply) {
-          // Re-apply the equipment stat bonuses that were lost during page reload
-          Object.entries(boostToApply).forEach(([stat, value]) => {
+      // Unequip all equipment on page reload to prevent stat desync
+      if(p.equipped) {
+        let boostToRemove = p.equipped.boost || (itemDefs[p.equipped.name] && itemDefs[p.equipped.name].boost);
+        if(boostToRemove) {
+          // Remove equipment stat bonuses from saved stats
+          Object.entries(boostToRemove).forEach(([stat, value]) => {
             if(stat === 'atk' || stat === 'def' || stat === 'maxHp') {
-              p[stat] = round1(p[stat] + value);
+              p[stat] = round1(p[stat] - value);
             }
           });
-          log(`Equipment reloaded: ${p.equipped.name} (${p.equipped.durability} durability) - stats restored`);
+          log(`Equipment unequipped on reload: ${p.equipped.name} - stats reset`);
         }
+        
+        // Move equipped item back to equipment array
+        if(!p.eq.some(item => item === p.equipped)) {
+          p.eq.push(p.equipped);
+        }
+        
+        // Clear equipped slot
+        p.equipped = null;
+        log("All equipment unequipped due to page reload");
       }
     }catch{localStorage.removeItem(SAVE);return init();}
     else p={
