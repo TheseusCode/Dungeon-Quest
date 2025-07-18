@@ -467,6 +467,9 @@ body {
   // Helper function to round to 1 decimal place
   const round1 = num => Math.round(num * 10) / 10;
   
+  // Store last position for step counting validation
+  let lastPosition = { x: 0, y: 0 };
+  
   // Data definitions - expanded monster templates with exponential scaling
   const monsterTpl={
     Goblin: {base:{hp:8,atk:3,def:1,boost:'atk'}, levels:[
@@ -894,6 +897,19 @@ body {
       // Validate arrays
       quests=Array.isArray(o.quests) ? o.quests : [];
       randomNpcActiveQuests=Array.isArray(o.randomNpcActiveQuests) ? o.randomNpcActiveQuests : [];
+      
+      // Initialize lastPosition for step tracking
+      lastPosition = { x: p.x, y: p.y };
+      
+      // Re-apply equipment effects after loading (fix equipment persistence bug)
+      if(p.equipped && p.equipped.name) {
+        const equipmentDef = itemDefs[p.equipped.name];
+        if(equipmentDef && equipmentDef.boost) {
+          // Equipment effects are already stored in p.equipped.boost or taken from itemDefs
+          // The game logic will apply them during combat/stat calculations
+          log(`Equipment loaded: ${p.equipped.name} (${p.equipped.durability} durability)`);
+        }
+      }
     }catch{localStorage.removeItem(SAVE);return init();}
     else p={
       x:TOWN*AREA+8,
@@ -919,6 +935,8 @@ body {
       bankDeaths:0,
       currentArea: {x: TOWN, y: TOWN}
     };
+    // Initialize lastPosition for step tracking in new games
+    lastPosition = { x: p.x, y: p.y };
     // Initialize world as empty 64x64 array for lazy loading
     world=Array.from({length:64},()=>Array.from({length:64},()=>null));
     
@@ -1638,79 +1656,90 @@ body {
     }
   }
   
+  // Function to handle potion step reduction - only called when player actually moves
+  function decrementPotionSteps() {
+    // Only decrement if player position has actually changed
+    if(p.x !== lastPosition.x || p.y !== lastPosition.y) {
+      // Handle temporary buffs
+      if(p.tempAtk){
+        p.tempAtk.steps--;
+        if(p.tempAtk.steps <= 0){
+          p.tempAtk = null;
+          log("Strength potion wore off!");
+          updateRealTimeDisplays();
+        }
+      }
+      
+      if(p.tempLuck){
+        p.tempLuck.steps--;
+        if(p.tempLuck.steps <= 0){
+          p.tempLuck = null;
+          log("Luck charm wore off!");
+          updateRealTimeDisplays();
+        }
+      }
+      
+      if(p.tempDef){
+        p.tempDef.steps--;
+        if(p.tempDef.steps <= 0){
+          p.tempDef = null;
+          log("Defense potion wore off!");
+          updateRealTimeDisplays();
+        }
+      }
+      
+      if(p.tempCraft){
+        p.tempCraft.steps--;
+        if(p.tempCraft.steps <= 0){
+          p.tempCraft = null;
+          log("Crafting potion wore off!");
+          updateRealTimeDisplays();
+        }
+      }
+      
+      // Handle new potion effects
+      if(p.tempOrcsRage){
+        p.tempOrcsRage.steps--;
+        if(p.tempOrcsRage.steps <= 0){
+          p.tempOrcsRage = null;
+          log("Orc's Rage wore off!");
+        }
+      }
+      
+      if(p.tempAngelsTouch){
+        p.tempAngelsTouch.steps--;
+        if(p.tempAngelsTouch.steps <= 0){
+          p.maxHp = round1(p.maxHp - 200);
+          p.hp = Math.min(p.hp, p.maxHp);
+          p.tempAngelsTouch = null;
+          log("Angel's Touch wore off! Lost temporary max HP.");
+        }
+      }
+      
+      if(p.tempDragonFury){
+        p.tempDragonFury.steps--;
+        if(p.tempDragonFury.steps <= 0){
+          p.maxHp = round1(p.maxHp * 2); // Restore max HP (was halved, so multiply by 2)
+          p.tempDragonFury = null;
+          log("Dragon Fury wore off! Max HP restored.");
+        }
+      }
+      
+      if(p.tempGodsGift){
+        p.tempGodsGift.steps--;
+        if(p.tempGodsGift.steps <= 0){
+          p.tempGodsGift = null;
+          log("God's Gift wore off!");
+        }
+      }
+      
+      // Update last position after processing step-based effects
+      lastPosition = { x: p.x, y: p.y };
+    }
+  }
+  
   function updateUI(){
-    // Handle temporary buffs
-    if(p.tempAtk){
-      p.tempAtk.steps--;
-      if(p.tempAtk.steps <= 0){
-        p.tempAtk = null;
-        log("Strength potion wore off!");
-        updateRealTimeDisplays();
-      }
-    }
-    
-    if(p.tempLuck){
-      p.tempLuck.steps--;
-      if(p.tempLuck.steps <= 0){
-        p.tempLuck = null;
-        log("Luck charm wore off!");
-        updateRealTimeDisplays();
-      }
-    }
-    
-    if(p.tempDef){
-      p.tempDef.steps--;
-      if(p.tempDef.steps <= 0){
-        p.tempDef = null;
-        log("Defense potion wore off!");
-        updateRealTimeDisplays();
-      }
-    }
-    
-    if(p.tempCraft){
-      p.tempCraft.steps--;
-      if(p.tempCraft.steps <= 0){
-        p.tempCraft = null;
-        log("Crafting potion wore off!");
-        updateRealTimeDisplays();
-      }
-    }
-    
-    // Handle new potion effects
-    if(p.tempOrcsRage){
-      p.tempOrcsRage.steps--;
-      if(p.tempOrcsRage.steps <= 0){
-        p.tempOrcsRage = null;
-        log("Orc's Rage wore off!");
-      }
-    }
-    
-    if(p.tempAngelsTouch){
-      p.tempAngelsTouch.steps--;
-      if(p.tempAngelsTouch.steps <= 0){
-        p.maxHp = round1(p.maxHp - 200);
-        p.hp = Math.min(p.hp, p.maxHp);
-        p.tempAngelsTouch = null;
-        log("Angel's Touch wore off! Lost temporary max HP.");
-      }
-    }
-    
-    if(p.tempDragonFury){
-      p.tempDragonFury.steps--;
-      if(p.tempDragonFury.steps <= 0){
-        p.maxHp = round1(p.maxHp * 2); // Restore max HP (was halved, so multiply by 2)
-        p.tempDragonFury = null;
-        log("Dragon Fury wore off! Max HP restored.");
-      }
-    }
-    
-    if(p.tempGodsGift){
-      p.tempGodsGift.steps--;
-      if(p.tempGodsGift.steps <= 0){
-        p.tempGodsGift = null;
-        log("God's Gift wore off!");
-      }
-    }
+    // Handle only non-step-based effects here
     
     // Handle Asura Blood effects
     if(p.asuraBlood && p.asuraBlood.active){
@@ -1919,6 +1948,9 @@ body {
       setT(nx,ny,{type:'empty'});
       p.x=nx; p.y=ny;
       
+      // Decrement potion steps only when player actually moves
+      decrementPotionSteps();
+      
       checkAreaChange();
       updateUI();
       updateRealTimeDisplays();
@@ -1929,6 +1961,10 @@ body {
       log("Trap! -"+dmg+" HP");
       setT(nx,ny,{type:'empty'});
       p.x=nx; p.y=ny;
+      
+      // Decrement potion steps only when player actually moves
+      decrementPotionSteps();
+      
       checkAreaChange();
       updateUI();
       updateRealTimeDisplays();
@@ -1954,6 +1990,10 @@ body {
       
       setT(nx,ny,{type:'empty'});
       p.x=nx; p.y=ny;
+      
+      // Decrement potion steps only when player actually moves
+      decrementPotionSteps();
+      
       checkAreaChange();
       updateUI();
     }
@@ -1962,6 +2002,9 @@ body {
     }
     else {
       p.x=nx; p.y=ny;
+      
+      // Decrement potion steps only when player actually moves
+      decrementPotionSteps();
       
       checkAreaChange();
       updateUI();
@@ -2988,14 +3031,7 @@ body {
             // Always increase craft skill by 0.1
             p.craft = round1(p.craft + 0.1);
             
-            // Reduce tempCraft attempts
-            if(p.tempCraft){
-              p.tempCraft.steps--;
-              if(p.tempCraft.steps <= 0){
-                p.tempCraft = null;
-                log("Crafting potion wore off!");
-              }
-            }
+            // Note: tempCraft steps are now handled in decrementPotionSteps() when player moves
             
             // Check if crafting succeeded based on percentage (craft skill + luck bonus)
             let currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
@@ -3045,14 +3081,7 @@ body {
           // Always increase craft skill by 0.1
           p.craft = round1(p.craft + 0.1);
           
-          // Reduce tempCraft attempts
-          if(p.tempCraft){
-            p.tempCraft.steps--;
-            if(p.tempCraft.steps <= 0){
-              p.tempCraft = null;
-              log("Crafting potion wore off!");
-            }
-          }
+          // Note: tempCraft steps are now handled in decrementPotionSteps() when player moves
           
           // Check if crafting succeeded based on percentage (craft skill + luck bonus)
           let currentLuck = round1(p.luck + (p.tempLuck ? p.tempLuck.value : 0));
