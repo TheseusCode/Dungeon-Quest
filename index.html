@@ -3040,11 +3040,28 @@ body {
               const availableItems = Object.keys(recipe.need).filter(item => (p.inv[item] || 0) >= recipe.need[item]);
               // Select first 4 available items
               const selectedItems = availableItems.slice(0, 4);
+              
+              // Check if any selected items are currently equipped and unequip them
+              selectedItems.forEach(itemName => {
+                if(p.equipped && p.equipped.name === itemName) {
+                  log(`Unequipping ${itemName} before using in crafting`);
+                  unequipItem();
+                }
+              });
+              
               selectedItems.forEach(item => {
                 p.inv[item] -= recipe.need[item];
                 if(p.inv[item] <= 0) delete p.inv[item];
               });
             } else {
+              // Check if any required materials are currently equipped and unequip them
+              Object.keys(recipe.need).forEach(materialName => {
+                if(p.equipped && p.equipped.name === materialName) {
+                  log(`Unequipping ${materialName} before using in crafting`);
+                  unequipItem();
+                }
+              });
+              
               // Always consume materials on attempt
               Object.keys(recipe.need).forEach(k=>p.inv[k]-=recipe.need[k]);
             }
@@ -3096,6 +3113,14 @@ body {
       if(btn.dataset.r){
         let recipe = recipes.find(r => r.name === btn.dataset.r);
         if(materials(recipe.need)){
+          // Check if any required materials are currently equipped and unequip them
+          Object.keys(recipe.need).forEach(materialName => {
+            if(p.equipped && p.equipped.name === materialName) {
+              log(`Unequipping ${materialName} before using in crafting`);
+              unequipItem();
+            }
+          });
+          
           // Always consume materials on attempt
           Object.keys(recipe.need).forEach(k=>p.inv[k]-=recipe.need[k]);
           
