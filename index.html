@@ -903,11 +903,15 @@ body {
       
       // Re-apply equipment effects after loading (fix equipment persistence bug)
       if(p.equipped && p.equipped.name) {
-        const equipmentDef = itemDefs[p.equipped.name];
-        if(equipmentDef && equipmentDef.boost) {
-          // Equipment effects are already stored in p.equipped.boost or taken from itemDefs
-          // The game logic will apply them during combat/stat calculations
-          log(`Equipment loaded: ${p.equipped.name} (${p.equipped.durability} durability)`);
+        let boostToApply = p.equipped.boost || (itemDefs[p.equipped.name] && itemDefs[p.equipped.name].boost);
+        if(boostToApply) {
+          // Re-apply the equipment stat bonuses that were lost during page reload
+          Object.entries(boostToApply).forEach(([stat, value]) => {
+            if(stat === 'atk' || stat === 'def' || stat === 'maxHp') {
+              p[stat] = round1(p[stat] + value);
+            }
+          });
+          log(`Equipment reloaded: ${p.equipped.name} (${p.equipped.durability} durability) - stats restored`);
         }
       }
     }catch{localStorage.removeItem(SAVE);return init();}
