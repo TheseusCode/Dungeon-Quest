@@ -675,66 +675,72 @@ body {
   };
 
   const itemDefs={
-    'Spear':{boost:{atk:2},maxD:100,level:1},
-    'Shield':{boost:{def:3},maxD:100,level:1},
-    'Greatsword':{boost:{atk:4},maxD:100,level:1},
-    'PlateArmor':{boost:{maxHp:10},maxD:100,level:1},
-    'Iron Sword':{boost:{atk:3},maxD:100,level:1},
-    'Skeleton_King_Bone':{boost:{def:1},maxD:50,level:1},
-    'Dire_Wolf_Pelt':{boost:{maxHp:5},maxD:50,level:1},
-    // Level 10 special items
-    'Ancient_Goblin_Crown':{boost:{atk:250,def:100},maxD:200,value:200,level:1},
-    'Bone_Archlich_Staff':{boost:{atk:400},maxD:200,value:200,level:1},
-    'Primordial_Wolf_Fang':{boost:{atk:300,maxHp:400},maxD:200,value:200,level:1},
-    'Orc_Destroyer_Axe':{boost:{atk:500},maxD:200,value:200,level:1},
-    'Ancient_Ogre_Club':{boost:{atk:350,maxHp:750},maxD:200,value:200,level:1},
-    'Gnoll_Demigod_Spear':{boost:{atk:450,def:150},maxD:200,value:200,level:1},
-    'Wyvern_God_Scale':{boost:{atk:600,def:250,maxHp:500},maxD:200,value:200,level:1},
-    // Ultimate legendary weapon
-    'Apex_Predator':{boost:{atk:800,def:800,maxHp:1200},maxD:100,value:1000,level:1},
-    // New ultimate weapon
-    'Broken_Stick':{boost:{atk:50000},maxD:5,value:0,level:1,unsellable:true},
-    // Level 15 boss weapons - cannot be sold
-    'Tidepiercer':{boost:{atk:1000,def:400},maxD:100,value:0,level:1,unsellable:true},
-    'Nova_Maul':{boost:{atk:600,maxHp:1000,def:200},maxD:100,value:0,level:1,unsellable:true},
-    'Stormfang_Katana':{boost:{atk:2000,def:1000},maxD:100,value:0,level:1,unsellable:true},
-    // New weapons with random durability
-    'Shadowstrike_Blade':{boost:{atk:6,def:1},maxD:()=>roll(40,100),value:150,level:1},
-    'Thundercaller_Hammer':{boost:{atk:8,maxHp:5},maxD:()=>roll(40,100),value:180,level:1},
-    'Voidreaper_Scythe':{boost:{atk:10},maxD:()=>roll(40,100),value:200,level:1},
-    'Dragonbane_Spear':{boost:{atk:5,def:4},maxD:()=>roll(40,100),value:160,level:1},
-    'Soulrender_Axe':{boost:{atk:7,maxHp:3},maxD:()=>roll(40,100),value:170,level:1},
-    // New crafted equipment
-    'Scale_Dagger':{boost:{atk:4},maxD:()=>roll(40,100),value:120,level:1},
-    'Hide_Shield':{boost:{def:7},maxD:()=>roll(40,100),value:200,level:1},
-    'Wild_Cape':{boost:{atk:5,def:5,maxHp:-15},maxD:()=>roll(40,100),value:250,level:1},
-    // Random NPC Quest Reward Equipment
-    // Low Level Equipment (Level 1-3 monsters)
-    'Rusty_Dagger':{boost:{atk:2},maxD:50,level:1},
-    'Leather_Gloves':{boost:{atk:2,def:2},maxD:40,level:1},
-    'Iron_Boots':{boost:{def:3},maxD:50,level:1},
-    'Steel_Helm':{boost:{def:2,maxHp:5},maxD:50,level:1},
-    'Hunter_Bow':{boost:{atk:3},maxD:50,level:1},
-    // Mid Level Equipment (Level 4-6 monsters)
-    'Chain_Mail':{boost:{def:4,maxHp:8},maxD:80,level:1},
-    'Battle_Axe':{boost:{atk:20},maxD:50,level:1},
-    'Magic_Ring':{boost:{atk:22,def:15,maxHp:10},maxD:30,level:1},
-    'Enchanted_Blade':{boost:{atk:27},maxD:50,level:1},
-    'Guardian_Shield':{boost:{def:28},maxD:40,level:1},
-    'Shadow_Boots':{boost:{atk:25,def:22},maxD:50,level:1},
-    // High Level Equipment (Level 7-9 monsters)
-    'Dragon_Scale_Armor':{boost:{def:76,maxHp:72},maxD:60,level:1},
-    'Mystic_Cloak':{boost:{maxHp:80,def:45},maxD:60,level:1},
-    'Warrior_Gauntlets':{boost:{atk:90},maxD:50,level:1},
-    'Crystal_Amulet':{boost:{atk:5,def:2,maxHp:7},maxD:80,level:1},
-    'Ice_Staff':{boost:{atk:99},maxD:50,level:1},
-    'Fire_Sword':{boost:{atk:88,maxHp:30},maxD:50,level:1},
-    'Lightning_Spear':{boost:{atk:99},maxD:50,level:1},
-    'Ancient_Relic':{boost:{atk:96,def:96,maxHp:115},maxD:90,level:1},
-    'Demon_Blade':{boost:{atk:150},maxD:50,level:1},
-    // New consumables
-    'Resurrection_Charm':{consumable:true,desc:'One-time reborn with all stats intact when you die',level:1},
-    'Asura_Blood':{consumable:true,desc:'100x all stats for 100 steps, then 75% stat reduction for 50 steps',level:1}
+    // === BASIC WEAPONS (Tier 1) ===
+    'Spear':{boost:{atk:2},maxD:100,level:1,category:'basic',value:15},
+    'Shield':{boost:{def:3},maxD:100,level:1,category:'basic',value:18},
+    'Greatsword':{boost:{atk:4},maxD:100,level:1,category:'basic',value:25},
+    'PlateArmor':{boost:{maxHp:10},maxD:100,level:1,category:'basic',value:30},
+    'Iron Sword':{boost:{atk:3},maxD:100,level:1,category:'basic',value:20},
+    'Skeleton_King_Bone':{boost:{def:1},maxD:50,level:1,category:'basic',value:10},
+    'Dire_Wolf_Pelt':{boost:{maxHp:5},maxD:50,level:1,category:'basic',value:12},
+    
+    // === LOW TIER EQUIPMENT (Tier 2) ===
+    'Rusty_Dagger':{boost:{atk:2},maxD:50,level:1,category:'low',value:15},
+    'Leather_Gloves':{boost:{atk:2,def:2},maxD:40,level:1,category:'low',value:22},
+    'Iron_Boots':{boost:{def:3},maxD:50,level:1,category:'low',value:18},
+    'Steel_Helm':{boost:{def:2,maxHp:5},maxD:50,level:1,category:'low',value:20},
+    'Hunter_Bow':{boost:{atk:3},maxD:50,level:1,category:'low',value:18},
+    
+    // === CRAFTED WEAPONS (Tier 3) ===
+    'Shadowstrike_Blade':{boost:{atk:6,def:1},maxD:()=>roll(40,100),level:1,category:'crafted',value:45},
+    'Thundercaller_Hammer':{boost:{atk:8,maxHp:5},maxD:()=>roll(40,100),level:1,category:'crafted',value:55},
+    'Voidreaper_Scythe':{boost:{atk:10},maxD:()=>roll(40,100),level:1,category:'crafted',value:65},
+    'Dragonbane_Spear':{boost:{atk:5,def:4},maxD:()=>roll(40,100),level:1,category:'crafted',value:50},
+    'Soulrender_Axe':{boost:{atk:7,maxHp:3},maxD:()=>roll(40,100),level:1,category:'crafted',value:52},
+    'Scale_Dagger':{boost:{atk:4},maxD:()=>roll(40,100),level:1,category:'crafted',value:35},
+    'Hide_Shield':{boost:{def:7},maxD:()=>roll(40,100),level:1,category:'crafted',value:60},
+    'Wild_Cape':{boost:{atk:5,def:5,maxHp:-15},maxD:()=>roll(40,100),level:1,category:'crafted',value:48},
+    
+    // === MID TIER EQUIPMENT (Tier 4) ===
+    'Chain_Mail':{boost:{def:4,maxHp:8},maxD:80,level:1,category:'mid',value:85},
+    'Battle_Axe':{boost:{atk:20},maxD:50,level:1,category:'mid',value:120},
+    'Magic_Ring':{boost:{atk:22,def:15,maxHp:10},maxD:30,level:1,category:'mid',value:180},
+    'Enchanted_Blade':{boost:{atk:27},maxD:50,level:1,category:'mid',value:160},
+    'Guardian_Shield':{boost:{def:28},maxD:40,level:1,category:'mid',value:170},
+    'Shadow_Boots':{boost:{atk:25,def:22},maxD:50,level:1,category:'mid',value:185},
+    
+    // === HIGH TIER EQUIPMENT (Tier 5) ===
+    'Dragon_Scale_Armor':{boost:{def:76,maxHp:72},maxD:60,level:1,category:'high',value:750},
+    'Mystic_Cloak':{boost:{maxHp:80,def:45},maxD:60,level:1,category:'high',value:650},
+    'Warrior_Gauntlets':{boost:{atk:90},maxD:50,level:1,category:'high',value:550},
+    'Crystal_Amulet':{boost:{atk:5,def:2,maxHp:7},maxD:80,level:1,category:'high',value:85},
+    'Ice_Staff':{boost:{atk:99},maxD:50,level:1,category:'high',value:600},
+    'Fire_Sword':{boost:{atk:88,maxHp:30},maxD:50,level:1,category:'high',value:580},
+    'Lightning_Spear':{boost:{atk:99},maxD:50,level:1,category:'high',value:600},
+    'Ancient_Relic':{boost:{atk:96,def:96,maxHp:115},maxD:90,level:1,category:'high',value:1200},
+    'Demon_Blade':{boost:{atk:150},maxD:50,level:1,category:'high',value:900},
+    
+    // === LEGENDARY TIER (Tier 6) ===
+    'Ancient_Goblin_Crown':{boost:{atk:250,def:100},maxD:200,level:1,category:'legendary',value:2500},
+    'Bone_Archlich_Staff':{boost:{atk:400},maxD:200,level:1,category:'legendary',value:3000},
+    'Primordial_Wolf_Fang':{boost:{atk:300,maxHp:400},maxD:200,level:1,category:'legendary',value:3200},
+    'Orc_Destroyer_Axe':{boost:{atk:500},maxD:200,level:1,category:'legendary',value:3800},
+    'Ancient_Ogre_Club':{boost:{atk:350,maxHp:750},maxD:200,level:1,category:'legendary',value:4000},
+    'Gnoll_Demigod_Spear':{boost:{atk:450,def:150},maxD:200,level:1,category:'legendary',value:3600},
+    'Wyvern_God_Scale':{boost:{atk:600,def:250,maxHp:500},maxD:200,level:1,category:'legendary',value:5000},
+    
+    // === ULTIMATE TIER (Tier 7) ===
+    'Apex_Predator':{boost:{atk:800,def:800,maxHp:1200},maxD:100,level:1,category:'ultimate',value:15000},
+    
+    // === UNSELLABLE ITEMS ===
+    'Broken_Stick':{boost:{atk:50000},maxD:5,level:1,category:'ultimate',unsellable:true},
+    'Tidepiercer':{boost:{atk:1000,def:400},maxD:100,level:1,category:'boss',unsellable:true},
+    'Nova_Maul':{boost:{atk:600,maxHp:1000,def:200},maxD:100,level:1,category:'boss',unsellable:true},
+    'Stormfang_Katana':{boost:{atk:2000,def:1000},maxD:100,level:1,category:'boss',unsellable:true},
+    
+    // === CONSUMABLES (UNSELLABLE) ===
+    'Resurrection_Charm':{consumable:true,desc:'One-time reborn with all stats intact when you die',level:1,unsellable:true},
+    'Asura_Blood':{consumable:true,desc:'100x all stats for 100 steps, then 75% stat reduction for 50 steps',level:1,unsellable:true}
   };
 
   const recipes=[
