@@ -467,6 +467,22 @@ body {
   // Helper function to round to 1 decimal place
   const round1 = num => Math.round(num * 10) / 10;
   
+  // Calculate level-appropriate selling price for items
+  function calculateSellingPrice(itemName, itemLevel = 1) {
+    const itemDef = itemDefs[itemName];
+    
+    // If item has a defined value, use it as base price
+    let basePrice = (itemDef && itemDef.value) ? itemDef.value : 1;
+    
+    // Apply level scaling: price increases exponentially with level
+    // Formula: basePrice * (1.5 ^ (level - 1))
+    // This means: Level 1 = 1x, Level 2 = 1.5x, Level 3 = 2.25x, Level 5 = 5x, Level 10 = 38x
+    const levelMultiplier = Math.pow(1.5, (itemLevel - 1));
+    const scaledPrice = Math.max(1, Math.floor(basePrice * levelMultiplier));
+    
+    return scaledPrice;
+  }
+  
   // Store last position for step counting validation
   let lastPosition = { x: 0, y: 0 };
   
@@ -2814,10 +2830,11 @@ body {
       html += '<div style="display:grid; gap:6px; margin-bottom:25px;">';
       Object.entries(p.inv).forEach(([k,v])=>{
         if(v>0) {
+          const sellingPrice = calculateSellingPrice(k, 1);
           let btnStyle = `padding:8px; border-radius:6px; border:1px solid #FF9800; background:#E65100; color:white; cursor:pointer; display:flex; justify-content:space-between; align-items:center;`;
           html+=`<button data-sell="${k}" style="${btnStyle}">`;
           html+=`<span>${k.replace(/_/g, ' ')} x${v}</span>`;
-          html+=`<span style="color:#FFD700; font-weight:bold;">1g each</span>`;
+          html+=`<span style="color:#FFD700; font-weight:bold;">${sellingPrice}g each</span>`;
           html+=`</button>`;
         }
       });
@@ -2829,14 +2846,15 @@ body {
       html += '<div style="display:grid; gap:6px;">';
       p.eq.forEach((item,i)=>{
         let itemDef = itemDefs[item.name];
-        let value = itemDef && itemDef.value ? itemDef.value : 5;
+        let itemLevel = item.level || 1;
+        let value = calculateSellingPrice(item.name, itemLevel);
         let isEquipped = p.equipped && p.equipped === item;
         let isUnsellable = itemDef && itemDef.unsellable;
         let isDisabled = isEquipped || isUnsellable;
         let btnStyle = `padding:8px; border-radius:6px; border:1px solid #f44336; background:${isDisabled ? '#666' : '#C62828'}; color:${isDisabled ? '#999' : 'white'}; cursor:${isDisabled ? 'not-allowed' : 'pointer'}; display:flex; justify-content:space-between; align-items:center;`;
         
         html+=`<button data-selleq="${i}" style="${btnStyle}">`;
-        html+=`<span>${item.name.replace(/_/g, ' ')} Lvl ${item.level || 1} (${item.durability})${isEquipped ? ' [EQUIPPED]' : ''}${isUnsellable ? ' [LEGENDARY]' : ''}</span>`;
+        html+=`<span>${item.name.replace(/_/g, ' ')} Lvl ${itemLevel} (${item.durability})${isEquipped ? ' [EQUIPPED]' : ''}${isUnsellable ? ' [LEGENDARY]' : ''}</span>`;
         html+=`<span style="color:#FFD700; font-weight:bold;">${isUnsellable ? 'UNSELLABLE' : value + 'g'}</span>`;
         html+=`</button>`;
       });
@@ -2859,16 +2877,17 @@ body {
       if(btn.dataset.sell){
         let item = btn.dataset.sell;
         if(p.inv[item] > 0) {
+          // Calculate level-appropriate selling price
+          const sellingPrice = calculateSellingPrice(item, 1); // Regular inventory items are typically level 1
           p.inv[item]--;
-          p.g = Math.max(0, (p.g || 0) + 1);
-          log("Sold " + item + " for 1g");
+          p.g = Math.max(0, (p.g || 0) + sellingPrice);
+          log("Sold " + item + " for " + sellingPrice + "g");
         }
       }
       if(btn.dataset.selleq){
         let index = parseInt(btn.dataset.selleq);
         let item = p.eq[index];
         let itemDef = itemDefs[item.name];
-        let value = itemDef && itemDef.value ? itemDef.value : 5;
         
         if(p.equipped && p.equipped === item) {
           log("Cannot sell equipped item!");
@@ -2880,9 +2899,13 @@ body {
           return;
         }
         
+        // Calculate level-appropriate selling price based on item level
+        const itemLevel = item.level || 1;
+        const value = calculateSellingPrice(item.name, itemLevel);
+        
         p.g = Math.max(0, (p.g || 0) + value);
         p.eq.splice(index, 1);
-        log("Sold " + item.name + " for " + value + "g");
+        log("Sold " + item.name + " (Level " + itemLevel + ") for " + value + "g");
       }
       updateUI();
     });
